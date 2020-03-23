@@ -1,0 +1,1444 @@
+<!DOCTYPE html>
+<html  lang="en">
+<head>
+    <meta charset="utf-8" />
+
+<meta name="generator" content="Hexo 4.2.0" />
+
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+
+<title>Android KitKat(4.4)单独编译Kernel - Zola&#39;s Blog</title>
+
+
+    <meta name="description" content="这篇文章教你如何在没有全部Android源码，只有kernel文件夹时编译boot.img。另外这里需要从4.4的源码或者平台源码提取一些工具。 Android源码里的Kernel文件夹是GNU协议的，所以厂家的驱动操作细节基本在其他目录（比如vendor）下的Hal代码里。 如果想熟悉Android大概编译流程的话，最直接的就是看&#x2F;build&#x2F;core&#x2F;Makefile的代码，这样你就会清楚每个">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Android KitKat(4.4)单独编译Kernel">
+<meta property="og:url" content="http://yoursite.com/2018/10/28/android_kernel/android_kitkat_kernel_build/index.html">
+<meta property="og:site_name" content="Zola&#39;s Blog">
+<meta property="og:description" content="这篇文章教你如何在没有全部Android源码，只有kernel文件夹时编译boot.img。另外这里需要从4.4的源码或者平台源码提取一些工具。 Android源码里的Kernel文件夹是GNU协议的，所以厂家的驱动操作细节基本在其他目录（比如vendor）下的Hal代码里。 如果想熟悉Android大概编译流程的话，最直接的就是看&#x2F;build&#x2F;core&#x2F;Makefile的代码，这样你就会清楚每个">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="http://yoursite.com/gallery/8.jpeg">
+<meta property="article:published_time" content="2018-10-28T09:43:14.000Z">
+<meta property="article:modified_time" content="2020-03-22T06:55:21.697Z">
+<meta property="article:author" content="Zola">
+<meta property="article:tag" content="Android KitKat">
+<meta property="article:tag" content="Android Kernel">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://yoursite.com/gallery/8.jpeg">
+
+
+
+
+
+
+
+<link rel="icon" href="/images/favicon.svg">
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.7.2/css/bulma.css">
+<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.4.1/css/all.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Ubuntu:400,600|Source+Code+Pro">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@9.12.0/styles/atom-one-dark.css">
+
+
+    
+    
+<style>body>.footer,body>.navbar,body>.section{opacity:0}</style>
+
+    
+    
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lightgallery@1.6.8/dist/css/lightgallery.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/justifiedGallery@3.7.0/dist/css/justifiedGallery.min.css">
+
+    
+    
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/outdatedbrowser@1.1.5/outdatedbrowser/outdatedbrowser.min.css">
+
+    
+    
+    
+    
+<link rel="stylesheet" href="/css/back-to-top.css">
+
+    
+    
+    
+    
+    
+    
+    
+    <link rel="stylesheet" href="/css/progressbar.css">
+<script src="https://cdn.jsdelivr.net/npm/pace-js@1.0.2/pace.min.js"></script>
+    
+    
+    
+
+
+<link rel="stylesheet" href="/css/style.css">
+</head>
+<body class="is-3-column">
+    <nav class="navbar navbar-main">
+    <div class="container">
+        <div class="navbar-brand is-flex-center">
+            <a class="navbar-item navbar-logo" href="/">
+            
+                <img src="/images/gen.svg" alt="Android KitKat(4.4)单独编译Kernel" height="28">
+            
+            </a>
+        </div>
+        <div class="navbar-menu">
+            
+            <div class="navbar-start">
+                
+                <a class="navbar-item"
+                href="/">Home</a>
+                
+                <a class="navbar-item"
+                href="/archives">Archives</a>
+                
+                <a class="navbar-item"
+                href="/categories">Categories</a>
+                
+                <a class="navbar-item"
+                href="/tags">Tags</a>
+                
+            </div>
+            
+            <div class="navbar-end">
+                
+                
+                
+                <a class="navbar-item search" title="Search" href="javascript:;">
+                    <i class="fas fa-search"></i>
+                </a>
+                
+            </div>
+        </div>
+    </div>
+</nav>
+    
+    <section class="section">
+        <div class="container">
+            <div class="columns">
+                <div class="column is-8-tablet is-8-desktop is-6-widescreen has-order-2 column-main">
+<div class="card">
+    
+    <div class="card-image">
+        <span  class="image is-7by1">
+            <img class="thumbnail" src="/gallery/8.jpeg" alt="Android KitKat(4.4)单独编译Kernel">
+        </span>
+    </div>
+    
+    <div class="card-content article ">
+        
+        <div class="level article-meta is-size-7 is-uppercase is-mobile is-overflow-x-auto">
+            <div class="level-left">
+                <time class="level-item has-text-grey" datetime="2018-10-28T09:43:14.000Z">2018-10-28</time>
+                
+                <div class="level-item">
+                <a class="has-link-grey -link" href="/categories/Android-System/">Android System</a>
+                </div>
+                
+                
+                <span class="level-item has-text-grey">
+                    
+                    
+                    5 minutes read (About 792 words)
+                </span>
+                
+                
+            </div>
+        </div>
+        
+        <h1 class="title is-size-3 is-size-4-mobile has-text-weight-normal">
+            
+                Android KitKat(4.4)单独编译Kernel
+            
+        </h1>
+        <div class="content">
+            <p>这篇文章教你如何在没有全部Android源码，只有kernel文件夹时编译boot.img。另外这里需要从4.4的源码或者平台源码提取一些工具。</p>
+<p>Android源码里的Kernel文件夹是GNU协议的，所以厂家的驱动操作细节基本在其他目录（比如vendor）下的Hal代码里。</p>
+<p>如果想熟悉Android大概编译流程的话，最直接的就是看/build/core/Makefile的代码，这样你就会清楚每个img文件是从那些文件里生成的，用的什么参数、工具也一目了然。</p>
+<hr>
+<h2 id="关于安卓各版本的差异和平台差异"><a href="#关于安卓各版本的差异和平台差异" class="headerlink" title="关于安卓各版本的差异和平台差异"></a>关于安卓各版本的差异和平台差异</h2><h3 id="安卓各版本差异"><a href="#安卓各版本差异" class="headerlink" title="安卓各版本差异"></a>安卓各版本差异</h3><p>Android不同版本编译时，需要的JDK版本和C编译工具版本是不一样的，4.4用的JDK版本是1.6，而C的编译器版本可以查看/build/core/Makefile的代码来确认。</p>
+<h3 id="平台差异"><a href="#平台差异" class="headerlink" title="平台差异"></a>平台差异</h3><p>展讯、MTK、高通下的有些平台在编译完源码后会对img进行签名加密操作，如果涉及到签名加密最好是拥有对应平台的源码，从中提取签名加密工具和参数。</p>
+<hr>
+<h2 id="编译脚本的编写"><a href="#编译脚本的编写" class="headerlink" title="编译脚本的编写"></a>编译脚本的编写</h2><h3 id="文件目录"><a href="#文件目录" class="headerlink" title="文件目录"></a>文件目录</h3><p>├── arm-eabi-4.8  // c编译器<br>├── build_tools  //编译相关工具<br>├── config<br>│   ├── kernel_config  //kernel编译的config文件，需要从kernel/arch/arm/configs下找到对应机器类型的config文件，或者直接从整体源码编译后的out目录里提取<br>│   └──xxxxx-native.dtb   //kernel对应机器类型的dts文件，用来生成dt.img，需要从kernel/arch/arm/boot/dts目录里提取<br>├── flash<br>│   └── ramdisk.img   //整体源码编译后的ramdisk.img<br>├── kernel   //源码文件<br>├── packimage_scripts  //签名加密工具，不一定需要，看平台<br>├── build.sh  //编译脚本</p>
+<h3 id="编写编译脚本build-sh"><a href="#编写编译脚本build-sh" class="headerlink" title="编写编译脚本build.sh"></a>编写编译脚本build.sh</h3><p>编译的过程，简单来说，就是先根据config文件编译kernel文件夹，找到对应机器的dts文件用dtbTool生成dt.img,然后使用mkbootimg工具，合并kernel的编译结果Image、ramdis.img、dt.img生成boot.img。</p>
+<p>最后如果需要签名加密在用签名加密工具对boot.img进行签名加密。</p>
+<pre><code>make -j8 -l8 -C ./kernel clean
+rm -rf out
+mkdir out
+
+rm flash/dt.img flash/boot.img flash/boot-sign.img
+
+cp ./config/kernel_config out/.config
+make -j4 -C ./kernel  ARCH=arm CROSS_COMPILE=$PWD/arm-eabi-4.8/bin/arm-eabi- O=$PWD/out/
+
+find out/arch/arm/boot/dts/ -name *.dtb ! -name xxxxx.dtb | xargs -I{} rm {}
+
+./build_tools/dtbTool -o  flash/dt.img -s 2048 -p out/scripts/dtc/ out/arch/arm/boot/dts/
+
+./build_tools/mkbootimg --kernel out/arch/arm/boot/Image --ramdisk flash/ramdisk.img --cmdline console=ttyS1,115200n8 --base 0x00000000 --pagesize 2048 --dt flash/dt.img --kernel_offset 0x00008000 --ramdisk_offset 0x05400000 --output flash/boot.img
+
+source packimage_scripts/packimage.sh flash/boot.img
+</code></pre><p>&nbsp;</p>
+<p>这里还得说下，因为平台的不同，编译过程的参数、指令、文件都可能有差异，最好是根据/build/core/Makefile里的过程走，也可以参照其他kernel编译的相关文章。</p>
+
+        </div>
+        
+        <div class="level is-size-7 is-uppercase">
+            <div class="level-start">
+                <div class="level-item">
+                    <span class="is-size-6 has-text-grey has-mr-7">#</span>
+                    <a class="has-link-grey -link" href="/tags/Android-Kernel/" rel="tag">Android Kernel</a>, <a class="has-link-grey -link" href="/tags/Android-KitKat/" rel="tag">Android KitKat</a>
+                </div>
+            </div>
+        </div>
+        
+        
+        
+    </div>
+</div>
+
+
+
+
+
+<div class="card card-transparent">
+    <div class="level post-navigation is-flex-wrap is-mobile">
+        
+        <div class="level-start">
+            <a class="level level-item has-link-grey  article-nav-prev" href="/2018/12/13/zbar/zbar_usage_and_bug/">
+                <i class="level-item fas fa-chevron-left"></i>
+                <span class="level-item">Zbar的使用建议及如何回避存在的Bug</span>
+            </a>
+        </div>
+        
+        
+        <div class="level-end">
+            <a class="level level-item has-link-grey  article-nav-next" href="/2017/07/15/android_map/android_map_understanding/">
+                <span class="level-item">谈谈Android地图sdk怎么实现的</span>
+                <i class="level-item fas fa-chevron-right"></i>
+            </a>
+        </div>
+        
+    </div>
+</div>
+
+
+</div>
+                
+
+
+
+
+<div class="column is-4-tablet is-4-desktop is-3-widescreen  has-order-1 column-left ">
+    
+        
+<div class="card widget">
+    <div class="card-content">
+        <nav class="level">
+            <div class="level-item has-text-centered" style="flex-shrink: 1">
+                <div>
+                    
+                    <figure class="image is-128x128 has-mb-6">
+                        <img class="" src="/images/avatar.png" alt="Zola">
+                    </figure>
+                    
+                    <p class="is-size-4 is-block">
+                        Zola
+                    </p>
+                    
+                    
+                    <p class="is-size-6 is-block">
+                        Enjoy technology , Enjoy Life
+                    </p>
+                    
+                    
+                    <p class="is-size-6 is-flex is-flex-center has-text-grey">
+                        <i class="fas fa-map-marker-alt has-mr-7"></i>
+                        <span>ShenZhen,China</span>
+                    </p>
+                    
+                </div>
+            </div>
+        </nav>
+        <nav class="level is-mobile">
+            <div class="level-item has-text-centered is-marginless">
+                <div>
+                    <p class="heading">
+                        Posts
+                    </p>
+                    <a href="/archives">
+                        <p class="title has-text-weight-normal">
+                            13
+                        </p>
+                    </a>
+                </div>
+            </div>
+            <div class="level-item has-text-centered is-marginless">
+                <div>
+                    <p class="heading">
+                        Categories
+                    </p>
+                    <a href="/categories">
+                        <p class="title has-text-weight-normal">
+                            9
+                        </p>
+                    </a>
+                </div>
+            </div>
+            <div class="level-item has-text-centered is-marginless">
+                <div>
+                    <p class="heading">
+                        Tags
+                    </p>
+                    <a href="/tags">
+                        <p class="title has-text-weight-normal">
+                            26
+                        </p>
+                    </a>
+                </div>
+            </div>
+        </nav>
+        
+        <div class="level">
+            <a class="level-item button is-link is-rounded" href="https://github.com/zolad" target="_blank" rel="noopener">
+                Follow</a>
+        </div>
+        
+        
+        
+        <div class="level is-mobile">
+            
+            <a class="level-item button is-white is-marginless" target="_blank" rel="noopener"
+                title="Github" href="https://github.com/zolad">
+                
+                <i class="fab fa-github"></i>
+                
+            </a>
+            
+        </div>
+        
+    </div>
+</div>
+    
+        
+    
+        <div class="card widget">
+    <div class="card-content">
+        <div class="menu">
+        <h3 class="menu-label">
+            Links
+        </h3>
+        <ul class="menu-list">
+        
+            <li>
+                <a class="level is-mobile" href="https://github.com/Zolad" target="_blank" rel="noopener">
+                    <span class="level-left">
+                        <span class="level-item">Zola</span>
+                    </span>
+                    <span class="level-right">
+                        <span class="level-item tag">github.com</span>
+                    </span>
+                </a>
+            </li>
+        
+        </ul>
+        </div>
+    </div>
+</div>
+
+    
+        
+<div class="card widget">
+    <div class="card-content">
+        <div class="menu">
+            <h3 class="menu-label">
+                Categories
+            </h3>
+            <ul class="menu-list">
+            <li>
+        <a class="level is-marginless" href="/categories/Android-Driver/">
+            <span class="level-start">
+                <span class="level-item">Android Driver</span>
+            </span>
+            <span class="level-end">
+                <span class="level-item tag">2</span>
+            </span>
+        </a></li><li>
+        <a class="level is-marginless" href="/categories/Android-Java-framework/">
+            <span class="level-start">
+                <span class="level-item">Android Java framework</span>
+            </span>
+            <span class="level-end">
+                <span class="level-item tag">2</span>
+            </span>
+        </a></li><li>
+        <a class="level is-marginless" href="/categories/Android-Map/">
+            <span class="level-start">
+                <span class="level-item">Android Map</span>
+            </span>
+            <span class="level-end">
+                <span class="level-item tag">1</span>
+            </span>
+        </a></li><li>
+        <a class="level is-marginless" href="/categories/Android-System/">
+            <span class="level-start">
+                <span class="level-item">Android System</span>
+            </span>
+            <span class="level-end">
+                <span class="level-item tag">2</span>
+            </span>
+        </a></li><li>
+        <a class="level is-marginless" href="/categories/Android-System-App/">
+            <span class="level-start">
+                <span class="level-item">Android System App</span>
+            </span>
+            <span class="level-end">
+                <span class="level-item tag">1</span>
+            </span>
+        </a></li><li>
+        <a class="level is-marginless" href="/categories/Android-UVCCamera-libuvc/">
+            <span class="level-start">
+                <span class="level-item">Android UVCCamera/libuvc</span>
+            </span>
+            <span class="level-end">
+                <span class="level-item tag">1</span>
+            </span>
+        </a></li><li>
+        <a class="level is-marginless" href="/categories/Java-Certificate/">
+            <span class="level-start">
+                <span class="level-item">Java Certificate</span>
+            </span>
+            <span class="level-end">
+                <span class="level-item tag">1</span>
+            </span>
+        </a></li><li>
+        <a class="level is-marginless" href="/categories/OpenCV/">
+            <span class="level-start">
+                <span class="level-item">OpenCV</span>
+            </span>
+            <span class="level-end">
+                <span class="level-item tag">1</span>
+            </span>
+        </a></li><li>
+        <a class="level is-marginless" href="/categories/Zbar/">
+            <span class="level-start">
+                <span class="level-item">Zbar</span>
+            </span>
+            <span class="level-end">
+                <span class="level-item tag">2</span>
+            </span>
+        </a></li>
+            </ul>
+        </div>
+    </div>
+</div>
+    
+        <div class="card widget">
+    <div class="card-content">
+        <h3 class="menu-label">
+            Tag Cloud
+        </h3>
+        <a href="/tags/Alarm/" style="font-size: 10px;">Alarm</a> <a href="/tags/Android/" style="font-size: 20px;">Android</a> <a href="/tags/Android-Camera-Driver/" style="font-size: 10px;">Android Camera Driver</a> <a href="/tags/Android-Driver/" style="font-size: 10px;">Android Driver</a> <a href="/tags/Android-Java-framework/" style="font-size: 10px;">Android Java framework</a> <a href="/tags/Android-Kernel/" style="font-size: 10px;">Android Kernel</a> <a href="/tags/Android-KitKat/" style="font-size: 10px;">Android KitKat</a> <a href="/tags/Android-Map/" style="font-size: 10px;">Android Map</a> <a href="/tags/Android-System/" style="font-size: 10px;">Android System</a> <a href="/tags/Android-System-App/" style="font-size: 10px;">Android System App</a> <a href="/tags/Certificate-Verify/" style="font-size: 10px;">Certificate Verify</a> <a href="/tags/Decript/" style="font-size: 10px;">Decript</a> <a href="/tags/Dialer/" style="font-size: 10px;">Dialer</a> <a href="/tags/Incall/" style="font-size: 10px;">Incall</a> <a href="/tags/Java/" style="font-size: 10px;">Java</a> <a href="/tags/Key/" style="font-size: 10px;">Key</a> <a href="/tags/Map-SDK/" style="font-size: 10px;">Map SDK</a> <a href="/tags/MapView/" style="font-size: 10px;">MapView</a> <a href="/tags/OpenCV/" style="font-size: 10px;">OpenCV</a> <a href="/tags/PhoneNumber-WhiteList/" style="font-size: 10px;">PhoneNumber WhiteList</a> <a href="/tags/Power-Save/" style="font-size: 10px;">Power Save</a> <a href="/tags/SPRD/" style="font-size: 10px;">SPRD</a> <a href="/tags/UVCCamera/" style="font-size: 10px;">UVCCamera</a> <a href="/tags/Video-Call/" style="font-size: 10px;">Video Call</a> <a href="/tags/Zbar/" style="font-size: 20px;">Zbar</a> <a href="/tags/libuvc/" style="font-size: 10px;">libuvc</a>
+    </div>
+</div>
+    
+    
+        <div class="column-right-shadow is-hidden-widescreen ">
+        
+            <div class="card widget">
+    <div class="card-content">
+        <h3 class="menu-label">
+            Recent
+        </h3>
+        
+        <article class="media">
+            
+            <a href="/2020/02/28/java_certificate_verify/java_certificate_verify_and_decript/" class="media-left">
+                <p class="image is-64x64">
+                    <img class="thumbnail" src="/gallery/5.jpeg" alt="JAVA根证书验证用户证书是否可信和解密数据">
+                </p>
+            </a>
+            
+            <div class="media-content">
+                <div class="content">
+                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2020-02-27T16:00:00.000Z">2020-02-28</time></div>
+                    <a href="/2020/02/28/java_certificate_verify/java_certificate_verify_and_decript/" class="title has-link-black-ter is-size-6 has-text-weight-normal">JAVA根证书验证用户证书是否可信和解密数据</a>
+                    <p class="is-size-7 is-uppercase">
+                        <a class="has-link-grey -link" href="/categories/Java-Certificate/">Java Certificate</a>
+                    </p>
+                </div>
+            </div>
+        </article>
+        
+        <article class="media">
+            
+            <a href="/2020/02/28/uvccamera/android_uvccamera_experience_and_bug/" class="media-left">
+                <p class="image is-64x64">
+                    <img class="thumbnail" src="/gallery/3.jpeg" alt="Android UVCCamera/libuvc遇到的卡死崩溃bug和解决方法">
+                </p>
+            </a>
+            
+            <div class="media-content">
+                <div class="content">
+                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2020-02-27T16:00:00.000Z">2020-02-28</time></div>
+                    <a href="/2020/02/28/uvccamera/android_uvccamera_experience_and_bug/" class="title has-link-black-ter is-size-6 has-text-weight-normal">Android UVCCamera/libuvc遇到的卡死崩溃bug和解决方法</a>
+                    <p class="is-size-7 is-uppercase">
+                        <a class="has-link-grey -link" href="/categories/Android-UVCCamera-libuvc/">Android UVCCamera/libuvc</a>
+                    </p>
+                </div>
+            </div>
+        </article>
+        
+        <article class="media">
+            
+            <a href="/2019/12/07/android_driver/camera_driver_config_experience/" class="media-left">
+                <p class="image is-64x64">
+                    <img class="thumbnail" src="/gallery/11.jpeg" alt="Android Camera Driver平台(展讯、MTK)适配经验">
+                </p>
+            </a>
+            
+            <div class="media-content">
+                <div class="content">
+                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2019-12-07T02:00:00.000Z">2019-12-07</time></div>
+                    <a href="/2019/12/07/android_driver/camera_driver_config_experience/" class="title has-link-black-ter is-size-6 has-text-weight-normal">Android Camera Driver平台(展讯、MTK)适配经验</a>
+                    <p class="is-size-7 is-uppercase">
+                        <a class="has-link-grey -link" href="/categories/Android-Driver/">Android Driver</a>
+                    </p>
+                </div>
+            </div>
+        </article>
+        
+        <article class="media">
+            
+            <a href="/2019/11/06/android_system_app/android_dialer_app_video_incall/" class="media-left">
+                <p class="image is-64x64">
+                    <img class="thumbnail" src="/gallery/6.jpeg" alt="Android如何屏蔽通话界面的视频彩铃">
+                </p>
+            </a>
+            
+            <div class="media-content">
+                <div class="content">
+                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2019-11-06T09:36:14.000Z">2019-11-06</time></div>
+                    <a href="/2019/11/06/android_system_app/android_dialer_app_video_incall/" class="title has-link-black-ter is-size-6 has-text-weight-normal">Android如何屏蔽通话界面的视频彩铃</a>
+                    <p class="is-size-7 is-uppercase">
+                        <a class="has-link-grey -link" href="/categories/Android-System-App/">Android System App</a>
+                    </p>
+                </div>
+            </div>
+        </article>
+        
+        <article class="media">
+            
+            <a href="/2019/04/02/android_system/android_sprd_mtk_alarm_group_whitelist/" class="media-left">
+                <p class="image is-64x64">
+                    <img class="thumbnail" src="/gallery/7.jpeg" alt="Android 展讯/MTK Alarm白名单设置">
+                </p>
+            </a>
+            
+            <div class="media-content">
+                <div class="content">
+                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2019-04-01T16:00:00.000Z">2019-04-02</time></div>
+                    <a href="/2019/04/02/android_system/android_sprd_mtk_alarm_group_whitelist/" class="title has-link-black-ter is-size-6 has-text-weight-normal">Android 展讯/MTK Alarm白名单设置</a>
+                    <p class="is-size-7 is-uppercase">
+                        <a class="has-link-grey -link" href="/categories/Android-System/">Android System</a>
+                    </p>
+                </div>
+            </div>
+        </article>
+        
+    </div>
+</div>
+        
+            <div class="card widget">
+    <div class="card-content">
+        <div class="menu">
+        <h3 class="menu-label">
+            Archives
+        </h3>
+        <ul class="menu-list">
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2020/02/">
+                <span class="level-start">
+                    <span class="level-item">February 2020</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">2</span>
+                </span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2019/12/">
+                <span class="level-start">
+                    <span class="level-item">December 2019</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">1</span>
+                </span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2019/11/">
+                <span class="level-start">
+                    <span class="level-item">November 2019</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">1</span>
+                </span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2019/04/">
+                <span class="level-start">
+                    <span class="level-item">April 2019</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">1</span>
+                </span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2019/02/">
+                <span class="level-start">
+                    <span class="level-item">February 2019</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">2</span>
+                </span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2019/01/">
+                <span class="level-start">
+                    <span class="level-item">January 2019</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">1</span>
+                </span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2018/12/">
+                <span class="level-start">
+                    <span class="level-item">December 2018</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">3</span>
+                </span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2018/10/">
+                <span class="level-start">
+                    <span class="level-item">October 2018</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">1</span>
+                </span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2017/07/">
+                <span class="level-start">
+                    <span class="level-item">July 2017</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">1</span>
+                </span>
+            </a>
+        </li>
+        
+        </ul>
+        </div>
+    </div>
+</div>
+        
+            <div class="card widget">
+    <div class="card-content">
+        <div class="menu">
+            <h3 class="menu-label">
+                Tags
+            </h3>
+            <div class="field is-grouped is-grouped-multiline">
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Alarm/">
+                        <span class="tag">Alarm</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Android/">
+                        <span class="tag">Android</span>
+                        <span class="tag is-grey">2</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Android-Camera-Driver/">
+                        <span class="tag">Android Camera Driver</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Android-Driver/">
+                        <span class="tag">Android Driver</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Android-Java-framework/">
+                        <span class="tag">Android Java framework</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Android-Kernel/">
+                        <span class="tag">Android Kernel</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Android-KitKat/">
+                        <span class="tag">Android KitKat</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Android-Map/">
+                        <span class="tag">Android Map</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Android-System/">
+                        <span class="tag">Android System</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Android-System-App/">
+                        <span class="tag">Android System App</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Certificate-Verify/">
+                        <span class="tag">Certificate Verify</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Decript/">
+                        <span class="tag">Decript</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Dialer/">
+                        <span class="tag">Dialer</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Incall/">
+                        <span class="tag">Incall</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Java/">
+                        <span class="tag">Java</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Key/">
+                        <span class="tag">Key</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Map-SDK/">
+                        <span class="tag">Map SDK</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/MapView/">
+                        <span class="tag">MapView</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/OpenCV/">
+                        <span class="tag">OpenCV</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/PhoneNumber-WhiteList/">
+                        <span class="tag">PhoneNumber WhiteList</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Power-Save/">
+                        <span class="tag">Power Save</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/SPRD/">
+                        <span class="tag">SPRD</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/UVCCamera/">
+                        <span class="tag">UVCCamera</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Video-Call/">
+                        <span class="tag">Video Call</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Zbar/">
+                        <span class="tag">Zbar</span>
+                        <span class="tag is-grey">2</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/libuvc/">
+                        <span class="tag">libuvc</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+            </div>
+        </div>
+    </div>
+</div>
+        
+        </div>
+    
+</div>
+
+                
+
+
+
+
+<div class="column is-4-tablet is-4-desktop is-3-widescreen is-hidden-touch is-hidden-desktop-only has-order-3 column-right ">
+    
+        <div class="card widget">
+    <div class="card-content">
+        <h3 class="menu-label">
+            Recent
+        </h3>
+        
+        <article class="media">
+            
+            <a href="/2020/02/28/java_certificate_verify/java_certificate_verify_and_decript/" class="media-left">
+                <p class="image is-64x64">
+                    <img class="thumbnail" src="/gallery/5.jpeg" alt="JAVA根证书验证用户证书是否可信和解密数据">
+                </p>
+            </a>
+            
+            <div class="media-content">
+                <div class="content">
+                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2020-02-27T16:00:00.000Z">2020-02-28</time></div>
+                    <a href="/2020/02/28/java_certificate_verify/java_certificate_verify_and_decript/" class="title has-link-black-ter is-size-6 has-text-weight-normal">JAVA根证书验证用户证书是否可信和解密数据</a>
+                    <p class="is-size-7 is-uppercase">
+                        <a class="has-link-grey -link" href="/categories/Java-Certificate/">Java Certificate</a>
+                    </p>
+                </div>
+            </div>
+        </article>
+        
+        <article class="media">
+            
+            <a href="/2020/02/28/uvccamera/android_uvccamera_experience_and_bug/" class="media-left">
+                <p class="image is-64x64">
+                    <img class="thumbnail" src="/gallery/3.jpeg" alt="Android UVCCamera/libuvc遇到的卡死崩溃bug和解决方法">
+                </p>
+            </a>
+            
+            <div class="media-content">
+                <div class="content">
+                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2020-02-27T16:00:00.000Z">2020-02-28</time></div>
+                    <a href="/2020/02/28/uvccamera/android_uvccamera_experience_and_bug/" class="title has-link-black-ter is-size-6 has-text-weight-normal">Android UVCCamera/libuvc遇到的卡死崩溃bug和解决方法</a>
+                    <p class="is-size-7 is-uppercase">
+                        <a class="has-link-grey -link" href="/categories/Android-UVCCamera-libuvc/">Android UVCCamera/libuvc</a>
+                    </p>
+                </div>
+            </div>
+        </article>
+        
+        <article class="media">
+            
+            <a href="/2019/12/07/android_driver/camera_driver_config_experience/" class="media-left">
+                <p class="image is-64x64">
+                    <img class="thumbnail" src="/gallery/11.jpeg" alt="Android Camera Driver平台(展讯、MTK)适配经验">
+                </p>
+            </a>
+            
+            <div class="media-content">
+                <div class="content">
+                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2019-12-07T02:00:00.000Z">2019-12-07</time></div>
+                    <a href="/2019/12/07/android_driver/camera_driver_config_experience/" class="title has-link-black-ter is-size-6 has-text-weight-normal">Android Camera Driver平台(展讯、MTK)适配经验</a>
+                    <p class="is-size-7 is-uppercase">
+                        <a class="has-link-grey -link" href="/categories/Android-Driver/">Android Driver</a>
+                    </p>
+                </div>
+            </div>
+        </article>
+        
+        <article class="media">
+            
+            <a href="/2019/11/06/android_system_app/android_dialer_app_video_incall/" class="media-left">
+                <p class="image is-64x64">
+                    <img class="thumbnail" src="/gallery/6.jpeg" alt="Android如何屏蔽通话界面的视频彩铃">
+                </p>
+            </a>
+            
+            <div class="media-content">
+                <div class="content">
+                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2019-11-06T09:36:14.000Z">2019-11-06</time></div>
+                    <a href="/2019/11/06/android_system_app/android_dialer_app_video_incall/" class="title has-link-black-ter is-size-6 has-text-weight-normal">Android如何屏蔽通话界面的视频彩铃</a>
+                    <p class="is-size-7 is-uppercase">
+                        <a class="has-link-grey -link" href="/categories/Android-System-App/">Android System App</a>
+                    </p>
+                </div>
+            </div>
+        </article>
+        
+        <article class="media">
+            
+            <a href="/2019/04/02/android_system/android_sprd_mtk_alarm_group_whitelist/" class="media-left">
+                <p class="image is-64x64">
+                    <img class="thumbnail" src="/gallery/7.jpeg" alt="Android 展讯/MTK Alarm白名单设置">
+                </p>
+            </a>
+            
+            <div class="media-content">
+                <div class="content">
+                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2019-04-01T16:00:00.000Z">2019-04-02</time></div>
+                    <a href="/2019/04/02/android_system/android_sprd_mtk_alarm_group_whitelist/" class="title has-link-black-ter is-size-6 has-text-weight-normal">Android 展讯/MTK Alarm白名单设置</a>
+                    <p class="is-size-7 is-uppercase">
+                        <a class="has-link-grey -link" href="/categories/Android-System/">Android System</a>
+                    </p>
+                </div>
+            </div>
+        </article>
+        
+    </div>
+</div>
+    
+        <div class="card widget">
+    <div class="card-content">
+        <div class="menu">
+        <h3 class="menu-label">
+            Archives
+        </h3>
+        <ul class="menu-list">
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2020/02/">
+                <span class="level-start">
+                    <span class="level-item">February 2020</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">2</span>
+                </span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2019/12/">
+                <span class="level-start">
+                    <span class="level-item">December 2019</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">1</span>
+                </span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2019/11/">
+                <span class="level-start">
+                    <span class="level-item">November 2019</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">1</span>
+                </span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2019/04/">
+                <span class="level-start">
+                    <span class="level-item">April 2019</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">1</span>
+                </span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2019/02/">
+                <span class="level-start">
+                    <span class="level-item">February 2019</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">2</span>
+                </span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2019/01/">
+                <span class="level-start">
+                    <span class="level-item">January 2019</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">1</span>
+                </span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2018/12/">
+                <span class="level-start">
+                    <span class="level-item">December 2018</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">3</span>
+                </span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2018/10/">
+                <span class="level-start">
+                    <span class="level-item">October 2018</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">1</span>
+                </span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2017/07/">
+                <span class="level-start">
+                    <span class="level-item">July 2017</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">1</span>
+                </span>
+            </a>
+        </li>
+        
+        </ul>
+        </div>
+    </div>
+</div>
+    
+        <div class="card widget">
+    <div class="card-content">
+        <div class="menu">
+            <h3 class="menu-label">
+                Tags
+            </h3>
+            <div class="field is-grouped is-grouped-multiline">
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Alarm/">
+                        <span class="tag">Alarm</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Android/">
+                        <span class="tag">Android</span>
+                        <span class="tag is-grey">2</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Android-Camera-Driver/">
+                        <span class="tag">Android Camera Driver</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Android-Driver/">
+                        <span class="tag">Android Driver</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Android-Java-framework/">
+                        <span class="tag">Android Java framework</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Android-Kernel/">
+                        <span class="tag">Android Kernel</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Android-KitKat/">
+                        <span class="tag">Android KitKat</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Android-Map/">
+                        <span class="tag">Android Map</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Android-System/">
+                        <span class="tag">Android System</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Android-System-App/">
+                        <span class="tag">Android System App</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Certificate-Verify/">
+                        <span class="tag">Certificate Verify</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Decript/">
+                        <span class="tag">Decript</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Dialer/">
+                        <span class="tag">Dialer</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Incall/">
+                        <span class="tag">Incall</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Java/">
+                        <span class="tag">Java</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Key/">
+                        <span class="tag">Key</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Map-SDK/">
+                        <span class="tag">Map SDK</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/MapView/">
+                        <span class="tag">MapView</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/OpenCV/">
+                        <span class="tag">OpenCV</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/PhoneNumber-WhiteList/">
+                        <span class="tag">PhoneNumber WhiteList</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Power-Save/">
+                        <span class="tag">Power Save</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/SPRD/">
+                        <span class="tag">SPRD</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/UVCCamera/">
+                        <span class="tag">UVCCamera</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Video-Call/">
+                        <span class="tag">Video Call</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Zbar/">
+                        <span class="tag">Zbar</span>
+                        <span class="tag is-grey">2</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/libuvc/">
+                        <span class="tag">libuvc</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+            </div>
+        </div>
+    </div>
+</div>
+    
+    
+</div>
+
+            </div>
+        </div>
+    </section>
+    <footer class="footer">
+    <div class="container">
+        <div class="level">
+            <div class="level-start has-text-centered-mobile">
+                <a class="footer-logo is-block has-mb-6" href="/">
+                
+                    <img src="/images/gen.svg" alt="Android KitKat(4.4)单独编译Kernel" height="28">
+                
+                </a>
+                <p class="is-size-7">
+                &copy; 2020 Zola&nbsp;
+                Powered by <a href="https://hexo.io/" target="_blank" rel="noopener">Hexo</a> & <a
+                        href="https://github.com/ppoffice/hexo-theme-icarus" target="_blank" rel="noopener">Icarus</a>
+                
+                </p>
+            </div>
+            <div class="level-end">
+            
+            </div>
+        </div>
+    </div>
+</footer>
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.3.1/dist/jquery.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/moment@2.22.2/min/moment-with-locales.min.js"></script>
+<script>moment.locale("en");</script>
+
+
+<script>
+var IcarusThemeSettings = {
+    site: {
+        url: 'http://yoursite.com',
+        external_link: {"enable":true,"exclude":[]}
+    },
+    article: {
+        highlight: {
+            clipboard: true,
+            fold: 'unfolded'
+        }
+    }
+};
+</script>
+
+
+<script src="https://cdn.jsdelivr.net/npm/clipboard@2.0.4/dist/clipboard.min.js" defer></script>
+
+
+
+
+
+<script src="/js/animation.js"></script>
+
+
+
+<script src="https://cdn.jsdelivr.net/npm/lightgallery@1.6.8/dist/js/lightgallery.min.js" defer></script>
+<script src="https://cdn.jsdelivr.net/npm/justifiedGallery@3.7.0/dist/js/jquery.justifiedGallery.min.js" defer></script>
+<script src="/js/gallery.js" defer></script>
+
+
+
+<div id="outdated">
+    <h6>Your browser is out-of-date!</h6>
+    <p>Update your browser to view this website correctly. <a id="btnUpdateBrowser" href="http://outdatedbrowser.com/">Update
+            my browser now </a></p>
+    <p class="last"><a href="#" id="btnCloseUpdateBrowser" title="Close">&times;</a></p>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/outdatedbrowser@1.1.5/outdatedbrowser/outdatedbrowser.min.js" defer></script>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        outdatedBrowser({
+            bgColor: '#f25648',
+            color: '#ffffff',
+            lowerThan: 'flex'
+        });
+    });
+</script>
+
+
+<script src="https://cdn.jsdelivr.net/npm/mathjax@2.7.5/unpacked/MathJax.js?config=TeX-MML-AM_CHTML" defer></script>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    MathJax.Hub.Config({
+        'HTML-CSS': {
+            matchFontHeight: false
+        },
+        SVG: {
+            matchFontHeight: false
+        },
+        CommonHTML: {
+            matchFontHeight: false
+        },
+        tex2jax: {
+            inlineMath: [
+                ['$','$'],
+                ['\\(','\\)']
+            ]
+        }
+    });
+});
+</script>
+
+
+<a id="back-to-top" title="Back to Top" href="javascript:;">
+    <i class="fas fa-chevron-up"></i>
+</a>
+<script src="/js/back-to-top.js" defer></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<script src="/js/main.js" defer></script>
+
+    
+    <div class="searchbox ins-search">
+    <div class="searchbox-container ins-search-container">
+        <div class="searchbox-input-wrapper">
+            <input type="text" class="searchbox-input ins-search-input" placeholder="Type something..." />
+            <span class="searchbox-close ins-close ins-selectable"><i class="fa fa-times-circle"></i></span>
+        </div>
+        <div class="searchbox-result-wrapper ins-section-wrapper">
+            <div class="ins-section-container"></div>
+        </div>
+    </div>
+</div>
+<script>
+    (function (window) {
+        var INSIGHT_CONFIG = {
+            TRANSLATION: {
+                POSTS: 'Posts',
+                PAGES: 'Pages',
+                CATEGORIES: 'Categories',
+                TAGS: 'Tags',
+                UNTITLED: '(Untitled)',
+            },
+            CONTENT_URL: '/content.json',
+        };
+        window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+    })(window);
+</script>
+<script src="/js/insight.js" defer></script>
+<link rel="stylesheet" href="/css/search.css">
+<link rel="stylesheet" href="/css/insight.css">
+    
+</body>
+</html>

@@ -1,0 +1,1437 @@
+<!DOCTYPE html>
+<html  lang="en">
+<head>
+    <meta charset="utf-8" />
+
+<meta name="generator" content="Hexo 4.2.0" />
+
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+
+<title>Tag: libuvc - Zola&#39;s Blog</title>
+
+
+    <meta name="description" content="An Android Developer  Enjoy technology , Enjoy Life">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Zola&#39;s Blog">
+<meta property="og:url" content="http://yoursite.com/tags/libuvc/index.html">
+<meta property="og:site_name" content="Zola&#39;s Blog">
+<meta property="og:description" content="An Android Developer  Enjoy technology , Enjoy Life">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="http://yoursite.com/images/og_image.png">
+<meta property="article:author" content="Zola">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://yoursite.com/images/og_image.png">
+
+
+
+
+
+
+
+<link rel="icon" href="/images/favicon.svg">
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.7.2/css/bulma.css">
+<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.4.1/css/all.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Ubuntu:400,600|Source+Code+Pro">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@9.12.0/styles/atom-one-dark.css">
+
+
+    
+    
+<style>body>.footer,body>.navbar,body>.section{opacity:0}</style>
+
+    
+    
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lightgallery@1.6.8/dist/css/lightgallery.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/justifiedGallery@3.7.0/dist/css/justifiedGallery.min.css">
+
+    
+    
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/outdatedbrowser@1.1.5/outdatedbrowser/outdatedbrowser.min.css">
+
+    
+    
+    
+    
+<link rel="stylesheet" href="/css/back-to-top.css">
+
+    
+    
+    
+    
+    
+    
+    
+    <link rel="stylesheet" href="/css/progressbar.css">
+<script src="https://cdn.jsdelivr.net/npm/pace-js@1.0.2/pace.min.js"></script>
+    
+    
+    
+
+
+<link rel="stylesheet" href="/css/style.css">
+</head>
+<body class="is-3-column">
+    <nav class="navbar navbar-main">
+    <div class="container">
+        <div class="navbar-brand is-flex-center">
+            <a class="navbar-item navbar-logo" href="/">
+            
+                <img src="/images/gen.svg" alt="Zola&#39;s Blog" height="28">
+            
+            </a>
+        </div>
+        <div class="navbar-menu">
+            
+            <div class="navbar-start">
+                
+                <a class="navbar-item"
+                href="/">Home</a>
+                
+                <a class="navbar-item"
+                href="/archives">Archives</a>
+                
+                <a class="navbar-item"
+                href="/categories">Categories</a>
+                
+                <a class="navbar-item"
+                href="/tags">Tags</a>
+                
+            </div>
+            
+            <div class="navbar-end">
+                
+                
+                
+                <a class="navbar-item search" title="Search" href="javascript:;">
+                    <i class="fas fa-search"></i>
+                </a>
+                
+            </div>
+        </div>
+    </div>
+</nav>
+    
+    <section class="section">
+        <div class="container">
+            <div class="columns">
+                <div class="column is-8-tablet is-8-desktop is-6-widescreen has-order-2 column-main"><div class="card">
+    <div class="card-content">
+        <nav class="breadcrumb" aria-label="breadcrumbs">
+        <ul>
+            <li><a href="/tags">Tags</a></li>
+            <li class="is-active"><a href="#" aria-current="page">libuvc</a></li>
+        </ul>
+        </nav>
+    </div>
+</div>
+
+    
+<div class="card">
+    
+    <div class="card-image">
+        <a href="/2020/02/28/uvccamera/android_uvccamera_experience_and_bug/" class="image is-7by1">
+            <img class="thumbnail" src="/gallery/3.jpeg" alt="Android UVCCamera/libuvc遇到的卡死崩溃bug和解决方法">
+        </a>
+    </div>
+    
+    <div class="card-content article ">
+        
+        <div class="level article-meta is-size-7 is-uppercase is-mobile is-overflow-x-auto">
+            <div class="level-left">
+                <time class="level-item has-text-grey" datetime="2020-02-27T16:00:00.000Z">2020-02-28</time>
+                
+                <div class="level-item">
+                <a class="has-link-grey -link" href="/categories/Android-UVCCamera-libuvc/">Android UVCCamera/libuvc</a>
+                </div>
+                
+                
+                <span class="level-item has-text-grey">
+                    
+                    
+                    6 minutes read (About 865 words)
+                </span>
+                
+                
+            </div>
+        </div>
+        
+        <h1 class="title is-size-3 is-size-4-mobile has-text-weight-normal">
+            
+                <a class="has-link-black-ter" href="/2020/02/28/uvccamera/android_uvccamera_experience_and_bug/">Android UVCCamera/libuvc遇到的卡死崩溃bug和解决方法</a>
+            
+        </h1>
+        <div class="content">
+            <p>分享下debug uvccamera/libuvc这些so库遇到的卡死崩溃问题和思路</p>
+<hr>
+<h3 id="1-UVCCamera执行stopPreview或release时阻塞卡死"><a href="#1-UVCCamera执行stopPreview或release时阻塞卡死" class="headerlink" title="1.UVCCamera执行stopPreview或release时阻塞卡死"></a>1.UVCCamera执行stopPreview或release时阻塞卡死</h3><p>在多次重复打开关闭uvc摄像头的时候，上层调用stopPreview/release会概率性卡死，经过调试一步步定位调用函数和阻塞住的位置</p>
+<p>android java层调用略，下面直接从so库的代码开始；<br> –&gt;<br>UVCCamera/UVCCamera.cpp-stopPreview()<br> –&gt;<br>UVCCamera/UVCPreView.cpp-stopPreview()<br>这里设置mIsRunning = false;停止预览帧处理；<br>调试发现，在下面这一句代码阻塞住没有往下走了：<br>pthread_join(preview_thread, NULL) != EXIT_SUCCESS;<br>pthread_join会阻塞到preview_thread预览线程执行结束为止，所以预览处理没有正常结束；<br>–&gt;<br>UVCCamera/UVCPreview.cpp-do_preview()<br>结束预览时会停止libuvc的流处理uvc_stop_streaming(mDeviceHandle);，所以流处理没有正常结束；<br>–&gt;<br>libuvc/stream.c-uvc_stop_streaming()<br>–&gt;<br>libuvc/stream.c-uvc_stream_close()<br>–&gt;<br>libuvc/stream.c-uvc_stream_stop()<br>这一步停止流的传输，并将所有流转换器都释放掉：<br>strmh-&gt;running = 0;并遍历调用libusb_cancel_transfer(strmh-&gt;transfers[i]);<br>至于关键的阻塞代码如下：</p>
+<pre><code>/* Wait for transfers to complete/cancel */
+    for (; 1 ;) {
+        for (i = 0; i &lt; LIBUVC_NUM_TRANSFER_BUFS; i++) {
+            if (strmh-&gt;transfers[i] != NULL)
+                break;
+        }
+        if (i == LIBUVC_NUM_TRANSFER_BUFS)
+            break;
+        pthread_cond_wait(&amp;strmh-&gt;cb_cond, &amp;strmh-&gt;cb_mutex);
+    }</code></pre><p>这里会一直循环等待所有流转换器都释放置空完成，而问题就在于偏偏有个别流转换器就是无法正常释放。</p>
+<p>为什么没有正常释放完成，<br>是因为libusb_cancel_transfer失败返回LIBUSB_ERROR_NOT_FOUND的状态时，<br>转换器持有无效的buffer和指针，导致上面的循环代码一直不往下走。</p>
+<p>一般释放正常时的Log如下：</p>
+<pre><code>[4632*stream.c:989:_uvc_stream_callback]:not retrying transfer, status = 3
+[4632*stream.c:629:_uvc_delete_transfer]:begin
+[4632*stream.c:642:_uvc_delete_transfer]:Freeing transfer 5 (0x72fdbe5960)
+[4632*stream.c:656:_uvc_delete_transfer]:end</code></pre><p>但函数阻塞住时，我发现并没有看到index为6的transfer执行delete的Log，于是我怀疑是否跟transfer的数量有关。</p>
+<p>这时查看源码里有一个transfer buffers的数量定义如下：</p>
+<pre><code>libuvc/libuvc_internal.h
+/*
+  set a high number of transfer buffers. This uses a lot of ram, but
+  avoids problems with scheduling delays on slow boards causing missed
+  transfers. A better approach may be to make the transfer thread FIFO
+  scheduled (if we have root).
+  We could/should change this to allow reduce it to, say, 5 by default
+  and then allow the user to change the number of buffers as required.
+ */
+#define LIBUVC_NUM_TRANSFER_BUFS 10</code></pre><p>如果设置得太高，不仅会提高内存的占用，在处理速度慢的板子上也会有transfer浪费掉。<br>这里我尝试降低数量值为5，再次调试开关100次，stopPreview卡死的问题不再复现。</p>
+<h3 id="2-JNI-DETECTED-ERROR-IN-APPLICATION-jmethodID-was-NULL-空指针"><a href="#2-JNI-DETECTED-ERROR-IN-APPLICATION-jmethodID-was-NULL-空指针" class="headerlink" title="2.JNI DETECTED ERROR IN APPLICATION: jmethodID was NULL  空指针"></a>2.JNI DETECTED ERROR IN APPLICATION: jmethodID was NULL  空指针</h3><p>由于java上层设置setFrameCallback(null, 0); iframecallback_fields.onFrame在另外一个线程被置为NULL<br>而以下这段代码没有判空，导致的空指针：<br><font color='red'>env-&gt;CallVoidMethod(mFrameCallbackObj, iframecallback_fields.onFrame, buf);</font></p>
+<p>解决方法为增加空指针判断如下</p>
+<pre><code>void UVCPreview::do_capture_callback(JNIEnv *env, uvc_frame_t *frame){
+...
++if (iframecallback_fields.onFrame != NULL) {
+  env-&gt;CallVoidMethod(mFrameCallbackObj, iframecallback_fields.onFrame, buf);
++}
+...
+}
+</code></pre><h3 id="3-UVCCamera-could-not-open-camera-err-99"><a href="#3-UVCCamera-could-not-open-camera-err-99" class="headerlink" title="3.UVCCamera could not open camera:err=-99"></a>3.UVCCamera could not open camera:err=-99</h3><p>要检查打开的usb设备是否已经被其他进程打开了/其他进程持有没释放/打开的是不是UVC摄像头，是否打开了错误的其他usb设备</p>
+<h3 id="4-其他一些别人发现的bug和修复方法"><a href="#4-其他一些别人发现的bug和修复方法" class="headerlink" title="4.其他一些别人发现的bug和修复方法"></a>4.其他一些别人发现的bug和修复方法</h3><p><a href="https://github.com/saki4510t/UVCCamera/pull/520">https://github.com/saki4510t/UVCCamera/pull/520</a><br><a href="https://github.com/saki4510t/UVCCamera/pull/328">https://github.com/saki4510t/UVCCamera/pull/328</a></p>
+
+        </div>
+        
+        
+        
+    </div>
+</div>
+
+
+
+
+
+
+
+
+</div>
+                
+
+
+
+
+<div class="column is-4-tablet is-4-desktop is-3-widescreen  has-order-1 column-left ">
+    
+        
+<div class="card widget">
+    <div class="card-content">
+        <nav class="level">
+            <div class="level-item has-text-centered" style="flex-shrink: 1">
+                <div>
+                    
+                    <figure class="image is-128x128 has-mb-6">
+                        <img class="" src="/images/avatar.png" alt="Zola">
+                    </figure>
+                    
+                    <p class="is-size-4 is-block">
+                        Zola
+                    </p>
+                    
+                    
+                    <p class="is-size-6 is-block">
+                        Enjoy technology , Enjoy Life
+                    </p>
+                    
+                    
+                    <p class="is-size-6 is-flex is-flex-center has-text-grey">
+                        <i class="fas fa-map-marker-alt has-mr-7"></i>
+                        <span>ShenZhen,China</span>
+                    </p>
+                    
+                </div>
+            </div>
+        </nav>
+        <nav class="level is-mobile">
+            <div class="level-item has-text-centered is-marginless">
+                <div>
+                    <p class="heading">
+                        Posts
+                    </p>
+                    <a href="/archives">
+                        <p class="title has-text-weight-normal">
+                            13
+                        </p>
+                    </a>
+                </div>
+            </div>
+            <div class="level-item has-text-centered is-marginless">
+                <div>
+                    <p class="heading">
+                        Categories
+                    </p>
+                    <a href="/categories">
+                        <p class="title has-text-weight-normal">
+                            9
+                        </p>
+                    </a>
+                </div>
+            </div>
+            <div class="level-item has-text-centered is-marginless">
+                <div>
+                    <p class="heading">
+                        Tags
+                    </p>
+                    <a href="/tags">
+                        <p class="title has-text-weight-normal">
+                            26
+                        </p>
+                    </a>
+                </div>
+            </div>
+        </nav>
+        
+        <div class="level">
+            <a class="level-item button is-link is-rounded" href="https://github.com/zolad" target="_blank" rel="noopener">
+                Follow</a>
+        </div>
+        
+        
+        
+        <div class="level is-mobile">
+            
+            <a class="level-item button is-white is-marginless" target="_blank" rel="noopener"
+                title="Github" href="https://github.com/zolad">
+                
+                <i class="fab fa-github"></i>
+                
+            </a>
+            
+        </div>
+        
+    </div>
+</div>
+    
+        
+    
+        <div class="card widget">
+    <div class="card-content">
+        <div class="menu">
+        <h3 class="menu-label">
+            Links
+        </h3>
+        <ul class="menu-list">
+        
+            <li>
+                <a class="level is-mobile" href="https://github.com/Zolad" target="_blank" rel="noopener">
+                    <span class="level-left">
+                        <span class="level-item">Zola</span>
+                    </span>
+                    <span class="level-right">
+                        <span class="level-item tag">github.com</span>
+                    </span>
+                </a>
+            </li>
+        
+        </ul>
+        </div>
+    </div>
+</div>
+
+    
+        
+<div class="card widget">
+    <div class="card-content">
+        <div class="menu">
+            <h3 class="menu-label">
+                Categories
+            </h3>
+            <ul class="menu-list">
+            <li>
+        <a class="level is-marginless" href="/categories/Android-Driver/">
+            <span class="level-start">
+                <span class="level-item">Android Driver</span>
+            </span>
+            <span class="level-end">
+                <span class="level-item tag">2</span>
+            </span>
+        </a></li><li>
+        <a class="level is-marginless" href="/categories/Android-Java-framework/">
+            <span class="level-start">
+                <span class="level-item">Android Java framework</span>
+            </span>
+            <span class="level-end">
+                <span class="level-item tag">2</span>
+            </span>
+        </a></li><li>
+        <a class="level is-marginless" href="/categories/Android-Map/">
+            <span class="level-start">
+                <span class="level-item">Android Map</span>
+            </span>
+            <span class="level-end">
+                <span class="level-item tag">1</span>
+            </span>
+        </a></li><li>
+        <a class="level is-marginless" href="/categories/Android-System/">
+            <span class="level-start">
+                <span class="level-item">Android System</span>
+            </span>
+            <span class="level-end">
+                <span class="level-item tag">2</span>
+            </span>
+        </a></li><li>
+        <a class="level is-marginless" href="/categories/Android-System-App/">
+            <span class="level-start">
+                <span class="level-item">Android System App</span>
+            </span>
+            <span class="level-end">
+                <span class="level-item tag">1</span>
+            </span>
+        </a></li><li>
+        <a class="level is-marginless" href="/categories/Android-UVCCamera-libuvc/">
+            <span class="level-start">
+                <span class="level-item">Android UVCCamera/libuvc</span>
+            </span>
+            <span class="level-end">
+                <span class="level-item tag">1</span>
+            </span>
+        </a></li><li>
+        <a class="level is-marginless" href="/categories/Java-Certificate/">
+            <span class="level-start">
+                <span class="level-item">Java Certificate</span>
+            </span>
+            <span class="level-end">
+                <span class="level-item tag">1</span>
+            </span>
+        </a></li><li>
+        <a class="level is-marginless" href="/categories/OpenCV/">
+            <span class="level-start">
+                <span class="level-item">OpenCV</span>
+            </span>
+            <span class="level-end">
+                <span class="level-item tag">1</span>
+            </span>
+        </a></li><li>
+        <a class="level is-marginless" href="/categories/Zbar/">
+            <span class="level-start">
+                <span class="level-item">Zbar</span>
+            </span>
+            <span class="level-end">
+                <span class="level-item tag">2</span>
+            </span>
+        </a></li>
+            </ul>
+        </div>
+    </div>
+</div>
+    
+        <div class="card widget">
+    <div class="card-content">
+        <h3 class="menu-label">
+            Tag Cloud
+        </h3>
+        <a href="/tags/Alarm/" style="font-size: 10px;">Alarm</a> <a href="/tags/Android/" style="font-size: 20px;">Android</a> <a href="/tags/Android-Camera-Driver/" style="font-size: 10px;">Android Camera Driver</a> <a href="/tags/Android-Driver/" style="font-size: 10px;">Android Driver</a> <a href="/tags/Android-Java-framework/" style="font-size: 10px;">Android Java framework</a> <a href="/tags/Android-Kernel/" style="font-size: 10px;">Android Kernel</a> <a href="/tags/Android-KitKat/" style="font-size: 10px;">Android KitKat</a> <a href="/tags/Android-Map/" style="font-size: 10px;">Android Map</a> <a href="/tags/Android-System/" style="font-size: 10px;">Android System</a> <a href="/tags/Android-System-App/" style="font-size: 10px;">Android System App</a> <a href="/tags/Certificate-Verify/" style="font-size: 10px;">Certificate Verify</a> <a href="/tags/Decript/" style="font-size: 10px;">Decript</a> <a href="/tags/Dialer/" style="font-size: 10px;">Dialer</a> <a href="/tags/Incall/" style="font-size: 10px;">Incall</a> <a href="/tags/Java/" style="font-size: 10px;">Java</a> <a href="/tags/Key/" style="font-size: 10px;">Key</a> <a href="/tags/Map-SDK/" style="font-size: 10px;">Map SDK</a> <a href="/tags/MapView/" style="font-size: 10px;">MapView</a> <a href="/tags/OpenCV/" style="font-size: 10px;">OpenCV</a> <a href="/tags/PhoneNumber-WhiteList/" style="font-size: 10px;">PhoneNumber WhiteList</a> <a href="/tags/Power-Save/" style="font-size: 10px;">Power Save</a> <a href="/tags/SPRD/" style="font-size: 10px;">SPRD</a> <a href="/tags/UVCCamera/" style="font-size: 10px;">UVCCamera</a> <a href="/tags/Video-Call/" style="font-size: 10px;">Video Call</a> <a href="/tags/Zbar/" style="font-size: 20px;">Zbar</a> <a href="/tags/libuvc/" style="font-size: 10px;">libuvc</a>
+    </div>
+</div>
+    
+    
+        <div class="column-right-shadow is-hidden-widescreen ">
+        
+            <div class="card widget">
+    <div class="card-content">
+        <h3 class="menu-label">
+            Recent
+        </h3>
+        
+        <article class="media">
+            
+            <a href="/2020/02/28/java_certificate_verify/java_certificate_verify_and_decript/" class="media-left">
+                <p class="image is-64x64">
+                    <img class="thumbnail" src="/gallery/5.jpeg" alt="JAVA根证书验证用户证书是否可信和解密数据">
+                </p>
+            </a>
+            
+            <div class="media-content">
+                <div class="content">
+                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2020-02-27T16:00:00.000Z">2020-02-28</time></div>
+                    <a href="/2020/02/28/java_certificate_verify/java_certificate_verify_and_decript/" class="title has-link-black-ter is-size-6 has-text-weight-normal">JAVA根证书验证用户证书是否可信和解密数据</a>
+                    <p class="is-size-7 is-uppercase">
+                        <a class="has-link-grey -link" href="/categories/Java-Certificate/">Java Certificate</a>
+                    </p>
+                </div>
+            </div>
+        </article>
+        
+        <article class="media">
+            
+            <a href="/2020/02/28/uvccamera/android_uvccamera_experience_and_bug/" class="media-left">
+                <p class="image is-64x64">
+                    <img class="thumbnail" src="/gallery/3.jpeg" alt="Android UVCCamera/libuvc遇到的卡死崩溃bug和解决方法">
+                </p>
+            </a>
+            
+            <div class="media-content">
+                <div class="content">
+                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2020-02-27T16:00:00.000Z">2020-02-28</time></div>
+                    <a href="/2020/02/28/uvccamera/android_uvccamera_experience_and_bug/" class="title has-link-black-ter is-size-6 has-text-weight-normal">Android UVCCamera/libuvc遇到的卡死崩溃bug和解决方法</a>
+                    <p class="is-size-7 is-uppercase">
+                        <a class="has-link-grey -link" href="/categories/Android-UVCCamera-libuvc/">Android UVCCamera/libuvc</a>
+                    </p>
+                </div>
+            </div>
+        </article>
+        
+        <article class="media">
+            
+            <a href="/2019/12/07/android_driver/camera_driver_config_experience/" class="media-left">
+                <p class="image is-64x64">
+                    <img class="thumbnail" src="/gallery/11.jpeg" alt="Android Camera Driver平台(展讯、MTK)适配经验">
+                </p>
+            </a>
+            
+            <div class="media-content">
+                <div class="content">
+                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2019-12-07T02:00:00.000Z">2019-12-07</time></div>
+                    <a href="/2019/12/07/android_driver/camera_driver_config_experience/" class="title has-link-black-ter is-size-6 has-text-weight-normal">Android Camera Driver平台(展讯、MTK)适配经验</a>
+                    <p class="is-size-7 is-uppercase">
+                        <a class="has-link-grey -link" href="/categories/Android-Driver/">Android Driver</a>
+                    </p>
+                </div>
+            </div>
+        </article>
+        
+        <article class="media">
+            
+            <a href="/2019/11/06/android_system_app/android_dialer_app_video_incall/" class="media-left">
+                <p class="image is-64x64">
+                    <img class="thumbnail" src="/gallery/6.jpeg" alt="Android如何屏蔽通话界面的视频彩铃">
+                </p>
+            </a>
+            
+            <div class="media-content">
+                <div class="content">
+                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2019-11-06T09:36:14.000Z">2019-11-06</time></div>
+                    <a href="/2019/11/06/android_system_app/android_dialer_app_video_incall/" class="title has-link-black-ter is-size-6 has-text-weight-normal">Android如何屏蔽通话界面的视频彩铃</a>
+                    <p class="is-size-7 is-uppercase">
+                        <a class="has-link-grey -link" href="/categories/Android-System-App/">Android System App</a>
+                    </p>
+                </div>
+            </div>
+        </article>
+        
+        <article class="media">
+            
+            <a href="/2019/04/02/android_system/android_sprd_mtk_alarm_group_whitelist/" class="media-left">
+                <p class="image is-64x64">
+                    <img class="thumbnail" src="/gallery/7.jpeg" alt="Android 展讯/MTK Alarm白名单设置">
+                </p>
+            </a>
+            
+            <div class="media-content">
+                <div class="content">
+                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2019-04-01T16:00:00.000Z">2019-04-02</time></div>
+                    <a href="/2019/04/02/android_system/android_sprd_mtk_alarm_group_whitelist/" class="title has-link-black-ter is-size-6 has-text-weight-normal">Android 展讯/MTK Alarm白名单设置</a>
+                    <p class="is-size-7 is-uppercase">
+                        <a class="has-link-grey -link" href="/categories/Android-System/">Android System</a>
+                    </p>
+                </div>
+            </div>
+        </article>
+        
+    </div>
+</div>
+        
+            <div class="card widget">
+    <div class="card-content">
+        <div class="menu">
+        <h3 class="menu-label">
+            Archives
+        </h3>
+        <ul class="menu-list">
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2020/02/">
+                <span class="level-start">
+                    <span class="level-item">February 2020</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">2</span>
+                </span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2019/12/">
+                <span class="level-start">
+                    <span class="level-item">December 2019</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">1</span>
+                </span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2019/11/">
+                <span class="level-start">
+                    <span class="level-item">November 2019</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">1</span>
+                </span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2019/04/">
+                <span class="level-start">
+                    <span class="level-item">April 2019</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">1</span>
+                </span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2019/02/">
+                <span class="level-start">
+                    <span class="level-item">February 2019</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">2</span>
+                </span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2019/01/">
+                <span class="level-start">
+                    <span class="level-item">January 2019</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">1</span>
+                </span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2018/12/">
+                <span class="level-start">
+                    <span class="level-item">December 2018</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">3</span>
+                </span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2018/10/">
+                <span class="level-start">
+                    <span class="level-item">October 2018</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">1</span>
+                </span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2017/07/">
+                <span class="level-start">
+                    <span class="level-item">July 2017</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">1</span>
+                </span>
+            </a>
+        </li>
+        
+        </ul>
+        </div>
+    </div>
+</div>
+        
+            <div class="card widget">
+    <div class="card-content">
+        <div class="menu">
+            <h3 class="menu-label">
+                Tags
+            </h3>
+            <div class="field is-grouped is-grouped-multiline">
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Alarm/">
+                        <span class="tag">Alarm</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Android/">
+                        <span class="tag">Android</span>
+                        <span class="tag is-grey">2</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Android-Camera-Driver/">
+                        <span class="tag">Android Camera Driver</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Android-Driver/">
+                        <span class="tag">Android Driver</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Android-Java-framework/">
+                        <span class="tag">Android Java framework</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Android-Kernel/">
+                        <span class="tag">Android Kernel</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Android-KitKat/">
+                        <span class="tag">Android KitKat</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Android-Map/">
+                        <span class="tag">Android Map</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Android-System/">
+                        <span class="tag">Android System</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Android-System-App/">
+                        <span class="tag">Android System App</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Certificate-Verify/">
+                        <span class="tag">Certificate Verify</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Decript/">
+                        <span class="tag">Decript</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Dialer/">
+                        <span class="tag">Dialer</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Incall/">
+                        <span class="tag">Incall</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Java/">
+                        <span class="tag">Java</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Key/">
+                        <span class="tag">Key</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Map-SDK/">
+                        <span class="tag">Map SDK</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/MapView/">
+                        <span class="tag">MapView</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/OpenCV/">
+                        <span class="tag">OpenCV</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/PhoneNumber-WhiteList/">
+                        <span class="tag">PhoneNumber WhiteList</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Power-Save/">
+                        <span class="tag">Power Save</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/SPRD/">
+                        <span class="tag">SPRD</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/UVCCamera/">
+                        <span class="tag">UVCCamera</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Video-Call/">
+                        <span class="tag">Video Call</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Zbar/">
+                        <span class="tag">Zbar</span>
+                        <span class="tag is-grey">2</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/libuvc/">
+                        <span class="tag">libuvc</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+            </div>
+        </div>
+    </div>
+</div>
+        
+        </div>
+    
+</div>
+
+                
+
+
+
+
+<div class="column is-4-tablet is-4-desktop is-3-widescreen is-hidden-touch is-hidden-desktop-only has-order-3 column-right ">
+    
+        <div class="card widget">
+    <div class="card-content">
+        <h3 class="menu-label">
+            Recent
+        </h3>
+        
+        <article class="media">
+            
+            <a href="/2020/02/28/java_certificate_verify/java_certificate_verify_and_decript/" class="media-left">
+                <p class="image is-64x64">
+                    <img class="thumbnail" src="/gallery/5.jpeg" alt="JAVA根证书验证用户证书是否可信和解密数据">
+                </p>
+            </a>
+            
+            <div class="media-content">
+                <div class="content">
+                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2020-02-27T16:00:00.000Z">2020-02-28</time></div>
+                    <a href="/2020/02/28/java_certificate_verify/java_certificate_verify_and_decript/" class="title has-link-black-ter is-size-6 has-text-weight-normal">JAVA根证书验证用户证书是否可信和解密数据</a>
+                    <p class="is-size-7 is-uppercase">
+                        <a class="has-link-grey -link" href="/categories/Java-Certificate/">Java Certificate</a>
+                    </p>
+                </div>
+            </div>
+        </article>
+        
+        <article class="media">
+            
+            <a href="/2020/02/28/uvccamera/android_uvccamera_experience_and_bug/" class="media-left">
+                <p class="image is-64x64">
+                    <img class="thumbnail" src="/gallery/3.jpeg" alt="Android UVCCamera/libuvc遇到的卡死崩溃bug和解决方法">
+                </p>
+            </a>
+            
+            <div class="media-content">
+                <div class="content">
+                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2020-02-27T16:00:00.000Z">2020-02-28</time></div>
+                    <a href="/2020/02/28/uvccamera/android_uvccamera_experience_and_bug/" class="title has-link-black-ter is-size-6 has-text-weight-normal">Android UVCCamera/libuvc遇到的卡死崩溃bug和解决方法</a>
+                    <p class="is-size-7 is-uppercase">
+                        <a class="has-link-grey -link" href="/categories/Android-UVCCamera-libuvc/">Android UVCCamera/libuvc</a>
+                    </p>
+                </div>
+            </div>
+        </article>
+        
+        <article class="media">
+            
+            <a href="/2019/12/07/android_driver/camera_driver_config_experience/" class="media-left">
+                <p class="image is-64x64">
+                    <img class="thumbnail" src="/gallery/11.jpeg" alt="Android Camera Driver平台(展讯、MTK)适配经验">
+                </p>
+            </a>
+            
+            <div class="media-content">
+                <div class="content">
+                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2019-12-07T02:00:00.000Z">2019-12-07</time></div>
+                    <a href="/2019/12/07/android_driver/camera_driver_config_experience/" class="title has-link-black-ter is-size-6 has-text-weight-normal">Android Camera Driver平台(展讯、MTK)适配经验</a>
+                    <p class="is-size-7 is-uppercase">
+                        <a class="has-link-grey -link" href="/categories/Android-Driver/">Android Driver</a>
+                    </p>
+                </div>
+            </div>
+        </article>
+        
+        <article class="media">
+            
+            <a href="/2019/11/06/android_system_app/android_dialer_app_video_incall/" class="media-left">
+                <p class="image is-64x64">
+                    <img class="thumbnail" src="/gallery/6.jpeg" alt="Android如何屏蔽通话界面的视频彩铃">
+                </p>
+            </a>
+            
+            <div class="media-content">
+                <div class="content">
+                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2019-11-06T09:36:14.000Z">2019-11-06</time></div>
+                    <a href="/2019/11/06/android_system_app/android_dialer_app_video_incall/" class="title has-link-black-ter is-size-6 has-text-weight-normal">Android如何屏蔽通话界面的视频彩铃</a>
+                    <p class="is-size-7 is-uppercase">
+                        <a class="has-link-grey -link" href="/categories/Android-System-App/">Android System App</a>
+                    </p>
+                </div>
+            </div>
+        </article>
+        
+        <article class="media">
+            
+            <a href="/2019/04/02/android_system/android_sprd_mtk_alarm_group_whitelist/" class="media-left">
+                <p class="image is-64x64">
+                    <img class="thumbnail" src="/gallery/7.jpeg" alt="Android 展讯/MTK Alarm白名单设置">
+                </p>
+            </a>
+            
+            <div class="media-content">
+                <div class="content">
+                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2019-04-01T16:00:00.000Z">2019-04-02</time></div>
+                    <a href="/2019/04/02/android_system/android_sprd_mtk_alarm_group_whitelist/" class="title has-link-black-ter is-size-6 has-text-weight-normal">Android 展讯/MTK Alarm白名单设置</a>
+                    <p class="is-size-7 is-uppercase">
+                        <a class="has-link-grey -link" href="/categories/Android-System/">Android System</a>
+                    </p>
+                </div>
+            </div>
+        </article>
+        
+    </div>
+</div>
+    
+        <div class="card widget">
+    <div class="card-content">
+        <div class="menu">
+        <h3 class="menu-label">
+            Archives
+        </h3>
+        <ul class="menu-list">
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2020/02/">
+                <span class="level-start">
+                    <span class="level-item">February 2020</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">2</span>
+                </span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2019/12/">
+                <span class="level-start">
+                    <span class="level-item">December 2019</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">1</span>
+                </span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2019/11/">
+                <span class="level-start">
+                    <span class="level-item">November 2019</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">1</span>
+                </span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2019/04/">
+                <span class="level-start">
+                    <span class="level-item">April 2019</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">1</span>
+                </span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2019/02/">
+                <span class="level-start">
+                    <span class="level-item">February 2019</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">2</span>
+                </span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2019/01/">
+                <span class="level-start">
+                    <span class="level-item">January 2019</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">1</span>
+                </span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2018/12/">
+                <span class="level-start">
+                    <span class="level-item">December 2018</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">3</span>
+                </span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2018/10/">
+                <span class="level-start">
+                    <span class="level-item">October 2018</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">1</span>
+                </span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2017/07/">
+                <span class="level-start">
+                    <span class="level-item">July 2017</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">1</span>
+                </span>
+            </a>
+        </li>
+        
+        </ul>
+        </div>
+    </div>
+</div>
+    
+        <div class="card widget">
+    <div class="card-content">
+        <div class="menu">
+            <h3 class="menu-label">
+                Tags
+            </h3>
+            <div class="field is-grouped is-grouped-multiline">
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Alarm/">
+                        <span class="tag">Alarm</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Android/">
+                        <span class="tag">Android</span>
+                        <span class="tag is-grey">2</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Android-Camera-Driver/">
+                        <span class="tag">Android Camera Driver</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Android-Driver/">
+                        <span class="tag">Android Driver</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Android-Java-framework/">
+                        <span class="tag">Android Java framework</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Android-Kernel/">
+                        <span class="tag">Android Kernel</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Android-KitKat/">
+                        <span class="tag">Android KitKat</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Android-Map/">
+                        <span class="tag">Android Map</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Android-System/">
+                        <span class="tag">Android System</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Android-System-App/">
+                        <span class="tag">Android System App</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Certificate-Verify/">
+                        <span class="tag">Certificate Verify</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Decript/">
+                        <span class="tag">Decript</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Dialer/">
+                        <span class="tag">Dialer</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Incall/">
+                        <span class="tag">Incall</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Java/">
+                        <span class="tag">Java</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Key/">
+                        <span class="tag">Key</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Map-SDK/">
+                        <span class="tag">Map SDK</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/MapView/">
+                        <span class="tag">MapView</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/OpenCV/">
+                        <span class="tag">OpenCV</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/PhoneNumber-WhiteList/">
+                        <span class="tag">PhoneNumber WhiteList</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Power-Save/">
+                        <span class="tag">Power Save</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/SPRD/">
+                        <span class="tag">SPRD</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/UVCCamera/">
+                        <span class="tag">UVCCamera</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Video-Call/">
+                        <span class="tag">Video Call</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Zbar/">
+                        <span class="tag">Zbar</span>
+                        <span class="tag is-grey">2</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/libuvc/">
+                        <span class="tag">libuvc</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+            </div>
+        </div>
+    </div>
+</div>
+    
+    
+</div>
+
+            </div>
+        </div>
+    </section>
+    <footer class="footer">
+    <div class="container">
+        <div class="level">
+            <div class="level-start has-text-centered-mobile">
+                <a class="footer-logo is-block has-mb-6" href="/">
+                
+                    <img src="/images/gen.svg" alt="Zola&#39;s Blog" height="28">
+                
+                </a>
+                <p class="is-size-7">
+                &copy; 2020 Zola&nbsp;
+                Powered by <a href="https://hexo.io/" target="_blank" rel="noopener">Hexo</a> & <a
+                        href="https://github.com/ppoffice/hexo-theme-icarus" target="_blank" rel="noopener">Icarus</a>
+                
+                </p>
+            </div>
+            <div class="level-end">
+            
+            </div>
+        </div>
+    </div>
+</footer>
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.3.1/dist/jquery.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/moment@2.22.2/min/moment-with-locales.min.js"></script>
+<script>moment.locale("en");</script>
+
+
+<script>
+var IcarusThemeSettings = {
+    site: {
+        url: 'http://yoursite.com',
+        external_link: {"enable":true,"exclude":[]}
+    },
+    article: {
+        highlight: {
+            clipboard: true,
+            fold: 'unfolded'
+        }
+    }
+};
+</script>
+
+
+<script src="https://cdn.jsdelivr.net/npm/clipboard@2.0.4/dist/clipboard.min.js" defer></script>
+
+
+
+
+
+<script src="/js/animation.js"></script>
+
+
+
+<script src="https://cdn.jsdelivr.net/npm/lightgallery@1.6.8/dist/js/lightgallery.min.js" defer></script>
+<script src="https://cdn.jsdelivr.net/npm/justifiedGallery@3.7.0/dist/js/jquery.justifiedGallery.min.js" defer></script>
+<script src="/js/gallery.js" defer></script>
+
+
+
+<div id="outdated">
+    <h6>Your browser is out-of-date!</h6>
+    <p>Update your browser to view this website correctly. <a id="btnUpdateBrowser" href="http://outdatedbrowser.com/">Update
+            my browser now </a></p>
+    <p class="last"><a href="#" id="btnCloseUpdateBrowser" title="Close">&times;</a></p>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/outdatedbrowser@1.1.5/outdatedbrowser/outdatedbrowser.min.js" defer></script>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        outdatedBrowser({
+            bgColor: '#f25648',
+            color: '#ffffff',
+            lowerThan: 'flex'
+        });
+    });
+</script>
+
+
+<script src="https://cdn.jsdelivr.net/npm/mathjax@2.7.5/unpacked/MathJax.js?config=TeX-MML-AM_CHTML" defer></script>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    MathJax.Hub.Config({
+        'HTML-CSS': {
+            matchFontHeight: false
+        },
+        SVG: {
+            matchFontHeight: false
+        },
+        CommonHTML: {
+            matchFontHeight: false
+        },
+        tex2jax: {
+            inlineMath: [
+                ['$','$'],
+                ['\\(','\\)']
+            ]
+        }
+    });
+});
+</script>
+
+
+<a id="back-to-top" title="Back to Top" href="javascript:;">
+    <i class="fas fa-chevron-up"></i>
+</a>
+<script src="/js/back-to-top.js" defer></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<script src="/js/main.js" defer></script>
+
+    
+    <div class="searchbox ins-search">
+    <div class="searchbox-container ins-search-container">
+        <div class="searchbox-input-wrapper">
+            <input type="text" class="searchbox-input ins-search-input" placeholder="Type something..." />
+            <span class="searchbox-close ins-close ins-selectable"><i class="fa fa-times-circle"></i></span>
+        </div>
+        <div class="searchbox-result-wrapper ins-section-wrapper">
+            <div class="ins-section-container"></div>
+        </div>
+    </div>
+</div>
+<script>
+    (function (window) {
+        var INSIGHT_CONFIG = {
+            TRANSLATION: {
+                POSTS: 'Posts',
+                PAGES: 'Pages',
+                CATEGORIES: 'Categories',
+                TAGS: 'Tags',
+                UNTITLED: '(Untitled)',
+            },
+            CONTENT_URL: '/content.json',
+        };
+        window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+    })(window);
+</script>
+<script src="/js/insight.js" defer></script>
+<link rel="stylesheet" href="/css/search.css">
+<link rel="stylesheet" href="/css/insight.css">
+    
+</body>
+</html>
