@@ -34,7 +34,7 @@
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.7.2/css/bulma.css">
 <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.4.1/css/all.css">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Ubuntu:400,600|Source+Code+Pro">
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@9.12.0/styles/atom-one-dark.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@9.12.0/styles/atom-one-light.css">
 
 
     
@@ -150,7 +150,7 @@
                 <span class="level-item has-text-grey">
                     
                     
-                    a minute read (About 140 words)
+                    a minute read (About 141 words)
                 </span>
                 
                 
@@ -166,10 +166,9 @@
             <p>当电话呼叫对方时，如果对方设置了视频彩铃，则会在呼叫页面出现运营商的视频和彩铃，可以通过修改系统应用中的Dialer App的incall页面来屏蔽。</p>
 <hr>
 <p>比如MTK平台的Dialer App，路径如下：vendor/mediatek/proprietary/packages/apps/Dialer/java/com/android/incallui/call/DialerCall.java<br>可以通过如下修改：</p>
-<pre><code>   public boolean isVideoCall() {
--    return getVideoTech().isTransmittingOrReceiving();
-+    return false;//getVideoTech().isTransmittingOrReceiving();
-   }</code></pre><p>或者修改vendor/mediatek/proprietary/packages/apps/Dialer/java/com/android/incallui/InCallActivity.java 的<br>private static ShouldShowUiResult getShouldShowVideoUi() 方法使其不显示视频页面</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs java">   <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">boolean</span> <span class="hljs-title">isVideoCall</span><span class="hljs-params">()</span> </span>&#123;<br>-    <span class="hljs-keyword">return</span> getVideoTech().isTransmittingOrReceiving();<br>+    <span class="hljs-keyword">return</span> <span class="hljs-keyword">false</span>;<span class="hljs-comment">//getVideoTech().isTransmittingOrReceiving();</span><br>   &#125;<br></code></pre></td></tr></table></figure>
+
+<p>或者修改vendor/mediatek/proprietary/packages/apps/Dialer/java/com/android/incallui/InCallActivity.java 的<br>private static ShouldShowUiResult getShouldShowVideoUi() 方法使其不显示视频页面</p>
 
         </div>
         
@@ -415,44 +414,6 @@
         
         <article class="media">
             
-            <a href="/2020/02/28/java_certificate_verify/java_certificate_verify_and_decript/" class="media-left">
-                <p class="image is-64x64">
-                    <img class="thumbnail" src="/gallery/5.jpeg" alt="JAVA根证书验证用户证书是否可信和解密数据">
-                </p>
-            </a>
-            
-            <div class="media-content">
-                <div class="content">
-                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2020-02-27T16:00:00.000Z">2020-02-28</time></div>
-                    <a href="/2020/02/28/java_certificate_verify/java_certificate_verify_and_decript/" class="title has-link-black-ter is-size-6 has-text-weight-normal">JAVA根证书验证用户证书是否可信和解密数据</a>
-                    <p class="is-size-7 is-uppercase">
-                        <a class="has-link-grey -link" href="/categories/Java-Certificate/">Java Certificate</a>
-                    </p>
-                </div>
-            </div>
-        </article>
-        
-        <article class="media">
-            
-            <a href="/2020/02/28/uvccamera/android_uvccamera_experience_and_bug/" class="media-left">
-                <p class="image is-64x64">
-                    <img class="thumbnail" src="/gallery/3.jpeg" alt="Android UVCCamera/libuvc遇到的卡死崩溃bug和解决方法">
-                </p>
-            </a>
-            
-            <div class="media-content">
-                <div class="content">
-                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2020-02-27T16:00:00.000Z">2020-02-28</time></div>
-                    <a href="/2020/02/28/uvccamera/android_uvccamera_experience_and_bug/" class="title has-link-black-ter is-size-6 has-text-weight-normal">Android UVCCamera/libuvc遇到的卡死崩溃bug和解决方法</a>
-                    <p class="is-size-7 is-uppercase">
-                        <a class="has-link-grey -link" href="/categories/Android-UVCCamera-libuvc/">Android UVCCamera/libuvc</a>
-                    </p>
-                </div>
-            </div>
-        </article>
-        
-        <article class="media">
-            
             <a href="/2019/12/07/android_driver/camera_driver_config_experience/" class="media-left">
                 <p class="image is-64x64">
                     <img class="thumbnail" src="/gallery/11.jpeg" alt="Android Camera Driver平台(展讯、MTK)适配经验">
@@ -491,6 +452,44 @@
         
         <article class="media">
             
+            <a href="/2019/08/28/java_certificate_verify/java_certificate_verify_and_decript/" class="media-left">
+                <p class="image is-64x64">
+                    <img class="thumbnail" src="/gallery/5.jpeg" alt="JAVA根证书验证用户证书是否可信和解密数据">
+                </p>
+            </a>
+            
+            <div class="media-content">
+                <div class="content">
+                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2019-08-27T16:00:00.000Z">2019-08-28</time></div>
+                    <a href="/2019/08/28/java_certificate_verify/java_certificate_verify_and_decript/" class="title has-link-black-ter is-size-6 has-text-weight-normal">JAVA根证书验证用户证书是否可信和解密数据</a>
+                    <p class="is-size-7 is-uppercase">
+                        <a class="has-link-grey -link" href="/categories/Java-Certificate/">Java Certificate</a>
+                    </p>
+                </div>
+            </div>
+        </article>
+        
+        <article class="media">
+            
+            <a href="/2019/08/27/uvccamera/android_uvccamera_experience_and_bug/" class="media-left">
+                <p class="image is-64x64">
+                    <img class="thumbnail" src="/gallery/3.jpeg" alt="Android UVCCamera/libuvc遇到的卡死崩溃bug和解决方法">
+                </p>
+            </a>
+            
+            <div class="media-content">
+                <div class="content">
+                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2019-08-26T16:00:00.000Z">2019-08-27</time></div>
+                    <a href="/2019/08/27/uvccamera/android_uvccamera_experience_and_bug/" class="title has-link-black-ter is-size-6 has-text-weight-normal">Android UVCCamera/libuvc遇到的卡死崩溃bug和解决方法</a>
+                    <p class="is-size-7 is-uppercase">
+                        <a class="has-link-grey -link" href="/categories/Android-UVCCamera-libuvc/">Android UVCCamera/libuvc</a>
+                    </p>
+                </div>
+            </div>
+        </article>
+        
+        <article class="media">
+            
             <a href="/2019/04/02/android_system/android_sprd_mtk_alarm_group_whitelist/" class="media-left">
                 <p class="image is-64x64">
                     <img class="thumbnail" src="/gallery/7.jpeg" alt="Android 展讯/MTK Alarm白名单设置">
@@ -520,17 +519,6 @@
         <ul class="menu-list">
         
         <li>
-            <a class="level is-marginless" href="/archives/2020/02/">
-                <span class="level-start">
-                    <span class="level-item">February 2020</span>
-                </span>
-                <span class="level-end">
-                    <span class="level-item tag">2</span>
-                </span>
-            </a>
-        </li>
-        
-        <li>
             <a class="level is-marginless" href="/archives/2019/12/">
                 <span class="level-start">
                     <span class="level-item">December 2019</span>
@@ -548,6 +536,17 @@
                 </span>
                 <span class="level-end">
                     <span class="level-item tag">1</span>
+                </span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2019/08/">
+                <span class="level-start">
+                    <span class="level-item">August 2019</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">2</span>
                 </span>
             </a>
         </li>
@@ -837,44 +836,6 @@
         
         <article class="media">
             
-            <a href="/2020/02/28/java_certificate_verify/java_certificate_verify_and_decript/" class="media-left">
-                <p class="image is-64x64">
-                    <img class="thumbnail" src="/gallery/5.jpeg" alt="JAVA根证书验证用户证书是否可信和解密数据">
-                </p>
-            </a>
-            
-            <div class="media-content">
-                <div class="content">
-                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2020-02-27T16:00:00.000Z">2020-02-28</time></div>
-                    <a href="/2020/02/28/java_certificate_verify/java_certificate_verify_and_decript/" class="title has-link-black-ter is-size-6 has-text-weight-normal">JAVA根证书验证用户证书是否可信和解密数据</a>
-                    <p class="is-size-7 is-uppercase">
-                        <a class="has-link-grey -link" href="/categories/Java-Certificate/">Java Certificate</a>
-                    </p>
-                </div>
-            </div>
-        </article>
-        
-        <article class="media">
-            
-            <a href="/2020/02/28/uvccamera/android_uvccamera_experience_and_bug/" class="media-left">
-                <p class="image is-64x64">
-                    <img class="thumbnail" src="/gallery/3.jpeg" alt="Android UVCCamera/libuvc遇到的卡死崩溃bug和解决方法">
-                </p>
-            </a>
-            
-            <div class="media-content">
-                <div class="content">
-                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2020-02-27T16:00:00.000Z">2020-02-28</time></div>
-                    <a href="/2020/02/28/uvccamera/android_uvccamera_experience_and_bug/" class="title has-link-black-ter is-size-6 has-text-weight-normal">Android UVCCamera/libuvc遇到的卡死崩溃bug和解决方法</a>
-                    <p class="is-size-7 is-uppercase">
-                        <a class="has-link-grey -link" href="/categories/Android-UVCCamera-libuvc/">Android UVCCamera/libuvc</a>
-                    </p>
-                </div>
-            </div>
-        </article>
-        
-        <article class="media">
-            
             <a href="/2019/12/07/android_driver/camera_driver_config_experience/" class="media-left">
                 <p class="image is-64x64">
                     <img class="thumbnail" src="/gallery/11.jpeg" alt="Android Camera Driver平台(展讯、MTK)适配经验">
@@ -913,6 +874,44 @@
         
         <article class="media">
             
+            <a href="/2019/08/28/java_certificate_verify/java_certificate_verify_and_decript/" class="media-left">
+                <p class="image is-64x64">
+                    <img class="thumbnail" src="/gallery/5.jpeg" alt="JAVA根证书验证用户证书是否可信和解密数据">
+                </p>
+            </a>
+            
+            <div class="media-content">
+                <div class="content">
+                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2019-08-27T16:00:00.000Z">2019-08-28</time></div>
+                    <a href="/2019/08/28/java_certificate_verify/java_certificate_verify_and_decript/" class="title has-link-black-ter is-size-6 has-text-weight-normal">JAVA根证书验证用户证书是否可信和解密数据</a>
+                    <p class="is-size-7 is-uppercase">
+                        <a class="has-link-grey -link" href="/categories/Java-Certificate/">Java Certificate</a>
+                    </p>
+                </div>
+            </div>
+        </article>
+        
+        <article class="media">
+            
+            <a href="/2019/08/27/uvccamera/android_uvccamera_experience_and_bug/" class="media-left">
+                <p class="image is-64x64">
+                    <img class="thumbnail" src="/gallery/3.jpeg" alt="Android UVCCamera/libuvc遇到的卡死崩溃bug和解决方法">
+                </p>
+            </a>
+            
+            <div class="media-content">
+                <div class="content">
+                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2019-08-26T16:00:00.000Z">2019-08-27</time></div>
+                    <a href="/2019/08/27/uvccamera/android_uvccamera_experience_and_bug/" class="title has-link-black-ter is-size-6 has-text-weight-normal">Android UVCCamera/libuvc遇到的卡死崩溃bug和解决方法</a>
+                    <p class="is-size-7 is-uppercase">
+                        <a class="has-link-grey -link" href="/categories/Android-UVCCamera-libuvc/">Android UVCCamera/libuvc</a>
+                    </p>
+                </div>
+            </div>
+        </article>
+        
+        <article class="media">
+            
             <a href="/2019/04/02/android_system/android_sprd_mtk_alarm_group_whitelist/" class="media-left">
                 <p class="image is-64x64">
                     <img class="thumbnail" src="/gallery/7.jpeg" alt="Android 展讯/MTK Alarm白名单设置">
@@ -942,17 +941,6 @@
         <ul class="menu-list">
         
         <li>
-            <a class="level is-marginless" href="/archives/2020/02/">
-                <span class="level-start">
-                    <span class="level-item">February 2020</span>
-                </span>
-                <span class="level-end">
-                    <span class="level-item tag">2</span>
-                </span>
-            </a>
-        </li>
-        
-        <li>
             <a class="level is-marginless" href="/archives/2019/12/">
                 <span class="level-start">
                     <span class="level-item">December 2019</span>
@@ -970,6 +958,17 @@
                 </span>
                 <span class="level-end">
                     <span class="level-item tag">1</span>
+                </span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2019/08/">
+                <span class="level-start">
+                    <span class="level-item">August 2019</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">2</span>
                 </span>
             </a>
         </li>

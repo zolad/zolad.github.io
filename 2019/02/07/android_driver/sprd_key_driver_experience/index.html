@@ -10,16 +10,16 @@
 <title>展讯物理按键配置经验 - Zola&#39;s Blog</title>
 
 
-    <meta name="description" content="展讯系统驱动配置物理按键，首先查看硬件原理图，找到对应物理按键的管脚，比如按键5接的是gpio125 1.打开kernel&#x2F;arch&#x2F;arm&#x2F;boot&#x2F;dts&#x2F;对应项目的.dts文件修改gpio_keys下的配置，gpios修改对应的gpio引脚号 gpio_keys {          key_5 {              label &#x3D; &quot;5 Key&quot;;">
+    <meta name="description" content="展讯系统驱动配置物理按键，首先查看硬件原理图，找到对应物理按键的管脚，比如按键5接的是gpio125 1.打开kernel&#x2F;arch&#x2F;arm&#x2F;boot&#x2F;dts&#x2F;对应项目的.dts文件修改gpio_keys下的配置，gpios修改对应的gpio引脚号 1234567891011gpio_keys &amp;#123; 		key_5 &amp;#123; 			label &#x3D; &quot;5 Key&quot;;			linux,co">
 <meta property="og:type" content="article">
 <meta property="og:title" content="展讯物理按键配置经验">
 <meta property="og:url" content="http://yoursite.com/2019/02/07/android_driver/sprd_key_driver_experience/index.html">
 <meta property="og:site_name" content="Zola&#39;s Blog">
-<meta property="og:description" content="展讯系统驱动配置物理按键，首先查看硬件原理图，找到对应物理按键的管脚，比如按键5接的是gpio125 1.打开kernel&#x2F;arch&#x2F;arm&#x2F;boot&#x2F;dts&#x2F;对应项目的.dts文件修改gpio_keys下的配置，gpios修改对应的gpio引脚号 gpio_keys {          key_5 {              label &#x3D; &quot;5 Key&quot;;">
+<meta property="og:description" content="展讯系统驱动配置物理按键，首先查看硬件原理图，找到对应物理按键的管脚，比如按键5接的是gpio125 1.打开kernel&#x2F;arch&#x2F;arm&#x2F;boot&#x2F;dts&#x2F;对应项目的.dts文件修改gpio_keys下的配置，gpios修改对应的gpio引脚号 1234567891011gpio_keys &amp;#123; 		key_5 &amp;#123; 			label &#x3D; &quot;5 Key&quot;;			linux,co">
 <meta property="og:locale" content="en_US">
 <meta property="og:image" content="http://yoursite.com/gallery/13.jpeg">
 <meta property="article:published_time" content="2019-02-07T09:36:14.000Z">
-<meta property="article:modified_time" content="2020-03-22T06:50:49.608Z">
+<meta property="article:modified_time" content="2020-03-23T13:43:59.407Z">
 <meta property="article:author" content="Zola">
 <meta property="article:tag" content="Android Driver">
 <meta property="article:tag" content="SPRD">
@@ -39,7 +39,7 @@
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.7.2/css/bulma.css">
 <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.4.1/css/all.css">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Ubuntu:400,600|Source+Code+Pro">
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@9.12.0/styles/atom-one-dark.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@9.12.0/styles/atom-one-light.css">
 
 
     
@@ -144,7 +144,7 @@
                 <span class="level-item has-text-grey">
                     
                     
-                    a minute read (About 220 words)
+                    a minute read (About 222 words)
                 </span>
                 
                 
@@ -159,21 +159,11 @@
         <div class="content">
             <p>展讯系统驱动配置物理按键，首先查看硬件原理图，找到对应物理按键的管脚，比如按键5接的是gpio125</p>
 <p>1.打开kernel/arch/arm/boot/dts/对应项目的.dts文件<br>修改gpio_keys下的配置，gpios修改对应的gpio引脚号</p>
-<pre><code>gpio_keys {
-         key_5 {
-             label = &quot;5 Key&quot;;
-            linux,code = &lt;6&gt;;
--            gpios = &lt;&amp;ap_gpio 92 1&gt;;
-+            gpios = &lt;&amp;ap_gpio 125 1&gt;;
-             gpio-key,wakeup;
-            gpio-key,level-trigger;
-         };
-
-}</code></pre><p>linux,code对应的就是KEY CODE<br>gpio-key,wakeup代表按下时如果系统正在休眠会触发唤醒<br>gpio-key,level-trigger 表示增加电平触发判断</p>
+<figure class="highlight dts"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs dts"><span class="hljs-class">gpio_keys </span>&#123;<br> 		<span class="hljs-class">key_5 </span>&#123;<br> 			label = <span class="hljs-string">"5 Key"</span>;<br>			linux,code = <span class="hljs-params">&lt;<span class="hljs-number">6</span>&gt;</span>;<br>-			gpios = <span class="hljs-params">&lt;<span class="hljs-variable">&amp;ap_gpio</span> <span class="hljs-number">92</span> <span class="hljs-number">1</span>&gt;</span>;<br>+			gpios = <span class="hljs-params">&lt;<span class="hljs-variable">&amp;ap_gpio</span> <span class="hljs-number">125</span> <span class="hljs-number">1</span>&gt;</span>;<br> 			gpio-key,wakeup;<br>			gpio-key,level-trigger;<br> 		&#125;;<br><br>&#125;<br></code></pre></td></tr></table></figure>
+<p>linux,code对应的就是KEY CODE<br>gpio-key,wakeup代表按下时如果系统正在休眠会触发唤醒<br>gpio-key,level-trigger 表示增加电平触发判断</p>
 <p>2.打开u-boot15/board/spreadtrum/对应项目的pinmap .c文件</p>
 <p>对照平台GPIO_Spec的xls表，找到gpio125对应的Ball Name，修改Fuction为默认gpio功能:BITS_PIN_AF(3)</p>
-<pre><code>{REG_PIN_RTCK_LTE,                      BITS_PIN_AF(3)},
-{REG_MISC_PIN_RTCK_LTE,                 BITS_PIN_DS(1)|BIT_PIN_NULL|BIT_PIN_NUL|BIT_PIN_SLP_AP|BIT_PIN_SLP_NUL|BIT_PIN_SLP_OE},</code></pre>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs c">&#123;REG_PIN_RTCK_LTE,                      BITS_PIN_AF(<span class="hljs-number">3</span>)&#125;,<br>&#123;REG_MISC_PIN_RTCK_LTE,                 BITS_PIN_DS(<span class="hljs-number">1</span>)|BIT_PIN_NULL|BIT_PIN_NUL|BIT_PIN_SLP_AP|BIT_PIN_SLP_NUL|BIT_PIN_SLP_OE&#125;,<br></code></pre></td></tr></table></figure>
         </div>
         
         <div class="level is-size-7 is-uppercase">
@@ -446,44 +436,6 @@
         
         <article class="media">
             
-            <a href="/2020/02/28/java_certificate_verify/java_certificate_verify_and_decript/" class="media-left">
-                <p class="image is-64x64">
-                    <img class="thumbnail" src="/gallery/5.jpeg" alt="JAVA根证书验证用户证书是否可信和解密数据">
-                </p>
-            </a>
-            
-            <div class="media-content">
-                <div class="content">
-                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2020-02-27T16:00:00.000Z">2020-02-28</time></div>
-                    <a href="/2020/02/28/java_certificate_verify/java_certificate_verify_and_decript/" class="title has-link-black-ter is-size-6 has-text-weight-normal">JAVA根证书验证用户证书是否可信和解密数据</a>
-                    <p class="is-size-7 is-uppercase">
-                        <a class="has-link-grey -link" href="/categories/Java-Certificate/">Java Certificate</a>
-                    </p>
-                </div>
-            </div>
-        </article>
-        
-        <article class="media">
-            
-            <a href="/2020/02/28/uvccamera/android_uvccamera_experience_and_bug/" class="media-left">
-                <p class="image is-64x64">
-                    <img class="thumbnail" src="/gallery/3.jpeg" alt="Android UVCCamera/libuvc遇到的卡死崩溃bug和解决方法">
-                </p>
-            </a>
-            
-            <div class="media-content">
-                <div class="content">
-                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2020-02-27T16:00:00.000Z">2020-02-28</time></div>
-                    <a href="/2020/02/28/uvccamera/android_uvccamera_experience_and_bug/" class="title has-link-black-ter is-size-6 has-text-weight-normal">Android UVCCamera/libuvc遇到的卡死崩溃bug和解决方法</a>
-                    <p class="is-size-7 is-uppercase">
-                        <a class="has-link-grey -link" href="/categories/Android-UVCCamera-libuvc/">Android UVCCamera/libuvc</a>
-                    </p>
-                </div>
-            </div>
-        </article>
-        
-        <article class="media">
-            
             <a href="/2019/12/07/android_driver/camera_driver_config_experience/" class="media-left">
                 <p class="image is-64x64">
                     <img class="thumbnail" src="/gallery/11.jpeg" alt="Android Camera Driver平台(展讯、MTK)适配经验">
@@ -522,6 +474,44 @@
         
         <article class="media">
             
+            <a href="/2019/08/28/java_certificate_verify/java_certificate_verify_and_decript/" class="media-left">
+                <p class="image is-64x64">
+                    <img class="thumbnail" src="/gallery/5.jpeg" alt="JAVA根证书验证用户证书是否可信和解密数据">
+                </p>
+            </a>
+            
+            <div class="media-content">
+                <div class="content">
+                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2019-08-27T16:00:00.000Z">2019-08-28</time></div>
+                    <a href="/2019/08/28/java_certificate_verify/java_certificate_verify_and_decript/" class="title has-link-black-ter is-size-6 has-text-weight-normal">JAVA根证书验证用户证书是否可信和解密数据</a>
+                    <p class="is-size-7 is-uppercase">
+                        <a class="has-link-grey -link" href="/categories/Java-Certificate/">Java Certificate</a>
+                    </p>
+                </div>
+            </div>
+        </article>
+        
+        <article class="media">
+            
+            <a href="/2019/08/27/uvccamera/android_uvccamera_experience_and_bug/" class="media-left">
+                <p class="image is-64x64">
+                    <img class="thumbnail" src="/gallery/3.jpeg" alt="Android UVCCamera/libuvc遇到的卡死崩溃bug和解决方法">
+                </p>
+            </a>
+            
+            <div class="media-content">
+                <div class="content">
+                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2019-08-26T16:00:00.000Z">2019-08-27</time></div>
+                    <a href="/2019/08/27/uvccamera/android_uvccamera_experience_and_bug/" class="title has-link-black-ter is-size-6 has-text-weight-normal">Android UVCCamera/libuvc遇到的卡死崩溃bug和解决方法</a>
+                    <p class="is-size-7 is-uppercase">
+                        <a class="has-link-grey -link" href="/categories/Android-UVCCamera-libuvc/">Android UVCCamera/libuvc</a>
+                    </p>
+                </div>
+            </div>
+        </article>
+        
+        <article class="media">
+            
             <a href="/2019/04/02/android_system/android_sprd_mtk_alarm_group_whitelist/" class="media-left">
                 <p class="image is-64x64">
                     <img class="thumbnail" src="/gallery/7.jpeg" alt="Android 展讯/MTK Alarm白名单设置">
@@ -551,17 +541,6 @@
         <ul class="menu-list">
         
         <li>
-            <a class="level is-marginless" href="/archives/2020/02/">
-                <span class="level-start">
-                    <span class="level-item">February 2020</span>
-                </span>
-                <span class="level-end">
-                    <span class="level-item tag">2</span>
-                </span>
-            </a>
-        </li>
-        
-        <li>
             <a class="level is-marginless" href="/archives/2019/12/">
                 <span class="level-start">
                     <span class="level-item">December 2019</span>
@@ -579,6 +558,17 @@
                 </span>
                 <span class="level-end">
                     <span class="level-item tag">1</span>
+                </span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2019/08/">
+                <span class="level-start">
+                    <span class="level-item">August 2019</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">2</span>
                 </span>
             </a>
         </li>
@@ -868,44 +858,6 @@
         
         <article class="media">
             
-            <a href="/2020/02/28/java_certificate_verify/java_certificate_verify_and_decript/" class="media-left">
-                <p class="image is-64x64">
-                    <img class="thumbnail" src="/gallery/5.jpeg" alt="JAVA根证书验证用户证书是否可信和解密数据">
-                </p>
-            </a>
-            
-            <div class="media-content">
-                <div class="content">
-                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2020-02-27T16:00:00.000Z">2020-02-28</time></div>
-                    <a href="/2020/02/28/java_certificate_verify/java_certificate_verify_and_decript/" class="title has-link-black-ter is-size-6 has-text-weight-normal">JAVA根证书验证用户证书是否可信和解密数据</a>
-                    <p class="is-size-7 is-uppercase">
-                        <a class="has-link-grey -link" href="/categories/Java-Certificate/">Java Certificate</a>
-                    </p>
-                </div>
-            </div>
-        </article>
-        
-        <article class="media">
-            
-            <a href="/2020/02/28/uvccamera/android_uvccamera_experience_and_bug/" class="media-left">
-                <p class="image is-64x64">
-                    <img class="thumbnail" src="/gallery/3.jpeg" alt="Android UVCCamera/libuvc遇到的卡死崩溃bug和解决方法">
-                </p>
-            </a>
-            
-            <div class="media-content">
-                <div class="content">
-                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2020-02-27T16:00:00.000Z">2020-02-28</time></div>
-                    <a href="/2020/02/28/uvccamera/android_uvccamera_experience_and_bug/" class="title has-link-black-ter is-size-6 has-text-weight-normal">Android UVCCamera/libuvc遇到的卡死崩溃bug和解决方法</a>
-                    <p class="is-size-7 is-uppercase">
-                        <a class="has-link-grey -link" href="/categories/Android-UVCCamera-libuvc/">Android UVCCamera/libuvc</a>
-                    </p>
-                </div>
-            </div>
-        </article>
-        
-        <article class="media">
-            
             <a href="/2019/12/07/android_driver/camera_driver_config_experience/" class="media-left">
                 <p class="image is-64x64">
                     <img class="thumbnail" src="/gallery/11.jpeg" alt="Android Camera Driver平台(展讯、MTK)适配经验">
@@ -944,6 +896,44 @@
         
         <article class="media">
             
+            <a href="/2019/08/28/java_certificate_verify/java_certificate_verify_and_decript/" class="media-left">
+                <p class="image is-64x64">
+                    <img class="thumbnail" src="/gallery/5.jpeg" alt="JAVA根证书验证用户证书是否可信和解密数据">
+                </p>
+            </a>
+            
+            <div class="media-content">
+                <div class="content">
+                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2019-08-27T16:00:00.000Z">2019-08-28</time></div>
+                    <a href="/2019/08/28/java_certificate_verify/java_certificate_verify_and_decript/" class="title has-link-black-ter is-size-6 has-text-weight-normal">JAVA根证书验证用户证书是否可信和解密数据</a>
+                    <p class="is-size-7 is-uppercase">
+                        <a class="has-link-grey -link" href="/categories/Java-Certificate/">Java Certificate</a>
+                    </p>
+                </div>
+            </div>
+        </article>
+        
+        <article class="media">
+            
+            <a href="/2019/08/27/uvccamera/android_uvccamera_experience_and_bug/" class="media-left">
+                <p class="image is-64x64">
+                    <img class="thumbnail" src="/gallery/3.jpeg" alt="Android UVCCamera/libuvc遇到的卡死崩溃bug和解决方法">
+                </p>
+            </a>
+            
+            <div class="media-content">
+                <div class="content">
+                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2019-08-26T16:00:00.000Z">2019-08-27</time></div>
+                    <a href="/2019/08/27/uvccamera/android_uvccamera_experience_and_bug/" class="title has-link-black-ter is-size-6 has-text-weight-normal">Android UVCCamera/libuvc遇到的卡死崩溃bug和解决方法</a>
+                    <p class="is-size-7 is-uppercase">
+                        <a class="has-link-grey -link" href="/categories/Android-UVCCamera-libuvc/">Android UVCCamera/libuvc</a>
+                    </p>
+                </div>
+            </div>
+        </article>
+        
+        <article class="media">
+            
             <a href="/2019/04/02/android_system/android_sprd_mtk_alarm_group_whitelist/" class="media-left">
                 <p class="image is-64x64">
                     <img class="thumbnail" src="/gallery/7.jpeg" alt="Android 展讯/MTK Alarm白名单设置">
@@ -973,17 +963,6 @@
         <ul class="menu-list">
         
         <li>
-            <a class="level is-marginless" href="/archives/2020/02/">
-                <span class="level-start">
-                    <span class="level-item">February 2020</span>
-                </span>
-                <span class="level-end">
-                    <span class="level-item tag">2</span>
-                </span>
-            </a>
-        </li>
-        
-        <li>
             <a class="level is-marginless" href="/archives/2019/12/">
                 <span class="level-start">
                     <span class="level-item">December 2019</span>
@@ -1001,6 +980,17 @@
                 </span>
                 <span class="level-end">
                     <span class="level-item tag">1</span>
+                </span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2019/08/">
+                <span class="level-start">
+                    <span class="level-item">August 2019</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">2</span>
                 </span>
             </a>
         </li>

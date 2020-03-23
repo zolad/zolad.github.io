@@ -34,7 +34,7 @@
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.7.2/css/bulma.css">
 <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.4.1/css/all.css">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Ubuntu:400,600|Source+Code+Pro">
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@9.12.0/styles/atom-one-dark.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@9.12.0/styles/atom-one-light.css">
 
 
     
@@ -132,7 +132,7 @@
 <div class="card">
     
     <div class="card-image">
-        <a href="/2020/02/28/java_certificate_verify/java_certificate_verify_and_decript/" class="image is-7by1">
+        <a href="/2019/08/28/java_certificate_verify/java_certificate_verify_and_decript/" class="image is-7by1">
             <img class="thumbnail" src="/gallery/5.jpeg" alt="JAVA根证书验证用户证书是否可信和解密数据">
         </a>
     </div>
@@ -141,7 +141,7 @@
         
         <div class="level article-meta is-size-7 is-uppercase is-mobile is-overflow-x-auto">
             <div class="level-left">
-                <time class="level-item has-text-grey" datetime="2020-02-27T16:00:00.000Z">2020-02-28</time>
+                <time class="level-item has-text-grey" datetime="2019-08-27T16:00:00.000Z">2019-08-28</time>
                 
                 <div class="level-item">
                 <a class="has-link-grey -link" href="/categories/Java-Certificate/">Java Certificate</a>
@@ -151,7 +151,7 @@
                 <span class="level-item has-text-grey">
                     
                     
-                    2 minutes read (About 353 words)
+                    2 minutes read (About 357 words)
                 </span>
                 
                 
@@ -160,42 +160,23 @@
         
         <h1 class="title is-size-3 is-size-4-mobile has-text-weight-normal">
             
-                <a class="has-link-black-ter" href="/2020/02/28/java_certificate_verify/java_certificate_verify_and_decript/">JAVA根证书验证用户证书是否可信和解密数据</a>
+                <a class="has-link-black-ter" href="/2019/08/28/java_certificate_verify/java_certificate_verify_and_decript/">JAVA根证书验证用户证书是否可信和解密数据</a>
             
         </h1>
         <div class="content">
             <p>一般用户证书和加密数据是一起发放到客户端的，但是使用用户证书的公钥解密数据前需要验证用户证书是否可信，即从源头来说是否由根证书签发的，按证书链去认证。使用根证书验证用户证书可信并解密的Java实现如下：</p>
 <p>1.读取根证书文件初始化根证书对象，并获取根证书中的公钥</p>
-<pre><code>CertificateFactory certificateFactory = CertificateFactory.getInstance(&quot;X.509&quot;);
-Certificate rootCert = certificateFactory.generateCertificate(new FileInputStream(rootCertPath));
-PublicKey rootCertPublicKey = rootCert.getPublicKey();</code></pre><p>2.使用用户证书byte数组数据初始化用户证书对象</p>
-<pre><code>X509Certificate userCert = (X509Certificate)certificateFactory.generateCertificate(
-                new ByteArrayInputStream(userCertByteArray));</code></pre><p>3.使用用户证书验证根证书的公钥，如果验证通过（即不抛出Exception）说明这个用户证书是这个根证书签发的,同时检查用户证书是否有效</p>
-<pre><code>try {
-       userCert.verify(rootCertPublicKey);
-       userCert.checkValidity();
-       Log.d(TAG,&quot;------------- 工作证书验证成功 -----------&quot;);
-}catch (Exception e) {
-       Log.d(TAG,&quot;------------- 工作证书验证失败 -----------&quot;);
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs java">CertificateFactory certificateFactory = CertificateFactory.getInstance(<span class="hljs-string">"X.509"</span>);<br>Certificate rootCert = certificateFactory.generateCertificate(<span class="hljs-keyword">new</span> FileInputStream(rootCertPath));<br>PublicKey rootCertPublicKey = rootCert.getPublicKey();<br></code></pre></td></tr></table></figure>
 
-}</code></pre><p>4.最后使用用户证书的公钥进行解密</p>
-<pre><code>try {
-    Cipher cipher = Cipher.getInstance(&quot;RSA/ECB/NoPadding&quot;);
-    cipher.init(Cipher.DECRYPT_MODE, userCert);
-    byte[] output = cipher.doFinal(cipherData);
-    return output;
-} catch (NoSuchAlgorithmException e) {
-    throw new Exception(&quot;无此解密算法&quot;);
-} catch (NoSuchPaddingException e) {
-    e.printStackTrace();
-    return null;
-} catch (InvalidKeyException e) {
-    throw new Exception(&quot;解密公钥非法,请检查&quot;);
-} catch (IllegalBlockSizeException e) {
-    throw new Exception(&quot;密文长度非法&quot;);
-} catch (BadPaddingException e) {
-    throw new Exception(&quot;密文数据已损坏&quot;);
-}</code></pre>
+
+<p>2.使用用户证书byte数组数据初始化用户证书对象</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs java">X509Certificate userCert = (X509Certificate)certificateFactory.generateCertificate(<br>                <span class="hljs-keyword">new</span> ByteArrayInputStream(userCertByteArray));<br></code></pre></td></tr></table></figure>
+
+<p>3.使用用户证书验证根证书的公钥，如果验证通过（即不抛出Exception）说明这个用户证书是这个根证书签发的,同时检查用户证书是否有效</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">try</span> &#123;<br>       userCert.verify(rootCertPublicKey);<br>       userCert.checkValidity();<br>       Log.d(TAG,<span class="hljs-string">"------------- 工作证书验证成功 -----------"</span>);<br>&#125;<span class="hljs-keyword">catch</span> (Exception e) &#123;<br>       Log.d(TAG,<span class="hljs-string">"------------- 工作证书验证失败 -----------"</span>);<br>        <br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>4.最后使用用户证书的公钥进行解密</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">try</span> &#123;<br>    Cipher cipher = Cipher.getInstance(<span class="hljs-string">"RSA/ECB/NoPadding"</span>);<br>	cipher.init(Cipher.DECRYPT_MODE, userCert);<br>    <span class="hljs-keyword">byte</span>[] output = cipher.doFinal(cipherData);<br>    <span class="hljs-keyword">return</span> output;<br>&#125; <span class="hljs-keyword">catch</span> (NoSuchAlgorithmException e) &#123;<br>    <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> Exception(<span class="hljs-string">"无此解密算法"</span>);<br>&#125; <span class="hljs-keyword">catch</span> (NoSuchPaddingException e) &#123;<br>    e.printStackTrace();<br>    <span class="hljs-keyword">return</span> <span class="hljs-keyword">null</span>;<br>&#125; <span class="hljs-keyword">catch</span> (InvalidKeyException e) &#123;<br>    <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> Exception(<span class="hljs-string">"解密公钥非法,请检查"</span>);<br>&#125; <span class="hljs-keyword">catch</span> (IllegalBlockSizeException e) &#123;<br>    <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> Exception(<span class="hljs-string">"密文长度非法"</span>);<br>&#125; <span class="hljs-keyword">catch</span> (BadPaddingException e) &#123;<br>    <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> Exception(<span class="hljs-string">"密文数据已损坏"</span>);<br>&#125;<br></code></pre></td></tr></table></figure>
         </div>
         
         
@@ -440,44 +421,6 @@ PublicKey rootCertPublicKey = rootCert.getPublicKey();</code></pre><p>2.使用�
         
         <article class="media">
             
-            <a href="/2020/02/28/java_certificate_verify/java_certificate_verify_and_decript/" class="media-left">
-                <p class="image is-64x64">
-                    <img class="thumbnail" src="/gallery/5.jpeg" alt="JAVA根证书验证用户证书是否可信和解密数据">
-                </p>
-            </a>
-            
-            <div class="media-content">
-                <div class="content">
-                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2020-02-27T16:00:00.000Z">2020-02-28</time></div>
-                    <a href="/2020/02/28/java_certificate_verify/java_certificate_verify_and_decript/" class="title has-link-black-ter is-size-6 has-text-weight-normal">JAVA根证书验证用户证书是否可信和解密数据</a>
-                    <p class="is-size-7 is-uppercase">
-                        <a class="has-link-grey -link" href="/categories/Java-Certificate/">Java Certificate</a>
-                    </p>
-                </div>
-            </div>
-        </article>
-        
-        <article class="media">
-            
-            <a href="/2020/02/28/uvccamera/android_uvccamera_experience_and_bug/" class="media-left">
-                <p class="image is-64x64">
-                    <img class="thumbnail" src="/gallery/3.jpeg" alt="Android UVCCamera/libuvc遇到的卡死崩溃bug和解决方法">
-                </p>
-            </a>
-            
-            <div class="media-content">
-                <div class="content">
-                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2020-02-27T16:00:00.000Z">2020-02-28</time></div>
-                    <a href="/2020/02/28/uvccamera/android_uvccamera_experience_and_bug/" class="title has-link-black-ter is-size-6 has-text-weight-normal">Android UVCCamera/libuvc遇到的卡死崩溃bug和解决方法</a>
-                    <p class="is-size-7 is-uppercase">
-                        <a class="has-link-grey -link" href="/categories/Android-UVCCamera-libuvc/">Android UVCCamera/libuvc</a>
-                    </p>
-                </div>
-            </div>
-        </article>
-        
-        <article class="media">
-            
             <a href="/2019/12/07/android_driver/camera_driver_config_experience/" class="media-left">
                 <p class="image is-64x64">
                     <img class="thumbnail" src="/gallery/11.jpeg" alt="Android Camera Driver平台(展讯、MTK)适配经验">
@@ -516,6 +459,44 @@ PublicKey rootCertPublicKey = rootCert.getPublicKey();</code></pre><p>2.使用�
         
         <article class="media">
             
+            <a href="/2019/08/28/java_certificate_verify/java_certificate_verify_and_decript/" class="media-left">
+                <p class="image is-64x64">
+                    <img class="thumbnail" src="/gallery/5.jpeg" alt="JAVA根证书验证用户证书是否可信和解密数据">
+                </p>
+            </a>
+            
+            <div class="media-content">
+                <div class="content">
+                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2019-08-27T16:00:00.000Z">2019-08-28</time></div>
+                    <a href="/2019/08/28/java_certificate_verify/java_certificate_verify_and_decript/" class="title has-link-black-ter is-size-6 has-text-weight-normal">JAVA根证书验证用户证书是否可信和解密数据</a>
+                    <p class="is-size-7 is-uppercase">
+                        <a class="has-link-grey -link" href="/categories/Java-Certificate/">Java Certificate</a>
+                    </p>
+                </div>
+            </div>
+        </article>
+        
+        <article class="media">
+            
+            <a href="/2019/08/27/uvccamera/android_uvccamera_experience_and_bug/" class="media-left">
+                <p class="image is-64x64">
+                    <img class="thumbnail" src="/gallery/3.jpeg" alt="Android UVCCamera/libuvc遇到的卡死崩溃bug和解决方法">
+                </p>
+            </a>
+            
+            <div class="media-content">
+                <div class="content">
+                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2019-08-26T16:00:00.000Z">2019-08-27</time></div>
+                    <a href="/2019/08/27/uvccamera/android_uvccamera_experience_and_bug/" class="title has-link-black-ter is-size-6 has-text-weight-normal">Android UVCCamera/libuvc遇到的卡死崩溃bug和解决方法</a>
+                    <p class="is-size-7 is-uppercase">
+                        <a class="has-link-grey -link" href="/categories/Android-UVCCamera-libuvc/">Android UVCCamera/libuvc</a>
+                    </p>
+                </div>
+            </div>
+        </article>
+        
+        <article class="media">
+            
             <a href="/2019/04/02/android_system/android_sprd_mtk_alarm_group_whitelist/" class="media-left">
                 <p class="image is-64x64">
                     <img class="thumbnail" src="/gallery/7.jpeg" alt="Android 展讯/MTK Alarm白名单设置">
@@ -545,17 +526,6 @@ PublicKey rootCertPublicKey = rootCert.getPublicKey();</code></pre><p>2.使用�
         <ul class="menu-list">
         
         <li>
-            <a class="level is-marginless" href="/archives/2020/02/">
-                <span class="level-start">
-                    <span class="level-item">February 2020</span>
-                </span>
-                <span class="level-end">
-                    <span class="level-item tag">2</span>
-                </span>
-            </a>
-        </li>
-        
-        <li>
             <a class="level is-marginless" href="/archives/2019/12/">
                 <span class="level-start">
                     <span class="level-item">December 2019</span>
@@ -573,6 +543,17 @@ PublicKey rootCertPublicKey = rootCert.getPublicKey();</code></pre><p>2.使用�
                 </span>
                 <span class="level-end">
                     <span class="level-item tag">1</span>
+                </span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2019/08/">
+                <span class="level-start">
+                    <span class="level-item">August 2019</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">2</span>
                 </span>
             </a>
         </li>
@@ -862,44 +843,6 @@ PublicKey rootCertPublicKey = rootCert.getPublicKey();</code></pre><p>2.使用�
         
         <article class="media">
             
-            <a href="/2020/02/28/java_certificate_verify/java_certificate_verify_and_decript/" class="media-left">
-                <p class="image is-64x64">
-                    <img class="thumbnail" src="/gallery/5.jpeg" alt="JAVA根证书验证用户证书是否可信和解密数据">
-                </p>
-            </a>
-            
-            <div class="media-content">
-                <div class="content">
-                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2020-02-27T16:00:00.000Z">2020-02-28</time></div>
-                    <a href="/2020/02/28/java_certificate_verify/java_certificate_verify_and_decript/" class="title has-link-black-ter is-size-6 has-text-weight-normal">JAVA根证书验证用户证书是否可信和解密数据</a>
-                    <p class="is-size-7 is-uppercase">
-                        <a class="has-link-grey -link" href="/categories/Java-Certificate/">Java Certificate</a>
-                    </p>
-                </div>
-            </div>
-        </article>
-        
-        <article class="media">
-            
-            <a href="/2020/02/28/uvccamera/android_uvccamera_experience_and_bug/" class="media-left">
-                <p class="image is-64x64">
-                    <img class="thumbnail" src="/gallery/3.jpeg" alt="Android UVCCamera/libuvc遇到的卡死崩溃bug和解决方法">
-                </p>
-            </a>
-            
-            <div class="media-content">
-                <div class="content">
-                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2020-02-27T16:00:00.000Z">2020-02-28</time></div>
-                    <a href="/2020/02/28/uvccamera/android_uvccamera_experience_and_bug/" class="title has-link-black-ter is-size-6 has-text-weight-normal">Android UVCCamera/libuvc遇到的卡死崩溃bug和解决方法</a>
-                    <p class="is-size-7 is-uppercase">
-                        <a class="has-link-grey -link" href="/categories/Android-UVCCamera-libuvc/">Android UVCCamera/libuvc</a>
-                    </p>
-                </div>
-            </div>
-        </article>
-        
-        <article class="media">
-            
             <a href="/2019/12/07/android_driver/camera_driver_config_experience/" class="media-left">
                 <p class="image is-64x64">
                     <img class="thumbnail" src="/gallery/11.jpeg" alt="Android Camera Driver平台(展讯、MTK)适配经验">
@@ -938,6 +881,44 @@ PublicKey rootCertPublicKey = rootCert.getPublicKey();</code></pre><p>2.使用�
         
         <article class="media">
             
+            <a href="/2019/08/28/java_certificate_verify/java_certificate_verify_and_decript/" class="media-left">
+                <p class="image is-64x64">
+                    <img class="thumbnail" src="/gallery/5.jpeg" alt="JAVA根证书验证用户证书是否可信和解密数据">
+                </p>
+            </a>
+            
+            <div class="media-content">
+                <div class="content">
+                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2019-08-27T16:00:00.000Z">2019-08-28</time></div>
+                    <a href="/2019/08/28/java_certificate_verify/java_certificate_verify_and_decript/" class="title has-link-black-ter is-size-6 has-text-weight-normal">JAVA根证书验证用户证书是否可信和解密数据</a>
+                    <p class="is-size-7 is-uppercase">
+                        <a class="has-link-grey -link" href="/categories/Java-Certificate/">Java Certificate</a>
+                    </p>
+                </div>
+            </div>
+        </article>
+        
+        <article class="media">
+            
+            <a href="/2019/08/27/uvccamera/android_uvccamera_experience_and_bug/" class="media-left">
+                <p class="image is-64x64">
+                    <img class="thumbnail" src="/gallery/3.jpeg" alt="Android UVCCamera/libuvc遇到的卡死崩溃bug和解决方法">
+                </p>
+            </a>
+            
+            <div class="media-content">
+                <div class="content">
+                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2019-08-26T16:00:00.000Z">2019-08-27</time></div>
+                    <a href="/2019/08/27/uvccamera/android_uvccamera_experience_and_bug/" class="title has-link-black-ter is-size-6 has-text-weight-normal">Android UVCCamera/libuvc遇到的卡死崩溃bug和解决方法</a>
+                    <p class="is-size-7 is-uppercase">
+                        <a class="has-link-grey -link" href="/categories/Android-UVCCamera-libuvc/">Android UVCCamera/libuvc</a>
+                    </p>
+                </div>
+            </div>
+        </article>
+        
+        <article class="media">
+            
             <a href="/2019/04/02/android_system/android_sprd_mtk_alarm_group_whitelist/" class="media-left">
                 <p class="image is-64x64">
                     <img class="thumbnail" src="/gallery/7.jpeg" alt="Android 展讯/MTK Alarm白名单设置">
@@ -967,17 +948,6 @@ PublicKey rootCertPublicKey = rootCert.getPublicKey();</code></pre><p>2.使用�
         <ul class="menu-list">
         
         <li>
-            <a class="level is-marginless" href="/archives/2020/02/">
-                <span class="level-start">
-                    <span class="level-item">February 2020</span>
-                </span>
-                <span class="level-end">
-                    <span class="level-item tag">2</span>
-                </span>
-            </a>
-        </li>
-        
-        <li>
             <a class="level is-marginless" href="/archives/2019/12/">
                 <span class="level-start">
                     <span class="level-item">December 2019</span>
@@ -995,6 +965,17 @@ PublicKey rootCertPublicKey = rootCert.getPublicKey();</code></pre><p>2.使用�
                 </span>
                 <span class="level-end">
                     <span class="level-item tag">1</span>
+                </span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2019/08/">
+                <span class="level-start">
+                    <span class="level-item">August 2019</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">2</span>
                 </span>
             </a>
         </li>

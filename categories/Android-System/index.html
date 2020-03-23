@@ -34,7 +34,7 @@
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.7.2/css/bulma.css">
 <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.4.1/css/all.css">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Ubuntu:400,600|Source+Code+Pro">
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@9.12.0/styles/atom-one-dark.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@9.12.0/styles/atom-one-light.css">
 
 
     
@@ -151,7 +151,7 @@
                 <span class="level-item has-text-grey">
                     
                     
-                    2 minutes read (About 355 words)
+                    2 minutes read (About 358 words)
                 </span>
                 
                 
@@ -169,7 +169,8 @@
 <hr>
 <h3 id="展讯平台"><a href="#展讯平台" class="headerlink" title="展讯平台"></a>展讯平台</h3><p>修改路径：vendor\sprd\platform\frameworks\native\data\etc\appPowerSaveConfig.xml</p>
 <p>在配置文件中添加应用包名</p>
-<pre><code>&lt;package name=&quot;com.my.app&quot; optimize=&quot;1&quot; alarm=&quot;2&quot; wakelock=&quot;2&quot; network=&quot;0&quot; autolaunch=&quot;2&quot; secondarylaunch=&quot;2&quot; lockscreencleanup=&quot;2&quot; consumertype=&quot;0&quot; /&gt;</code></pre><ul>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs xml"><span class="hljs-tag">&lt;<span class="hljs-name">package</span> <span class="hljs-attr">name</span>=<span class="hljs-string">"com.my.app"</span> <span class="hljs-attr">optimize</span>=<span class="hljs-string">"1"</span> <span class="hljs-attr">alarm</span>=<span class="hljs-string">"2"</span> <span class="hljs-attr">wakelock</span>=<span class="hljs-string">"2"</span> <span class="hljs-attr">network</span>=<span class="hljs-string">"0"</span> <span class="hljs-attr">autolaunch</span>=<span class="hljs-string">"2"</span> <span class="hljs-attr">secondarylaunch</span>=<span class="hljs-string">"2"</span> <span class="hljs-attr">lockscreencleanup</span>=<span class="hljs-string">"2"</span> <span class="hljs-attr">consumertype</span>=<span class="hljs-string">"0"</span> /&gt;</span><br></code></pre></td></tr></table></figure>
+<ul>
 <li>optimize 对应是否对该应用进行省电优化的总开关，0 为不优化，1 为优化</li>
 <li>alarm 对应待机唤醒优化，0 对应自动，1 对应优化，2 对应不优化</li>
 <li>wakelock 对应待机休眠优化，0 对应自动，1 对应优化，2 对应不优化</li>
@@ -177,11 +178,10 @@
 <hr>
 <h3 id="MTK平台"><a href="#MTK平台" class="headerlink" title="MTK平台"></a>MTK平台</h3><p>修改路径：frameworks/base/core/java/com/mediatek/amplus/config/alarmplus.config</p>
 <p>如果没有该文件就创建一个，在配置文件中添加应用包名</p>
-<pre><code>1com.my.app
-2com.my.app2</code></pre><p>另外将该文件拷贝到system/etc下</p>
-<pre><code>#alarmplus
-PRODUCT_COPY_FILES += \
-vendor/mediatek/proprietary/frameworks/opt/amplus/config/alarmplus.config:system/etc/alarmplus.config:mtk</code></pre>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs config">1com.my.app<br>2com.my.app2<br></code></pre></td></tr></table></figure>
+
+<p>另外将该文件拷贝到system/etc下</p>
+<figure class="highlight mk"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs mk"><span class="hljs-comment">#alarmplus</span><br>PRODUCT_COPY_FILES += \<br><span class="hljs-section">vendor/mediatek/proprietary/frameworks/opt/amplus/config/alarmplus.config:system/etc/alarmplus.config:mtk</span><br></code></pre></td></tr></table></figure>
         </div>
         
         
@@ -219,7 +219,7 @@ vendor/mediatek/proprietary/frameworks/opt/amplus/config/alarmplus.config:system
                 <span class="level-item has-text-grey">
                     
                     
-                    5 minutes read (About 792 words)
+                    5 minutes read (About 793 words)
                 </span>
                 
                 
@@ -242,23 +242,9 @@ vendor/mediatek/proprietary/frameworks/opt/amplus/config/alarmplus.config:system
 <h2 id="编译脚本的编写"><a href="#编译脚本的编写" class="headerlink" title="编译脚本的编写"></a>编译脚本的编写</h2><h3 id="文件目录"><a href="#文件目录" class="headerlink" title="文件目录"></a>文件目录</h3><p>├── arm-eabi-4.8  // c编译器<br>├── build_tools  //编译相关工具<br>├── config<br>│   ├── kernel_config  //kernel编译的config文件，需要从kernel/arch/arm/configs下找到对应机器类型的config文件，或者直接从整体源码编译后的out目录里提取<br>│   └──xxxxx-native.dtb   //kernel对应机器类型的dts文件，用来生成dt.img，需要从kernel/arch/arm/boot/dts目录里提取<br>├── flash<br>│   └── ramdisk.img   //整体源码编译后的ramdisk.img<br>├── kernel   //源码文件<br>├── packimage_scripts  //签名加密工具，不一定需要，看平台<br>├── build.sh  //编译脚本</p>
 <h3 id="编写编译脚本build-sh"><a href="#编写编译脚本build-sh" class="headerlink" title="编写编译脚本build.sh"></a>编写编译脚本build.sh</h3><p>编译的过程，简单来说，就是先根据config文件编译kernel文件夹，找到对应机器的dts文件用dtbTool生成dt.img,然后使用mkbootimg工具，合并kernel的编译结果Image、ramdis.img、dt.img生成boot.img。</p>
 <p>最后如果需要签名加密在用签名加密工具对boot.img进行签名加密。</p>
-<pre><code>make -j8 -l8 -C ./kernel clean
-rm -rf out
-mkdir out
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><code class="hljs sh">make -j8 -l8 -C ./kernel clean<br>rm -rf out<br>mkdir out<br><br>rm flash/dt.img flash/boot.img flash/boot-sign.img<br><br>cp ./config/kernel_config out/.config<br>make -j4 -C ./kernel  ARCH=arm CROSS_COMPILE=<span class="hljs-variable">$PWD</span>/arm-eabi-4.8/bin/arm-eabi- O=<span class="hljs-variable">$PWD</span>/out/<br><br>find out/arch/arm/boot/dts/ -name *.dtb ! -name xxxxx.dtb | xargs -I&#123;&#125; rm &#123;&#125;<br><br>./build_tools/dtbTool -o  flash/dt.img -s 2048 -p out/scripts/dtc/ out/arch/arm/boot/dts/<br><br>./build_tools/mkbootimg --kernel out/arch/arm/boot/Image --ramdisk flash/ramdisk.img --cmdline console=ttyS1,115200n8 --base 0x00000000 --pagesize 2048 --dt flash/dt.img --kernel_offset 0x00008000 --ramdisk_offset 0x05400000 --output flash/boot.img<br><br><span class="hljs-built_in">source</span> packimage_scripts/packimage.sh flash/boot.img<br></code></pre></td></tr></table></figure>
 
-rm flash/dt.img flash/boot.img flash/boot-sign.img
-
-cp ./config/kernel_config out/.config
-make -j4 -C ./kernel  ARCH=arm CROSS_COMPILE=$PWD/arm-eabi-4.8/bin/arm-eabi- O=$PWD/out/
-
-find out/arch/arm/boot/dts/ -name *.dtb ! -name xxxxx.dtb | xargs -I{} rm {}
-
-./build_tools/dtbTool -o  flash/dt.img -s 2048 -p out/scripts/dtc/ out/arch/arm/boot/dts/
-
-./build_tools/mkbootimg --kernel out/arch/arm/boot/Image --ramdisk flash/ramdisk.img --cmdline console=ttyS1,115200n8 --base 0x00000000 --pagesize 2048 --dt flash/dt.img --kernel_offset 0x00008000 --ramdisk_offset 0x05400000 --output flash/boot.img
-
-source packimage_scripts/packimage.sh flash/boot.img
-</code></pre><p>&nbsp;</p>
+<p>&nbsp;</p>
 <p>这里还得说下，因为平台的不同，编译过程的参数、指令、文件都可能有差异，最好是根据/build/core/Makefile里的过程走，也可以参照其他kernel编译的相关文章。</p>
 
         </div>
@@ -505,44 +491,6 @@ source packimage_scripts/packimage.sh flash/boot.img
         
         <article class="media">
             
-            <a href="/2020/02/28/java_certificate_verify/java_certificate_verify_and_decript/" class="media-left">
-                <p class="image is-64x64">
-                    <img class="thumbnail" src="/gallery/5.jpeg" alt="JAVA根证书验证用户证书是否可信和解密数据">
-                </p>
-            </a>
-            
-            <div class="media-content">
-                <div class="content">
-                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2020-02-27T16:00:00.000Z">2020-02-28</time></div>
-                    <a href="/2020/02/28/java_certificate_verify/java_certificate_verify_and_decript/" class="title has-link-black-ter is-size-6 has-text-weight-normal">JAVA根证书验证用户证书是否可信和解密数据</a>
-                    <p class="is-size-7 is-uppercase">
-                        <a class="has-link-grey -link" href="/categories/Java-Certificate/">Java Certificate</a>
-                    </p>
-                </div>
-            </div>
-        </article>
-        
-        <article class="media">
-            
-            <a href="/2020/02/28/uvccamera/android_uvccamera_experience_and_bug/" class="media-left">
-                <p class="image is-64x64">
-                    <img class="thumbnail" src="/gallery/3.jpeg" alt="Android UVCCamera/libuvc遇到的卡死崩溃bug和解决方法">
-                </p>
-            </a>
-            
-            <div class="media-content">
-                <div class="content">
-                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2020-02-27T16:00:00.000Z">2020-02-28</time></div>
-                    <a href="/2020/02/28/uvccamera/android_uvccamera_experience_and_bug/" class="title has-link-black-ter is-size-6 has-text-weight-normal">Android UVCCamera/libuvc遇到的卡死崩溃bug和解决方法</a>
-                    <p class="is-size-7 is-uppercase">
-                        <a class="has-link-grey -link" href="/categories/Android-UVCCamera-libuvc/">Android UVCCamera/libuvc</a>
-                    </p>
-                </div>
-            </div>
-        </article>
-        
-        <article class="media">
-            
             <a href="/2019/12/07/android_driver/camera_driver_config_experience/" class="media-left">
                 <p class="image is-64x64">
                     <img class="thumbnail" src="/gallery/11.jpeg" alt="Android Camera Driver平台(展讯、MTK)适配经验">
@@ -581,6 +529,44 @@ source packimage_scripts/packimage.sh flash/boot.img
         
         <article class="media">
             
+            <a href="/2019/08/28/java_certificate_verify/java_certificate_verify_and_decript/" class="media-left">
+                <p class="image is-64x64">
+                    <img class="thumbnail" src="/gallery/5.jpeg" alt="JAVA根证书验证用户证书是否可信和解密数据">
+                </p>
+            </a>
+            
+            <div class="media-content">
+                <div class="content">
+                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2019-08-27T16:00:00.000Z">2019-08-28</time></div>
+                    <a href="/2019/08/28/java_certificate_verify/java_certificate_verify_and_decript/" class="title has-link-black-ter is-size-6 has-text-weight-normal">JAVA根证书验证用户证书是否可信和解密数据</a>
+                    <p class="is-size-7 is-uppercase">
+                        <a class="has-link-grey -link" href="/categories/Java-Certificate/">Java Certificate</a>
+                    </p>
+                </div>
+            </div>
+        </article>
+        
+        <article class="media">
+            
+            <a href="/2019/08/27/uvccamera/android_uvccamera_experience_and_bug/" class="media-left">
+                <p class="image is-64x64">
+                    <img class="thumbnail" src="/gallery/3.jpeg" alt="Android UVCCamera/libuvc遇到的卡死崩溃bug和解决方法">
+                </p>
+            </a>
+            
+            <div class="media-content">
+                <div class="content">
+                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2019-08-26T16:00:00.000Z">2019-08-27</time></div>
+                    <a href="/2019/08/27/uvccamera/android_uvccamera_experience_and_bug/" class="title has-link-black-ter is-size-6 has-text-weight-normal">Android UVCCamera/libuvc遇到的卡死崩溃bug和解决方法</a>
+                    <p class="is-size-7 is-uppercase">
+                        <a class="has-link-grey -link" href="/categories/Android-UVCCamera-libuvc/">Android UVCCamera/libuvc</a>
+                    </p>
+                </div>
+            </div>
+        </article>
+        
+        <article class="media">
+            
             <a href="/2019/04/02/android_system/android_sprd_mtk_alarm_group_whitelist/" class="media-left">
                 <p class="image is-64x64">
                     <img class="thumbnail" src="/gallery/7.jpeg" alt="Android 展讯/MTK Alarm白名单设置">
@@ -610,17 +596,6 @@ source packimage_scripts/packimage.sh flash/boot.img
         <ul class="menu-list">
         
         <li>
-            <a class="level is-marginless" href="/archives/2020/02/">
-                <span class="level-start">
-                    <span class="level-item">February 2020</span>
-                </span>
-                <span class="level-end">
-                    <span class="level-item tag">2</span>
-                </span>
-            </a>
-        </li>
-        
-        <li>
             <a class="level is-marginless" href="/archives/2019/12/">
                 <span class="level-start">
                     <span class="level-item">December 2019</span>
@@ -638,6 +613,17 @@ source packimage_scripts/packimage.sh flash/boot.img
                 </span>
                 <span class="level-end">
                     <span class="level-item tag">1</span>
+                </span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2019/08/">
+                <span class="level-start">
+                    <span class="level-item">August 2019</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">2</span>
                 </span>
             </a>
         </li>
@@ -927,44 +913,6 @@ source packimage_scripts/packimage.sh flash/boot.img
         
         <article class="media">
             
-            <a href="/2020/02/28/java_certificate_verify/java_certificate_verify_and_decript/" class="media-left">
-                <p class="image is-64x64">
-                    <img class="thumbnail" src="/gallery/5.jpeg" alt="JAVA根证书验证用户证书是否可信和解密数据">
-                </p>
-            </a>
-            
-            <div class="media-content">
-                <div class="content">
-                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2020-02-27T16:00:00.000Z">2020-02-28</time></div>
-                    <a href="/2020/02/28/java_certificate_verify/java_certificate_verify_and_decript/" class="title has-link-black-ter is-size-6 has-text-weight-normal">JAVA根证书验证用户证书是否可信和解密数据</a>
-                    <p class="is-size-7 is-uppercase">
-                        <a class="has-link-grey -link" href="/categories/Java-Certificate/">Java Certificate</a>
-                    </p>
-                </div>
-            </div>
-        </article>
-        
-        <article class="media">
-            
-            <a href="/2020/02/28/uvccamera/android_uvccamera_experience_and_bug/" class="media-left">
-                <p class="image is-64x64">
-                    <img class="thumbnail" src="/gallery/3.jpeg" alt="Android UVCCamera/libuvc遇到的卡死崩溃bug和解决方法">
-                </p>
-            </a>
-            
-            <div class="media-content">
-                <div class="content">
-                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2020-02-27T16:00:00.000Z">2020-02-28</time></div>
-                    <a href="/2020/02/28/uvccamera/android_uvccamera_experience_and_bug/" class="title has-link-black-ter is-size-6 has-text-weight-normal">Android UVCCamera/libuvc遇到的卡死崩溃bug和解决方法</a>
-                    <p class="is-size-7 is-uppercase">
-                        <a class="has-link-grey -link" href="/categories/Android-UVCCamera-libuvc/">Android UVCCamera/libuvc</a>
-                    </p>
-                </div>
-            </div>
-        </article>
-        
-        <article class="media">
-            
             <a href="/2019/12/07/android_driver/camera_driver_config_experience/" class="media-left">
                 <p class="image is-64x64">
                     <img class="thumbnail" src="/gallery/11.jpeg" alt="Android Camera Driver平台(展讯、MTK)适配经验">
@@ -1003,6 +951,44 @@ source packimage_scripts/packimage.sh flash/boot.img
         
         <article class="media">
             
+            <a href="/2019/08/28/java_certificate_verify/java_certificate_verify_and_decript/" class="media-left">
+                <p class="image is-64x64">
+                    <img class="thumbnail" src="/gallery/5.jpeg" alt="JAVA根证书验证用户证书是否可信和解密数据">
+                </p>
+            </a>
+            
+            <div class="media-content">
+                <div class="content">
+                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2019-08-27T16:00:00.000Z">2019-08-28</time></div>
+                    <a href="/2019/08/28/java_certificate_verify/java_certificate_verify_and_decript/" class="title has-link-black-ter is-size-6 has-text-weight-normal">JAVA根证书验证用户证书是否可信和解密数据</a>
+                    <p class="is-size-7 is-uppercase">
+                        <a class="has-link-grey -link" href="/categories/Java-Certificate/">Java Certificate</a>
+                    </p>
+                </div>
+            </div>
+        </article>
+        
+        <article class="media">
+            
+            <a href="/2019/08/27/uvccamera/android_uvccamera_experience_and_bug/" class="media-left">
+                <p class="image is-64x64">
+                    <img class="thumbnail" src="/gallery/3.jpeg" alt="Android UVCCamera/libuvc遇到的卡死崩溃bug和解决方法">
+                </p>
+            </a>
+            
+            <div class="media-content">
+                <div class="content">
+                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2019-08-26T16:00:00.000Z">2019-08-27</time></div>
+                    <a href="/2019/08/27/uvccamera/android_uvccamera_experience_and_bug/" class="title has-link-black-ter is-size-6 has-text-weight-normal">Android UVCCamera/libuvc遇到的卡死崩溃bug和解决方法</a>
+                    <p class="is-size-7 is-uppercase">
+                        <a class="has-link-grey -link" href="/categories/Android-UVCCamera-libuvc/">Android UVCCamera/libuvc</a>
+                    </p>
+                </div>
+            </div>
+        </article>
+        
+        <article class="media">
+            
             <a href="/2019/04/02/android_system/android_sprd_mtk_alarm_group_whitelist/" class="media-left">
                 <p class="image is-64x64">
                     <img class="thumbnail" src="/gallery/7.jpeg" alt="Android 展讯/MTK Alarm白名单设置">
@@ -1032,17 +1018,6 @@ source packimage_scripts/packimage.sh flash/boot.img
         <ul class="menu-list">
         
         <li>
-            <a class="level is-marginless" href="/archives/2020/02/">
-                <span class="level-start">
-                    <span class="level-item">February 2020</span>
-                </span>
-                <span class="level-end">
-                    <span class="level-item tag">2</span>
-                </span>
-            </a>
-        </li>
-        
-        <li>
             <a class="level is-marginless" href="/archives/2019/12/">
                 <span class="level-start">
                     <span class="level-item">December 2019</span>
@@ -1060,6 +1035,17 @@ source packimage_scripts/packimage.sh flash/boot.img
                 </span>
                 <span class="level-end">
                     <span class="level-item tag">1</span>
+                </span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2019/08/">
+                <span class="level-start">
+                    <span class="level-item">August 2019</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">2</span>
                 </span>
             </a>
         </li>

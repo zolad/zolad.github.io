@@ -34,7 +34,7 @@
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.7.2/css/bulma.css">
 <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.4.1/css/all.css">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Ubuntu:400,600|Source+Code+Pro">
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@9.12.0/styles/atom-one-dark.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@9.12.0/styles/atom-one-light.css">
 
 
     
@@ -150,7 +150,7 @@
                 <span class="level-item has-text-grey">
                     
                     
-                    4 minutes read (About 546 words)
+                    4 minutes read (About 549 words)
                 </span>
                 
                 
@@ -169,90 +169,13 @@
 <hr>
 <h3 id="白名单电话接听拦截和短信拦截"><a href="#白名单电话接听拦截和短信拦截" class="headerlink" title="白名单电话接听拦截和短信拦截"></a>白名单电话接听拦截和短信拦截</h3><p>这里直接利用BlockedNumberContract框架里的关键判断类BlockChecker，BlockChecker的isBlocked函数会返回一个bool值，根据这个bool值，BlockedNumberContract框架会决定是否拦截对应号码的电话和短信。</p>
 <p>修改位置 frameworks\opt\telephony\src\java\com\android\internal\telephony\BlockChecker.java</p>
-<pre><code>   /**
-     * Returns {@code true} if {@code phoneNumber} is blocked.
-     * &lt;p&gt;
-     * This method catches all underlying exceptions to ensure that this method never throws any
-     * exception.
-     */
-    public static boolean isBlocked(Context context, String phoneNumber) {
-        boolean isBlocked = false;
-        long startTimeNano = System.nanoTime();
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><code class="hljs java">   <span class="hljs-comment">/**</span><br><span class="hljs-comment">     * Returns &#123;<span class="hljs-doctag">@code</span> true&#125; if &#123;<span class="hljs-doctag">@code</span> phoneNumber&#125; is blocked.</span><br><span class="hljs-comment">     * &lt;p&gt;</span><br><span class="hljs-comment">     * This method catches all underlying exceptions to ensure that this method never throws any</span><br><span class="hljs-comment">     * exception.</span><br><span class="hljs-comment">     */</span><br>    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">boolean</span> <span class="hljs-title">isBlocked</span><span class="hljs-params">(Context context, String phoneNumber)</span> </span>&#123;<br>        <span class="hljs-keyword">boolean</span> isBlocked = <span class="hljs-keyword">false</span>;<br>        <span class="hljs-keyword">long</span> startTimeNano = System.nanoTime();<br><br>        <span class="hljs-keyword">try</span> &#123;<br>+        	<span class="hljs-comment">//注释掉这部分原生判断，会读取BlockedNumberContract数据库里的名单作对比</span><br>+            <span class="hljs-comment">// if (BlockedNumberContract.SystemContract.shouldSystemBlockNumber(</span><br>+           <span class="hljs-comment">//         context, phoneNumber)) &#123;</span><br>+            <span class="hljs-comment">//     Rlog.d(TAG, phoneNumber + " is blocked.");</span><br>+            <span class="hljs-comment">//     isBlocked = true;</span><br>+            <span class="hljs-comment">// &#125;</span><br><br>+             <span class="hljs-comment">//新增一个shouldBlockNumber函数，这里可以根据自己需求，从什么数据库读取白名单来判断对应号码是否该拦截</span><br>+               <span class="hljs-keyword">if</span> (shouldBlockNumber( context, phoneNumber)) &#123;<br>+                Log.d(TAG, phoneNumber + <span class="hljs-string">" is blocked."</span>);<br>+                isBlocked = <span class="hljs-keyword">true</span>;<br>+            &#125;<br>            <br><br>        &#125; <span class="hljs-keyword">catch</span> (Exception e) &#123;<br>            Rlog.e(TAG, <span class="hljs-string">"Exception checking for blocked number: "</span> + e);<br>           <br>        &#125;<br><br>        <span class="hljs-keyword">int</span> durationMillis = (<span class="hljs-keyword">int</span>) ((System.nanoTime() - startTimeNano) / <span class="hljs-number">1000000</span>);<br>        <span class="hljs-keyword">if</span> (durationMillis &gt; <span class="hljs-number">500</span> || VDBG) &#123;<br>            Rlog.d(TAG, <span class="hljs-string">"Blocked number lookup took: "</span> + durationMillis + <span class="hljs-string">" ms."</span>);<br>        &#125;<br>        <span class="hljs-keyword">return</span> isBlocked;<br>    &#125;<br></code></pre></td></tr></table></figure>
 
-        try {
-+            //注释掉这部分原生判断，会读取BlockedNumberContract数据库里的名单作对比
-+            // if (BlockedNumberContract.SystemContract.shouldSystemBlockNumber(
-+           //         context, phoneNumber)) {
-+            //     Rlog.d(TAG, phoneNumber + &quot; is blocked.&quot;);
-+            //     isBlocked = true;
-+            // }
-
-+             //新增一个shouldBlockNumber函数，这里可以根据自己需求，从什么数据库读取白名单来判断对应号码是否该拦截
-+               if (shouldBlockNumber( context, phoneNumber)) {
-+                Log.d(TAG, phoneNumber + &quot; is blocked.&quot;);
-+                isBlocked = true;
-+            }
-
-
-        } catch (Exception e) {
-            Rlog.e(TAG, &quot;Exception checking for blocked number: &quot; + e);
-
-        }
-
-        int durationMillis = (int) ((System.nanoTime() - startTimeNano) / 1000000);
-        if (durationMillis &gt; 500 || VDBG) {
-            Rlog.d(TAG, &quot;Blocked number lookup took: &quot; + durationMillis + &quot; ms.&quot;);
-        }
-        return isBlocked;
-    }</code></pre><p>如果不想短信受控制，可以修改<br>frameworks/opt/telephony/src/java/com/android/internal/telephony/InboundSmsHandler.java</p>
-<pre><code>-            block = BlockChecker.isBlocked(mContext, tracker.getDisplayAddress());
-+            // not block 
-+           // block = BlockChecker.isBlocked(mContext, tracker.getDisplayAddress());
-
-
--                        block = BlockChecker.isBlocked(mContext,
--                                cursor.getString(PDU_SEQUENCE_PORT_PROJECTION_INDEX_MAPPING
--                                        .get(DISPLAY_ADDRESS_COLUMN)));
-
-+        // not block 
-+                    //    block = BlockChecker.isBlocked(mContext,
-+                    //            cursor.getString(PDU_SEQUENCE_PORT_PROJECTION_INDEX_MAPPING
-+                    //                    .get(DISPLAY_ADDRESS_COLUMN)));
-</code></pre><p>frameworks/opt/telephony/src/java/com/android/internal/telephony/WapPushOverSms.java</p>
-<pre><code>-                if (nInd.getFrom() != null
--                        &amp;&amp; BlockChecker.isBlocked(mContext, nInd.getFrom().getString())) {
-+
-+        // not block 
-+        // &amp;&amp; BlockChecker.isBlocked(mContext, nInd.getFrom().getString())
-+                if (nInd.getFrom() != null) {</code></pre><hr>
+<p>如果不想短信受控制，可以修改<br>frameworks/opt/telephony/src/java/com/android/internal/telephony/InboundSmsHandler.java</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><code class="hljs java">-            block = BlockChecker.isBlocked(mContext, tracker.getDisplayAddress());<br>+		    <span class="hljs-comment">// not block </span><br>+           <span class="hljs-comment">// block = BlockChecker.isBlocked(mContext, tracker.getDisplayAddress());</span><br><br><br>-                        block = BlockChecker.isBlocked(mContext,<br>-                                cursor.getString(PDU_SEQUENCE_PORT_PROJECTION_INDEX_MAPPING<br>-                                        .get(DISPLAY_ADDRESS_COLUMN)));<br><br>+		<span class="hljs-comment">// not block </span><br>+                    <span class="hljs-comment">//    block = BlockChecker.isBlocked(mContext,</span><br>+                    <span class="hljs-comment">//            cursor.getString(PDU_SEQUENCE_PORT_PROJECTION_INDEX_MAPPING</span><br>+                    <span class="hljs-comment">//                    .get(DISPLAY_ADDRESS_COLUMN)));</span><br><br>``` <br><br><br>frameworks/opt/telephony/src/java/com/android/internal/telephony/WapPushOverSms.java<br>``` <br>-                <span class="hljs-keyword">if</span> (nInd.getFrom() != <span class="hljs-keyword">null</span><br>-                        &amp;&amp; BlockChecker.isBlocked(mContext, nInd.getFrom().getString())) &#123;<br>+<br>+		<span class="hljs-comment">// not block </span><br>+		<span class="hljs-comment">// &amp;&amp; BlockChecker.isBlocked(mContext, nInd.getFrom().getString())</span><br>+                <span class="hljs-keyword">if</span> (nInd.getFrom() != <span class="hljs-keyword">null</span>) &#123;<br></code></pre></td></tr></table></figure>
+<hr>
 <h3 id="电话拨号拦截"><a href="#电话拨号拦截" class="headerlink" title="电话拨号拦截"></a>电话拨号拦截</h3><p>修改位置 proprietary/packages/services/Telecomm/src/com/android/server/telecom/CallIntentProcessor.java</p>
-<pre><code>    /**
-     * Processes CALL, CALL_PRIVILEGED, and CALL_EMERGENCY intents.
-     *
-     * @param intent Call intent containing data about the handle to call.
-     */
-    static void processOutgoingCallIntent(
-            Context context,
-            CallsManager callsManager,
-            Intent intent) {
-
-
-
-                    if (phoneNumber != null) {
-            if (!PhoneNumberUtils.isUriNumber(phoneNumber)) {  
-               phoneNumber = PhoneNumberUtils.convertAndStrip(phoneNumber);  
-            }  
-        }
-
-+        if (shouldBlockNumber(context,phoneNumber)) {
-+                
-+                Log.d(CallIntentProcessor.class,phoneNumber + &quot; is blocked.&quot;);
-+
-+                return;
-+        }
-
-
-    }</code></pre>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><code class="hljs java">    <span class="hljs-comment">/**</span><br><span class="hljs-comment">     * Processes CALL, CALL_PRIVILEGED, and CALL_EMERGENCY intents.</span><br><span class="hljs-comment">     *</span><br><span class="hljs-comment">     * <span class="hljs-doctag">@param</span> intent Call intent containing data about the handle to call.</span><br><span class="hljs-comment">     */</span><br>    <span class="hljs-function"><span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title">processOutgoingCallIntent</span><span class="hljs-params">(</span></span><br><span class="hljs-function"><span class="hljs-params">            Context context,</span></span><br><span class="hljs-function"><span class="hljs-params">            CallsManager callsManager,</span></span><br><span class="hljs-function"><span class="hljs-params">            Intent intent)</span> </span>&#123;<br><br><br><br>            	    <span class="hljs-keyword">if</span> (phoneNumber != <span class="hljs-keyword">null</span>) &#123;<br>            <span class="hljs-keyword">if</span> (!PhoneNumberUtils.isUriNumber(phoneNumber)) &#123;  <br>               phoneNumber = PhoneNumberUtils.convertAndStrip(phoneNumber);  <br>            &#125;  <br>        &#125;<br><br>+        <span class="hljs-keyword">if</span> (shouldBlockNumber(context,phoneNumber)) &#123;<br>+                <br>+                Log.d(CallIntentProcessor.class,phoneNumber + " is blocked.");<br>+<br>+                <span class="hljs-keyword">return</span>;<br>+        &#125;<br><br><br>    &#125;<br></code></pre></td></tr></table></figure>
         </div>
         
         
@@ -497,44 +420,6 @@
         
         <article class="media">
             
-            <a href="/2020/02/28/java_certificate_verify/java_certificate_verify_and_decript/" class="media-left">
-                <p class="image is-64x64">
-                    <img class="thumbnail" src="/gallery/5.jpeg" alt="JAVA根证书验证用户证书是否可信和解密数据">
-                </p>
-            </a>
-            
-            <div class="media-content">
-                <div class="content">
-                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2020-02-27T16:00:00.000Z">2020-02-28</time></div>
-                    <a href="/2020/02/28/java_certificate_verify/java_certificate_verify_and_decript/" class="title has-link-black-ter is-size-6 has-text-weight-normal">JAVA根证书验证用户证书是否可信和解密数据</a>
-                    <p class="is-size-7 is-uppercase">
-                        <a class="has-link-grey -link" href="/categories/Java-Certificate/">Java Certificate</a>
-                    </p>
-                </div>
-            </div>
-        </article>
-        
-        <article class="media">
-            
-            <a href="/2020/02/28/uvccamera/android_uvccamera_experience_and_bug/" class="media-left">
-                <p class="image is-64x64">
-                    <img class="thumbnail" src="/gallery/3.jpeg" alt="Android UVCCamera/libuvc遇到的卡死崩溃bug和解决方法">
-                </p>
-            </a>
-            
-            <div class="media-content">
-                <div class="content">
-                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2020-02-27T16:00:00.000Z">2020-02-28</time></div>
-                    <a href="/2020/02/28/uvccamera/android_uvccamera_experience_and_bug/" class="title has-link-black-ter is-size-6 has-text-weight-normal">Android UVCCamera/libuvc遇到的卡死崩溃bug和解决方法</a>
-                    <p class="is-size-7 is-uppercase">
-                        <a class="has-link-grey -link" href="/categories/Android-UVCCamera-libuvc/">Android UVCCamera/libuvc</a>
-                    </p>
-                </div>
-            </div>
-        </article>
-        
-        <article class="media">
-            
             <a href="/2019/12/07/android_driver/camera_driver_config_experience/" class="media-left">
                 <p class="image is-64x64">
                     <img class="thumbnail" src="/gallery/11.jpeg" alt="Android Camera Driver平台(展讯、MTK)适配经验">
@@ -573,6 +458,44 @@
         
         <article class="media">
             
+            <a href="/2019/08/28/java_certificate_verify/java_certificate_verify_and_decript/" class="media-left">
+                <p class="image is-64x64">
+                    <img class="thumbnail" src="/gallery/5.jpeg" alt="JAVA根证书验证用户证书是否可信和解密数据">
+                </p>
+            </a>
+            
+            <div class="media-content">
+                <div class="content">
+                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2019-08-27T16:00:00.000Z">2019-08-28</time></div>
+                    <a href="/2019/08/28/java_certificate_verify/java_certificate_verify_and_decript/" class="title has-link-black-ter is-size-6 has-text-weight-normal">JAVA根证书验证用户证书是否可信和解密数据</a>
+                    <p class="is-size-7 is-uppercase">
+                        <a class="has-link-grey -link" href="/categories/Java-Certificate/">Java Certificate</a>
+                    </p>
+                </div>
+            </div>
+        </article>
+        
+        <article class="media">
+            
+            <a href="/2019/08/27/uvccamera/android_uvccamera_experience_and_bug/" class="media-left">
+                <p class="image is-64x64">
+                    <img class="thumbnail" src="/gallery/3.jpeg" alt="Android UVCCamera/libuvc遇到的卡死崩溃bug和解决方法">
+                </p>
+            </a>
+            
+            <div class="media-content">
+                <div class="content">
+                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2019-08-26T16:00:00.000Z">2019-08-27</time></div>
+                    <a href="/2019/08/27/uvccamera/android_uvccamera_experience_and_bug/" class="title has-link-black-ter is-size-6 has-text-weight-normal">Android UVCCamera/libuvc遇到的卡死崩溃bug和解决方法</a>
+                    <p class="is-size-7 is-uppercase">
+                        <a class="has-link-grey -link" href="/categories/Android-UVCCamera-libuvc/">Android UVCCamera/libuvc</a>
+                    </p>
+                </div>
+            </div>
+        </article>
+        
+        <article class="media">
+            
             <a href="/2019/04/02/android_system/android_sprd_mtk_alarm_group_whitelist/" class="media-left">
                 <p class="image is-64x64">
                     <img class="thumbnail" src="/gallery/7.jpeg" alt="Android 展讯/MTK Alarm白名单设置">
@@ -602,17 +525,6 @@
         <ul class="menu-list">
         
         <li>
-            <a class="level is-marginless" href="/archives/2020/02/">
-                <span class="level-start">
-                    <span class="level-item">February 2020</span>
-                </span>
-                <span class="level-end">
-                    <span class="level-item tag">2</span>
-                </span>
-            </a>
-        </li>
-        
-        <li>
             <a class="level is-marginless" href="/archives/2019/12/">
                 <span class="level-start">
                     <span class="level-item">December 2019</span>
@@ -630,6 +542,17 @@
                 </span>
                 <span class="level-end">
                     <span class="level-item tag">1</span>
+                </span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2019/08/">
+                <span class="level-start">
+                    <span class="level-item">August 2019</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">2</span>
                 </span>
             </a>
         </li>
@@ -919,44 +842,6 @@
         
         <article class="media">
             
-            <a href="/2020/02/28/java_certificate_verify/java_certificate_verify_and_decript/" class="media-left">
-                <p class="image is-64x64">
-                    <img class="thumbnail" src="/gallery/5.jpeg" alt="JAVA根证书验证用户证书是否可信和解密数据">
-                </p>
-            </a>
-            
-            <div class="media-content">
-                <div class="content">
-                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2020-02-27T16:00:00.000Z">2020-02-28</time></div>
-                    <a href="/2020/02/28/java_certificate_verify/java_certificate_verify_and_decript/" class="title has-link-black-ter is-size-6 has-text-weight-normal">JAVA根证书验证用户证书是否可信和解密数据</a>
-                    <p class="is-size-7 is-uppercase">
-                        <a class="has-link-grey -link" href="/categories/Java-Certificate/">Java Certificate</a>
-                    </p>
-                </div>
-            </div>
-        </article>
-        
-        <article class="media">
-            
-            <a href="/2020/02/28/uvccamera/android_uvccamera_experience_and_bug/" class="media-left">
-                <p class="image is-64x64">
-                    <img class="thumbnail" src="/gallery/3.jpeg" alt="Android UVCCamera/libuvc遇到的卡死崩溃bug和解决方法">
-                </p>
-            </a>
-            
-            <div class="media-content">
-                <div class="content">
-                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2020-02-27T16:00:00.000Z">2020-02-28</time></div>
-                    <a href="/2020/02/28/uvccamera/android_uvccamera_experience_and_bug/" class="title has-link-black-ter is-size-6 has-text-weight-normal">Android UVCCamera/libuvc遇到的卡死崩溃bug和解决方法</a>
-                    <p class="is-size-7 is-uppercase">
-                        <a class="has-link-grey -link" href="/categories/Android-UVCCamera-libuvc/">Android UVCCamera/libuvc</a>
-                    </p>
-                </div>
-            </div>
-        </article>
-        
-        <article class="media">
-            
             <a href="/2019/12/07/android_driver/camera_driver_config_experience/" class="media-left">
                 <p class="image is-64x64">
                     <img class="thumbnail" src="/gallery/11.jpeg" alt="Android Camera Driver平台(展讯、MTK)适配经验">
@@ -995,6 +880,44 @@
         
         <article class="media">
             
+            <a href="/2019/08/28/java_certificate_verify/java_certificate_verify_and_decript/" class="media-left">
+                <p class="image is-64x64">
+                    <img class="thumbnail" src="/gallery/5.jpeg" alt="JAVA根证书验证用户证书是否可信和解密数据">
+                </p>
+            </a>
+            
+            <div class="media-content">
+                <div class="content">
+                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2019-08-27T16:00:00.000Z">2019-08-28</time></div>
+                    <a href="/2019/08/28/java_certificate_verify/java_certificate_verify_and_decript/" class="title has-link-black-ter is-size-6 has-text-weight-normal">JAVA根证书验证用户证书是否可信和解密数据</a>
+                    <p class="is-size-7 is-uppercase">
+                        <a class="has-link-grey -link" href="/categories/Java-Certificate/">Java Certificate</a>
+                    </p>
+                </div>
+            </div>
+        </article>
+        
+        <article class="media">
+            
+            <a href="/2019/08/27/uvccamera/android_uvccamera_experience_and_bug/" class="media-left">
+                <p class="image is-64x64">
+                    <img class="thumbnail" src="/gallery/3.jpeg" alt="Android UVCCamera/libuvc遇到的卡死崩溃bug和解决方法">
+                </p>
+            </a>
+            
+            <div class="media-content">
+                <div class="content">
+                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2019-08-26T16:00:00.000Z">2019-08-27</time></div>
+                    <a href="/2019/08/27/uvccamera/android_uvccamera_experience_and_bug/" class="title has-link-black-ter is-size-6 has-text-weight-normal">Android UVCCamera/libuvc遇到的卡死崩溃bug和解决方法</a>
+                    <p class="is-size-7 is-uppercase">
+                        <a class="has-link-grey -link" href="/categories/Android-UVCCamera-libuvc/">Android UVCCamera/libuvc</a>
+                    </p>
+                </div>
+            </div>
+        </article>
+        
+        <article class="media">
+            
             <a href="/2019/04/02/android_system/android_sprd_mtk_alarm_group_whitelist/" class="media-left">
                 <p class="image is-64x64">
                     <img class="thumbnail" src="/gallery/7.jpeg" alt="Android 展讯/MTK Alarm白名单设置">
@@ -1024,17 +947,6 @@
         <ul class="menu-list">
         
         <li>
-            <a class="level is-marginless" href="/archives/2020/02/">
-                <span class="level-start">
-                    <span class="level-item">February 2020</span>
-                </span>
-                <span class="level-end">
-                    <span class="level-item tag">2</span>
-                </span>
-            </a>
-        </li>
-        
-        <li>
             <a class="level is-marginless" href="/archives/2019/12/">
                 <span class="level-start">
                     <span class="level-item">December 2019</span>
@@ -1052,6 +964,17 @@
                 </span>
                 <span class="level-end">
                     <span class="level-item tag">1</span>
+                </span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2019/08/">
+                <span class="level-start">
+                    <span class="level-item">August 2019</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">2</span>
                 </span>
             </a>
         </li>

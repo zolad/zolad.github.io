@@ -7,25 +7,25 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
 
-<title>JAVA根证书验证用户证书是否可信和解密数据 - Zola&#39;s Blog</title>
+<title>Android UVCCamera/libuvc遇到的卡死崩溃bug和解决方法 - Zola&#39;s Blog</title>
 
 
-    <meta name="description" content="一般用户证书和加密数据是一起发放到客户端的，但是使用用户证书的公钥解密数据前需要验证用户证书是否可信，即从源头来说是否由根证书签发的，按证书链去认证。使用根证书验证用户证书可信并解密的Java实现如下： 1.读取根证书文件初始化根证书对象，并获取根证书中的公钥 CertificateFactory certificateFactory &#x3D; CertificateFactory.getInstanc">
+    <meta name="description" content="分享下debug uvccamera&#x2F;libuvc这些so库遇到的卡死崩溃问题和思路  1.UVCCamera执行stopPreview或release时阻塞卡死在多次重复打开关闭uvc摄像头的时候，上层调用stopPreview&#x2F;release会概率性卡死，经过调试一步步定位调用函数和阻塞住的位置 android java层调用略，下面直接从so库的代码开始； –&gt;UVCCamera&#x2F;UV">
 <meta property="og:type" content="article">
-<meta property="og:title" content="JAVA根证书验证用户证书是否可信和解密数据">
-<meta property="og:url" content="http://yoursite.com/2020/02/28/java_certificate_verify/java_certificate_verify_and_decript/index.html">
+<meta property="og:title" content="Android UVCCamera&#x2F;libuvc遇到的卡死崩溃bug和解决方法">
+<meta property="og:url" content="http://yoursite.com/2019/08/27/uvccamera/android_uvccamera_experience_and_bug/index.html">
 <meta property="og:site_name" content="Zola&#39;s Blog">
-<meta property="og:description" content="一般用户证书和加密数据是一起发放到客户端的，但是使用用户证书的公钥解密数据前需要验证用户证书是否可信，即从源头来说是否由根证书签发的，按证书链去认证。使用根证书验证用户证书可信并解密的Java实现如下： 1.读取根证书文件初始化根证书对象，并获取根证书中的公钥 CertificateFactory certificateFactory &#x3D; CertificateFactory.getInstanc">
+<meta property="og:description" content="分享下debug uvccamera&#x2F;libuvc这些so库遇到的卡死崩溃问题和思路  1.UVCCamera执行stopPreview或release时阻塞卡死在多次重复打开关闭uvc摄像头的时候，上层调用stopPreview&#x2F;release会概率性卡死，经过调试一步步定位调用函数和阻塞住的位置 android java层调用略，下面直接从so库的代码开始； –&gt;UVCCamera&#x2F;UV">
 <meta property="og:locale" content="en_US">
-<meta property="og:image" content="http://yoursite.com/gallery/5.jpeg">
-<meta property="article:published_time" content="2020-02-27T16:00:00.000Z">
-<meta property="article:modified_time" content="2020-03-22T06:57:03.505Z">
+<meta property="og:image" content="http://yoursite.com/gallery/3.jpeg">
+<meta property="article:published_time" content="2019-08-26T16:00:00.000Z">
+<meta property="article:modified_time" content="2020-03-23T13:40:42.871Z">
 <meta property="article:author" content="Zola">
-<meta property="article:tag" content="Java">
-<meta property="article:tag" content="Certificate Verify">
-<meta property="article:tag" content="Decript">
+<meta property="article:tag" content="Android">
+<meta property="article:tag" content="UVCCamera">
+<meta property="article:tag" content="libuvc">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="http://yoursite.com/gallery/5.jpeg">
+<meta name="twitter:image" content="http://yoursite.com/gallery/3.jpeg">
 
 
 
@@ -39,7 +39,7 @@
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.7.2/css/bulma.css">
 <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.4.1/css/all.css">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Ubuntu:400,600|Source+Code+Pro">
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@9.12.0/styles/atom-one-dark.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@9.12.0/styles/atom-one-light.css">
 
 
     
@@ -83,7 +83,7 @@
         <div class="navbar-brand is-flex-center">
             <a class="navbar-item navbar-logo" href="/">
             
-                <img src="/images/gen.svg" alt="JAVA根证书验证用户证书是否可信和解密数据" height="28">
+                <img src="/images/gen.svg" alt="Android UVCCamera/libuvc遇到的卡死崩溃bug和解决方法" height="28">
             
             </a>
         </div>
@@ -126,7 +126,7 @@
     
     <div class="card-image">
         <span  class="image is-7by1">
-            <img class="thumbnail" src="/gallery/5.jpeg" alt="JAVA根证书验证用户证书是否可信和解密数据">
+            <img class="thumbnail" src="/gallery/3.jpeg" alt="Android UVCCamera/libuvc遇到的卡死崩溃bug和解决方法">
         </span>
     </div>
     
@@ -134,17 +134,17 @@
         
         <div class="level article-meta is-size-7 is-uppercase is-mobile is-overflow-x-auto">
             <div class="level-left">
-                <time class="level-item has-text-grey" datetime="2020-02-27T16:00:00.000Z">2020-02-28</time>
+                <time class="level-item has-text-grey" datetime="2019-08-26T16:00:00.000Z">2019-08-27</time>
                 
                 <div class="level-item">
-                <a class="has-link-grey -link" href="/categories/Java-Certificate/">Java Certificate</a>
+                <a class="has-link-grey -link" href="/categories/Android-UVCCamera-libuvc/">Android UVCCamera/libuvc</a>
                 </div>
                 
                 
                 <span class="level-item has-text-grey">
                     
                     
-                    2 minutes read (About 353 words)
+                    6 minutes read (About 869 words)
                 </span>
                 
                 
@@ -153,49 +153,38 @@
         
         <h1 class="title is-size-3 is-size-4-mobile has-text-weight-normal">
             
-                JAVA根证书验证用户证书是否可信和解密数据
+                Android UVCCamera/libuvc遇到的卡死崩溃bug和解决方法
             
         </h1>
         <div class="content">
-            <p>一般用户证书和加密数据是一起发放到客户端的，但是使用用户证书的公钥解密数据前需要验证用户证书是否可信，即从源头来说是否由根证书签发的，按证书链去认证。使用根证书验证用户证书可信并解密的Java实现如下：</p>
-<p>1.读取根证书文件初始化根证书对象，并获取根证书中的公钥</p>
-<pre><code>CertificateFactory certificateFactory = CertificateFactory.getInstance(&quot;X.509&quot;);
-Certificate rootCert = certificateFactory.generateCertificate(new FileInputStream(rootCertPath));
-PublicKey rootCertPublicKey = rootCert.getPublicKey();</code></pre><p>2.使用用户证书byte数组数据初始化用户证书对象</p>
-<pre><code>X509Certificate userCert = (X509Certificate)certificateFactory.generateCertificate(
-                new ByteArrayInputStream(userCertByteArray));</code></pre><p>3.使用用户证书验证根证书的公钥，如果验证通过（即不抛出Exception）说明这个用户证书是这个根证书签发的,同时检查用户证书是否有效</p>
-<pre><code>try {
-       userCert.verify(rootCertPublicKey);
-       userCert.checkValidity();
-       Log.d(TAG,&quot;------------- 工作证书验证成功 -----------&quot;);
-}catch (Exception e) {
-       Log.d(TAG,&quot;------------- 工作证书验证失败 -----------&quot;);
+            <p>分享下debug uvccamera/libuvc这些so库遇到的卡死崩溃问题和思路</p>
+<hr>
+<h3 id="1-UVCCamera执行stopPreview或release时阻塞卡死"><a href="#1-UVCCamera执行stopPreview或release时阻塞卡死" class="headerlink" title="1.UVCCamera执行stopPreview或release时阻塞卡死"></a>1.UVCCamera执行stopPreview或release时阻塞卡死</h3><p>在多次重复打开关闭uvc摄像头的时候，上层调用stopPreview/release会概率性卡死，经过调试一步步定位调用函数和阻塞住的位置</p>
+<p>android java层调用略，下面直接从so库的代码开始；<br> –&gt;<br>UVCCamera/UVCCamera.cpp-stopPreview()<br> –&gt;<br>UVCCamera/UVCPreView.cpp-stopPreview()<br>这里设置mIsRunning = false;停止预览帧处理；<br>调试发现，在下面这一句代码阻塞住没有往下走了：<br>pthread_join(preview_thread, NULL) != EXIT_SUCCESS;<br>pthread_join会阻塞到preview_thread预览线程执行结束为止，所以预览处理没有正常结束；<br>–&gt;<br>UVCCamera/UVCPreview.cpp-do_preview()<br>结束预览时会停止libuvc的流处理uvc_stop_streaming(mDeviceHandle);，所以流处理没有正常结束；<br>–&gt;<br>libuvc/stream.c-uvc_stop_streaming()<br>–&gt;<br>libuvc/stream.c-uvc_stream_close()<br>–&gt;<br>libuvc/stream.c-uvc_stream_stop()<br>这一步停止流的传输，并将所有流转换器都释放掉：<br>strmh-&gt;running = 0;并遍历调用libusb_cancel_transfer(strmh-&gt;transfers[i]);<br>至于关键的阻塞代码如下：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-comment">/* Wait for transfers to complete/cancel */</span><br>	<span class="hljs-keyword">for</span> (; <span class="hljs-number">1</span> ;) &#123;<br>		<span class="hljs-keyword">for</span> (i = <span class="hljs-number">0</span>; i &lt; LIBUVC_NUM_TRANSFER_BUFS; i++) &#123;<br>			<span class="hljs-keyword">if</span> (strmh-&gt;transfers[i] != <span class="hljs-literal">NULL</span>)<br>				<span class="hljs-keyword">break</span>;<br>		&#125;<br>		<span class="hljs-keyword">if</span> (i == LIBUVC_NUM_TRANSFER_BUFS)<br>			<span class="hljs-keyword">break</span>;<br>		pthread_cond_wait(&amp;strmh-&gt;cb_cond, &amp;strmh-&gt;cb_mutex);<br>	&#125;<br></code></pre></td></tr></table></figure>
+<p>这里会一直循环等待所有流转换器都释放置空完成，而问题就在于偏偏有个别流转换器就是无法正常释放。</p>
+<p>为什么没有正常释放完成，<br>是因为libusb_cancel_transfer失败返回LIBUSB_ERROR_NOT_FOUND的状态时，<br>转换器持有无效的buffer和指针，导致上面的循环代码一直不往下走。</p>
+<p>一般释放正常时的Log如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs log">[4632*stream.c:989:_uvc_stream_callback]:not retrying transfer, status &#x3D; 3<br>[4632*stream.c:629:_uvc_delete_transfer]:begin<br>[4632*stream.c:642:_uvc_delete_transfer]:Freeing transfer 5 (0x72fdbe5960)<br>[4632*stream.c:656:_uvc_delete_transfer]:end<br></code></pre></td></tr></table></figure>
+<p>但函数阻塞住时，我发现并没有看到index为6的transfer执行delete的Log，于是我怀疑是否跟transfer的数量有关。</p>
+<p>这时查看源码里有一个transfer buffers的数量定义如下：</p>
+<figure class="highlight h"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs h">libuvc/libuvc_internal.h<br><span class="hljs-comment">/*</span><br><span class="hljs-comment">  set a high number of transfer buffers. This uses a lot of ram, but</span><br><span class="hljs-comment">  avoids problems with scheduling delays on slow boards causing missed</span><br><span class="hljs-comment">  transfers. A better approach may be to make the transfer thread FIFO</span><br><span class="hljs-comment">  scheduled (if we have root).</span><br><span class="hljs-comment">  We could/should change this to allow reduce it to, say, 5 by default</span><br><span class="hljs-comment">  and then allow the user to change the number of buffers as required.</span><br><span class="hljs-comment"> */</span><br><span class="hljs-meta">#<span class="hljs-meta-keyword">define</span> LIBUVC_NUM_TRANSFER_BUFS 10</span><br></code></pre></td></tr></table></figure>
+<p>如果设置得太高，不仅会提高内存的占用，在处理速度慢的板子上也会有transfer浪费掉。<br>这里我尝试降低数量值为5，再次调试开关100次，stopPreview卡死的问题不再复现。</p>
+<h3 id="2-JNI-DETECTED-ERROR-IN-APPLICATION-jmethodID-was-NULL-空指针"><a href="#2-JNI-DETECTED-ERROR-IN-APPLICATION-jmethodID-was-NULL-空指针" class="headerlink" title="2.JNI DETECTED ERROR IN APPLICATION: jmethodID was NULL  空指针"></a>2.JNI DETECTED ERROR IN APPLICATION: jmethodID was NULL  空指针</h3><p>由于java上层设置setFrameCallback(null, 0); iframecallback_fields.onFrame在另外一个线程被置为NULL<br>而以下这段代码没有判空，导致的空指针：<br><font color='red'>env-&gt;CallVoidMethod(mFrameCallbackObj, iframecallback_fields.onFrame, buf);</font></p>
+<p>解决方法为增加空指针判断如下</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-function"><span class="hljs-keyword">void</span> <span class="hljs-title">UVCPreview::do_capture_callback</span><span class="hljs-params">(JNIEnv *env, <span class="hljs-keyword">uvc_frame_t</span> *frame)</span></span>&#123;<br>...<br>+<span class="hljs-keyword">if</span> (iframecallback_fields.onFrame != <span class="hljs-literal">NULL</span>) &#123;<br>  env-&gt;CallVoidMethod(mFrameCallbackObj, iframecallback_fields.onFrame, buf);<br>+&#125;<br>...<br>&#125;<br></code></pre></td></tr></table></figure>
 
-}</code></pre><p>4.最后使用用户证书的公钥进行解密</p>
-<pre><code>try {
-    Cipher cipher = Cipher.getInstance(&quot;RSA/ECB/NoPadding&quot;);
-    cipher.init(Cipher.DECRYPT_MODE, userCert);
-    byte[] output = cipher.doFinal(cipherData);
-    return output;
-} catch (NoSuchAlgorithmException e) {
-    throw new Exception(&quot;无此解密算法&quot;);
-} catch (NoSuchPaddingException e) {
-    e.printStackTrace();
-    return null;
-} catch (InvalidKeyException e) {
-    throw new Exception(&quot;解密公钥非法,请检查&quot;);
-} catch (IllegalBlockSizeException e) {
-    throw new Exception(&quot;密文长度非法&quot;);
-} catch (BadPaddingException e) {
-    throw new Exception(&quot;密文数据已损坏&quot;);
-}</code></pre>
+
+<h3 id="3-UVCCamera-could-not-open-camera-err-99"><a href="#3-UVCCamera-could-not-open-camera-err-99" class="headerlink" title="3.UVCCamera could not open camera:err=-99"></a>3.UVCCamera could not open camera:err=-99</h3><p>要检查打开的usb设备是否已经被其他进程打开了/其他进程持有没释放/打开的是不是UVC摄像头，是否打开了错误的其他usb设备</p>
+<h3 id="4-其他一些别人发现的bug和修复方法"><a href="#4-其他一些别人发现的bug和修复方法" class="headerlink" title="4.其他一些别人发现的bug和修复方法"></a>4.其他一些别人发现的bug和修复方法</h3><p><a href="https://github.com/saki4510t/UVCCamera/pull/520">https://github.com/saki4510t/UVCCamera/pull/520</a><br><a href="https://github.com/saki4510t/UVCCamera/pull/328">https://github.com/saki4510t/UVCCamera/pull/328</a></p>
+
         </div>
         
         <div class="level is-size-7 is-uppercase">
             <div class="level-start">
                 <div class="level-item">
                     <span class="is-size-6 has-text-grey has-mr-7">#</span>
-                    <a class="has-link-grey -link" href="/tags/Certificate-Verify/" rel="tag">Certificate Verify</a>, <a class="has-link-grey -link" href="/tags/Decript/" rel="tag">Decript</a>, <a class="has-link-grey -link" href="/tags/Java/" rel="tag">Java</a>
+                    <a class="has-link-grey -link" href="/tags/Android/" rel="tag">Android</a>, <a class="has-link-grey -link" href="/tags/UVCCamera/" rel="tag">UVCCamera</a>, <a class="has-link-grey -link" href="/tags/libuvc/" rel="tag">libuvc</a>
                 </div>
             </div>
         </div>
@@ -212,10 +201,17 @@ PublicKey rootCertPublicKey = rootCert.getPublicKey();</code></pre><p>2.使用�
 <div class="card card-transparent">
     <div class="level post-navigation is-flex-wrap is-mobile">
         
+        <div class="level-start">
+            <a class="level level-item has-link-grey  article-nav-prev" href="/2019/08/28/java_certificate_verify/java_certificate_verify_and_decript/">
+                <i class="level-item fas fa-chevron-left"></i>
+                <span class="level-item">JAVA根证书验证用户证书是否可信和解密数据</span>
+            </a>
+        </div>
+        
         
         <div class="level-end">
-            <a class="level level-item has-link-grey  article-nav-next" href="/2020/02/28/uvccamera/android_uvccamera_experience_and_bug/">
-                <span class="level-item">Android UVCCamera/libuvc遇到的卡死崩溃bug和解决方法</span>
+            <a class="level level-item has-link-grey  article-nav-next" href="/2019/04/02/android_system/android_sprd_mtk_alarm_group_whitelist/">
+                <span class="level-item">Android 展讯/MTK Alarm白名单设置</span>
                 <i class="level-item fas fa-chevron-right"></i>
             </a>
         </div>
@@ -454,44 +450,6 @@ PublicKey rootCertPublicKey = rootCert.getPublicKey();</code></pre><p>2.使用�
         
         <article class="media">
             
-            <a href="/2020/02/28/java_certificate_verify/java_certificate_verify_and_decript/" class="media-left">
-                <p class="image is-64x64">
-                    <img class="thumbnail" src="/gallery/5.jpeg" alt="JAVA根证书验证用户证书是否可信和解密数据">
-                </p>
-            </a>
-            
-            <div class="media-content">
-                <div class="content">
-                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2020-02-27T16:00:00.000Z">2020-02-28</time></div>
-                    <a href="/2020/02/28/java_certificate_verify/java_certificate_verify_and_decript/" class="title has-link-black-ter is-size-6 has-text-weight-normal">JAVA根证书验证用户证书是否可信和解密数据</a>
-                    <p class="is-size-7 is-uppercase">
-                        <a class="has-link-grey -link" href="/categories/Java-Certificate/">Java Certificate</a>
-                    </p>
-                </div>
-            </div>
-        </article>
-        
-        <article class="media">
-            
-            <a href="/2020/02/28/uvccamera/android_uvccamera_experience_and_bug/" class="media-left">
-                <p class="image is-64x64">
-                    <img class="thumbnail" src="/gallery/3.jpeg" alt="Android UVCCamera/libuvc遇到的卡死崩溃bug和解决方法">
-                </p>
-            </a>
-            
-            <div class="media-content">
-                <div class="content">
-                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2020-02-27T16:00:00.000Z">2020-02-28</time></div>
-                    <a href="/2020/02/28/uvccamera/android_uvccamera_experience_and_bug/" class="title has-link-black-ter is-size-6 has-text-weight-normal">Android UVCCamera/libuvc遇到的卡死崩溃bug和解决方法</a>
-                    <p class="is-size-7 is-uppercase">
-                        <a class="has-link-grey -link" href="/categories/Android-UVCCamera-libuvc/">Android UVCCamera/libuvc</a>
-                    </p>
-                </div>
-            </div>
-        </article>
-        
-        <article class="media">
-            
             <a href="/2019/12/07/android_driver/camera_driver_config_experience/" class="media-left">
                 <p class="image is-64x64">
                     <img class="thumbnail" src="/gallery/11.jpeg" alt="Android Camera Driver平台(展讯、MTK)适配经验">
@@ -530,6 +488,44 @@ PublicKey rootCertPublicKey = rootCert.getPublicKey();</code></pre><p>2.使用�
         
         <article class="media">
             
+            <a href="/2019/08/28/java_certificate_verify/java_certificate_verify_and_decript/" class="media-left">
+                <p class="image is-64x64">
+                    <img class="thumbnail" src="/gallery/5.jpeg" alt="JAVA根证书验证用户证书是否可信和解密数据">
+                </p>
+            </a>
+            
+            <div class="media-content">
+                <div class="content">
+                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2019-08-27T16:00:00.000Z">2019-08-28</time></div>
+                    <a href="/2019/08/28/java_certificate_verify/java_certificate_verify_and_decript/" class="title has-link-black-ter is-size-6 has-text-weight-normal">JAVA根证书验证用户证书是否可信和解密数据</a>
+                    <p class="is-size-7 is-uppercase">
+                        <a class="has-link-grey -link" href="/categories/Java-Certificate/">Java Certificate</a>
+                    </p>
+                </div>
+            </div>
+        </article>
+        
+        <article class="media">
+            
+            <a href="/2019/08/27/uvccamera/android_uvccamera_experience_and_bug/" class="media-left">
+                <p class="image is-64x64">
+                    <img class="thumbnail" src="/gallery/3.jpeg" alt="Android UVCCamera/libuvc遇到的卡死崩溃bug和解决方法">
+                </p>
+            </a>
+            
+            <div class="media-content">
+                <div class="content">
+                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2019-08-26T16:00:00.000Z">2019-08-27</time></div>
+                    <a href="/2019/08/27/uvccamera/android_uvccamera_experience_and_bug/" class="title has-link-black-ter is-size-6 has-text-weight-normal">Android UVCCamera/libuvc遇到的卡死崩溃bug和解决方法</a>
+                    <p class="is-size-7 is-uppercase">
+                        <a class="has-link-grey -link" href="/categories/Android-UVCCamera-libuvc/">Android UVCCamera/libuvc</a>
+                    </p>
+                </div>
+            </div>
+        </article>
+        
+        <article class="media">
+            
             <a href="/2019/04/02/android_system/android_sprd_mtk_alarm_group_whitelist/" class="media-left">
                 <p class="image is-64x64">
                     <img class="thumbnail" src="/gallery/7.jpeg" alt="Android 展讯/MTK Alarm白名单设置">
@@ -559,17 +555,6 @@ PublicKey rootCertPublicKey = rootCert.getPublicKey();</code></pre><p>2.使用�
         <ul class="menu-list">
         
         <li>
-            <a class="level is-marginless" href="/archives/2020/02/">
-                <span class="level-start">
-                    <span class="level-item">February 2020</span>
-                </span>
-                <span class="level-end">
-                    <span class="level-item tag">2</span>
-                </span>
-            </a>
-        </li>
-        
-        <li>
             <a class="level is-marginless" href="/archives/2019/12/">
                 <span class="level-start">
                     <span class="level-item">December 2019</span>
@@ -587,6 +572,17 @@ PublicKey rootCertPublicKey = rootCert.getPublicKey();</code></pre><p>2.使用�
                 </span>
                 <span class="level-end">
                     <span class="level-item tag">1</span>
+                </span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2019/08/">
+                <span class="level-start">
+                    <span class="level-item">August 2019</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">2</span>
                 </span>
             </a>
         </li>
@@ -876,44 +872,6 @@ PublicKey rootCertPublicKey = rootCert.getPublicKey();</code></pre><p>2.使用�
         
         <article class="media">
             
-            <a href="/2020/02/28/java_certificate_verify/java_certificate_verify_and_decript/" class="media-left">
-                <p class="image is-64x64">
-                    <img class="thumbnail" src="/gallery/5.jpeg" alt="JAVA根证书验证用户证书是否可信和解密数据">
-                </p>
-            </a>
-            
-            <div class="media-content">
-                <div class="content">
-                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2020-02-27T16:00:00.000Z">2020-02-28</time></div>
-                    <a href="/2020/02/28/java_certificate_verify/java_certificate_verify_and_decript/" class="title has-link-black-ter is-size-6 has-text-weight-normal">JAVA根证书验证用户证书是否可信和解密数据</a>
-                    <p class="is-size-7 is-uppercase">
-                        <a class="has-link-grey -link" href="/categories/Java-Certificate/">Java Certificate</a>
-                    </p>
-                </div>
-            </div>
-        </article>
-        
-        <article class="media">
-            
-            <a href="/2020/02/28/uvccamera/android_uvccamera_experience_and_bug/" class="media-left">
-                <p class="image is-64x64">
-                    <img class="thumbnail" src="/gallery/3.jpeg" alt="Android UVCCamera/libuvc遇到的卡死崩溃bug和解决方法">
-                </p>
-            </a>
-            
-            <div class="media-content">
-                <div class="content">
-                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2020-02-27T16:00:00.000Z">2020-02-28</time></div>
-                    <a href="/2020/02/28/uvccamera/android_uvccamera_experience_and_bug/" class="title has-link-black-ter is-size-6 has-text-weight-normal">Android UVCCamera/libuvc遇到的卡死崩溃bug和解决方法</a>
-                    <p class="is-size-7 is-uppercase">
-                        <a class="has-link-grey -link" href="/categories/Android-UVCCamera-libuvc/">Android UVCCamera/libuvc</a>
-                    </p>
-                </div>
-            </div>
-        </article>
-        
-        <article class="media">
-            
             <a href="/2019/12/07/android_driver/camera_driver_config_experience/" class="media-left">
                 <p class="image is-64x64">
                     <img class="thumbnail" src="/gallery/11.jpeg" alt="Android Camera Driver平台(展讯、MTK)适配经验">
@@ -952,6 +910,44 @@ PublicKey rootCertPublicKey = rootCert.getPublicKey();</code></pre><p>2.使用�
         
         <article class="media">
             
+            <a href="/2019/08/28/java_certificate_verify/java_certificate_verify_and_decript/" class="media-left">
+                <p class="image is-64x64">
+                    <img class="thumbnail" src="/gallery/5.jpeg" alt="JAVA根证书验证用户证书是否可信和解密数据">
+                </p>
+            </a>
+            
+            <div class="media-content">
+                <div class="content">
+                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2019-08-27T16:00:00.000Z">2019-08-28</time></div>
+                    <a href="/2019/08/28/java_certificate_verify/java_certificate_verify_and_decript/" class="title has-link-black-ter is-size-6 has-text-weight-normal">JAVA根证书验证用户证书是否可信和解密数据</a>
+                    <p class="is-size-7 is-uppercase">
+                        <a class="has-link-grey -link" href="/categories/Java-Certificate/">Java Certificate</a>
+                    </p>
+                </div>
+            </div>
+        </article>
+        
+        <article class="media">
+            
+            <a href="/2019/08/27/uvccamera/android_uvccamera_experience_and_bug/" class="media-left">
+                <p class="image is-64x64">
+                    <img class="thumbnail" src="/gallery/3.jpeg" alt="Android UVCCamera/libuvc遇到的卡死崩溃bug和解决方法">
+                </p>
+            </a>
+            
+            <div class="media-content">
+                <div class="content">
+                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2019-08-26T16:00:00.000Z">2019-08-27</time></div>
+                    <a href="/2019/08/27/uvccamera/android_uvccamera_experience_and_bug/" class="title has-link-black-ter is-size-6 has-text-weight-normal">Android UVCCamera/libuvc遇到的卡死崩溃bug和解决方法</a>
+                    <p class="is-size-7 is-uppercase">
+                        <a class="has-link-grey -link" href="/categories/Android-UVCCamera-libuvc/">Android UVCCamera/libuvc</a>
+                    </p>
+                </div>
+            </div>
+        </article>
+        
+        <article class="media">
+            
             <a href="/2019/04/02/android_system/android_sprd_mtk_alarm_group_whitelist/" class="media-left">
                 <p class="image is-64x64">
                     <img class="thumbnail" src="/gallery/7.jpeg" alt="Android 展讯/MTK Alarm白名单设置">
@@ -981,17 +977,6 @@ PublicKey rootCertPublicKey = rootCert.getPublicKey();</code></pre><p>2.使用�
         <ul class="menu-list">
         
         <li>
-            <a class="level is-marginless" href="/archives/2020/02/">
-                <span class="level-start">
-                    <span class="level-item">February 2020</span>
-                </span>
-                <span class="level-end">
-                    <span class="level-item tag">2</span>
-                </span>
-            </a>
-        </li>
-        
-        <li>
             <a class="level is-marginless" href="/archives/2019/12/">
                 <span class="level-start">
                     <span class="level-item">December 2019</span>
@@ -1009,6 +994,17 @@ PublicKey rootCertPublicKey = rootCert.getPublicKey();</code></pre><p>2.使用�
                 </span>
                 <span class="level-end">
                     <span class="level-item tag">1</span>
+                </span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2019/08/">
+                <span class="level-start">
+                    <span class="level-item">August 2019</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">2</span>
                 </span>
             </a>
         </li>
@@ -1291,7 +1287,7 @@ PublicKey rootCertPublicKey = rootCert.getPublicKey();</code></pre><p>2.使用�
             <div class="level-start has-text-centered-mobile">
                 <a class="footer-logo is-block has-mb-6" href="/">
                 
-                    <img src="/images/gen.svg" alt="JAVA根证书验证用户证书是否可信和解密数据" height="28">
+                    <img src="/images/gen.svg" alt="Android UVCCamera/libuvc遇到的卡死崩溃bug和解决方法" height="28">
                 
                 </a>
                 <p class="is-size-7">

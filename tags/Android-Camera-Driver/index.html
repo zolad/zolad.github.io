@@ -34,7 +34,7 @@
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.7.2/css/bulma.css">
 <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.4.1/css/all.css">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Ubuntu:400,600|Source+Code+Pro">
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@9.12.0/styles/atom-one-dark.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@9.12.0/styles/atom-one-light.css">
 
 
     
@@ -150,7 +150,7 @@
                 <span class="level-item has-text-grey">
                     
                     
-                    6 minutes read (About 845 words)
+                    6 minutes read (About 855 words)
                 </span>
                 
                 
@@ -163,83 +163,41 @@
             
         </h1>
         <div class="content">
-            <h2 id="展讯平台"><a href="#展讯平台" class="headerlink" title="展讯平台"></a>展讯平台</h2><h3 id="1-项目对应kernel-dts文件配置"><a href="#1-项目对应kernel-dts文件配置" class="headerlink" title="1.项目对应kernel/dts文件配置"></a>1.项目对应kernel/dts文件配置</h3><pre><code>&amp;i2c0 {
-    status = &quot;okay&quot;;
-    clock-frequency = &lt;400000&gt;;
+            <h2 id="展讯平台"><a href="#展讯平台" class="headerlink" title="展讯平台"></a>展讯平台</h2><h3 id="1-项目对应kernel-dts文件配置"><a href="#1-项目对应kernel-dts文件配置" class="headerlink" title="1.项目对应kernel/dts文件配置"></a>1.项目对应kernel/dts文件配置</h3><figure class="highlight dts"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><code class="hljs dts"><span class="hljs-variable">&amp;i2c0</span> &#123;<br>	status = <span class="hljs-string">"okay"</span>;<br>	clock-frequency = <span class="hljs-params">&lt;<span class="hljs-number">400000</span>&gt;</span>;<br><br><span class="hljs-symbol">	sensor_main:</span> sensor-<span class="hljs-class">main@3c </span>&#123;<br>		compatible = <span class="hljs-string">"sprd,sensor-main"</span>;<br>		reg = <span class="hljs-params">&lt;<span class="hljs-number">0x3c</span>&gt;</span>;<br>		clock-names = <span class="hljs-string">"clk_src"</span>, <span class="hljs-string">"sensor_eb"</span>,<br>			<span class="hljs-string">"clk_96m"</span>, <span class="hljs-string">"clk_76m8"</span>,<br>			<span class="hljs-string">"clk_48m"</span>, <span class="hljs-string">"clk_26m"</span>;<br>		clocks  = <span class="hljs-params">&lt;<span class="hljs-variable">&amp;clk_sensor0</span>&gt;</span>,<br>			<span class="hljs-params">&lt;<span class="hljs-variable">&amp;clk_mm_ckg_gates</span> <span class="hljs-number">1</span>&gt;</span>,<br>			<span class="hljs-params">&lt;<span class="hljs-variable">&amp;clk_twpll_96m</span>&gt;</span>,<br>			<span class="hljs-params">&lt;<span class="hljs-variable">&amp;clk_twpll_76m8</span>&gt;</span>,<br>			<span class="hljs-params">&lt;<span class="hljs-variable">&amp;clk_twpll_48m</span>&gt;</span>,<br>			<span class="hljs-params">&lt;<span class="hljs-variable">&amp;ext_26m</span>&gt;</span>;<br>		vddio-supply = <span class="hljs-params">&lt;<span class="hljs-variable">&amp;vddcamio</span>&gt;</span>;<br>		vddcama-supply = <span class="hljs-params">&lt;<span class="hljs-variable">&amp;vddcama</span>&gt;</span>;<br>		vddcamd-supply = <span class="hljs-params">&lt;<span class="hljs-variable">&amp;vddcamd</span>&gt;</span>;<br>		vddcammot-supply = <span class="hljs-params">&lt;<span class="hljs-variable">&amp;vddcammot</span>&gt;</span>;<br>		reset-gpios = <span class="hljs-params">&lt;<span class="hljs-variable">&amp;ap_gpio</span> <span class="hljs-number">37</span> <span class="hljs-number">0</span>&gt;</span>;<br>		power-down-gpios = <span class="hljs-params">&lt;<span class="hljs-variable">&amp;ap_gpio</span> <span class="hljs-number">39</span> <span class="hljs-number">0</span>&gt;</span>;<br>		host = <span class="hljs-string">"dcam0"</span>;<br>		<span class="hljs-class">port </span>&#123;<br><span class="hljs-symbol">			sensor_main_0:</span> <span class="hljs-class">endpoint </span>&#123;<br>				remote-endpoint = <span class="hljs-params">&lt;<span class="hljs-variable">&amp;phy0_out</span>&gt;</span>;<br>			&#125;;<br>		&#125;;<br>	&#125;;<br><br>&#125;;<br></code></pre></td></tr></table></figure>
 
-    sensor_main: sensor-main@3c {
-        compatible = &quot;sprd,sensor-main&quot;;
-        reg = &lt;0x3c&gt;;
-        clock-names = &quot;clk_src&quot;, &quot;sensor_eb&quot;,
-            &quot;clk_96m&quot;, &quot;clk_76m8&quot;,
-            &quot;clk_48m&quot;, &quot;clk_26m&quot;;
-        clocks  = &lt;&amp;clk_sensor0&gt;,
-            &lt;&amp;clk_mm_ckg_gates 1&gt;,
-            &lt;&amp;clk_twpll_96m&gt;,
-            &lt;&amp;clk_twpll_76m8&gt;,
-            &lt;&amp;clk_twpll_48m&gt;,
-            &lt;&amp;ext_26m&gt;;
-        vddio-supply = &lt;&amp;vddcamio&gt;;
-        vddcama-supply = &lt;&amp;vddcama&gt;;
-        vddcamd-supply = &lt;&amp;vddcamd&gt;;
-        vddcammot-supply = &lt;&amp;vddcammot&gt;;
-        reset-gpios = &lt;&amp;ap_gpio 37 0&gt;;
-        power-down-gpios = &lt;&amp;ap_gpio 39 0&gt;;
-        host = &quot;dcam0&quot;;
-        port {
-            sensor_main_0: endpoint {
-                remote-endpoint = &lt;&amp;phy0_out&gt;;
-            };
-        };
-    };
-
-};</code></pre><p>(1).compatible = “sprd,sensor-main”， 这里不需要配摄像头的I2C Device Address，<br>alps/kernel/drivers/misc/sprd_camera/sensor/sprd_sensor_drv.c 会读取这里的id进行处理<br>具体的I2C地址在sensor驱动中配置</p>
+<p>(1).compatible = “sprd,sensor-main”， 这里不需要配摄像头的I2C Device Address，<br>alps/kernel/drivers/misc/sprd_camera/sensor/sprd_sensor_drv.c 会读取这里的id进行处理<br>具体的I2C地址在sensor驱动中配置</p>
 <p>(2).reset-gpios，power-down-gpios可通过查看机器板子的原理图来确定对应gpio的引脚修改</p>
 <h3 id="2-项目对应device-BoardConfig-mk配置"><a href="#2-项目对应device-BoardConfig-mk配置" class="headerlink" title="2.项目对应device/../../BoardConfig.mk配置"></a>2.项目对应device/../../BoardConfig.mk配置</h3><p>(1).配上前后置摄像头对应Camera Sensor的型号，如：<br>CAMERA_SENSOR_TYPE_BACK := “sp2509 c2590”<br>CAMERA_SENSOR_TYPE_FRONT := “gc030a”</p>
 <p>(2).若模组厂打样时摄像头拍照方向为横屏，则TARGET_BOARD_BACK_CAMERA_ROTATION/TARGET_BOARD_FRONT_CAMERA_ROTATION设置为false，否则设置为true。</p>
 <p>(3).配置Camera支持的分辨率</p>
-<pre><code>#select camera 2M,3M,5M,8M,13M,16M,21M
-CAMERA_SUPPORT_SIZE := 2M
-FRONT_CAMERA_SUPPORT_SIZE := 2M</code></pre><h3 id="3-vendor-sprd-libcamera配置和添加Camera驱动代码"><a href="#3-vendor-sprd-libcamera配置和添加Camera驱动代码" class="headerlink" title="3.vendor/sprd/../../libcamera配置和添加Camera驱动代码"></a>3.vendor/sprd/../../libcamera配置和添加Camera驱动代码</h3><p>(1).在vendor/sprd/../../libcamera/sensor下放置已经适配了平台的sensor_drv代码，<br>如果没有已经适配了平台的驱动代码，那只能按平台已有的驱动代码为模板按硬件文档进行适配修改。<br>注意修改时尽量按平台已有的camera驱动代码为规范。这方面可以自己修改也可以找FAE帮忙。</p>
+<figure class="highlight mk"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs mk"><span class="hljs-comment">#select camera 2M,3M,5M,8M,13M,16M,21M</span><br>CAMERA_SUPPORT_SIZE := 2M<br>FRONT_CAMERA_SUPPORT_SIZE := 2M<br></code></pre></td></tr></table></figure>
+
+<h3 id="3-vendor-sprd-libcamera配置和添加Camera驱动代码"><a href="#3-vendor-sprd-libcamera配置和添加Camera驱动代码" class="headerlink" title="3.vendor/sprd/../../libcamera配置和添加Camera驱动代码"></a>3.vendor/sprd/../../libcamera配置和添加Camera驱动代码</h3><p>(1).在vendor/sprd/../../libcamera/sensor下放置已经适配了平台的sensor_drv代码，<br>如果没有已经适配了平台的驱动代码，那只能按平台已有的驱动代码为模板按硬件文档进行适配修改。<br>注意修改时尽量按平台已有的camera驱动代码为规范。这方面可以自己修改也可以找FAE帮忙。</p>
 <p>(2).修改vendor/sprd/../../libcamera/sensorsensor_cfg.c，配置新Camera</p>
-<pre><code>#ifdef OV8856
-extern SENSOR_INFO_T g_ov8856_mipi_raw_info;
-#endif
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-meta">#<span class="hljs-meta-keyword">ifdef</span> OV8856</span><br><span class="hljs-keyword">extern</span> SENSOR_INFO_T g_ov8856_mipi_raw_info;<br><span class="hljs-meta">#<span class="hljs-meta-keyword">endif</span></span><br><br>在对应的sensor_infor_tab添加配置，分别是camera <span class="hljs-keyword">module</span> name/camera name/sensor info/af/otp：<br><span class="hljs-meta">#<span class="hljs-meta-keyword">ifdef</span> OV8856</span><br>    &#123;MODULE_SUNNY, <span class="hljs-string">"ov8856"</span>, &amp;g_ov8856_mipi_raw_info, &#123;&amp;dw9763a_drv_entry, <span class="hljs-number">0</span>&#125;, &amp;ov8856_cmk_drv_entry&#125;,<br><span class="hljs-meta">#<span class="hljs-meta-keyword">endif</span></span><br></code></pre></td></tr></table></figure>
 
-在对应的sensor_infor_tab添加配置，分别是camera module name/camera name/sensor info/af/otp：
-#ifdef OV8856
-    {MODULE_SUNNY, &quot;ov8856&quot;, &amp;g_ov8856_mipi_raw_info, {&amp;dw9763a_drv_entry, 0}, &amp;ov8856_cmk_drv_entry},
-#endif
-</code></pre><hr>
-<h2 id="MTK平台"><a href="#MTK平台" class="headerlink" title="MTK平台"></a>MTK平台</h2><h3 id="1-kernel-4-4-drivers-misc-mediatek-imgsensor-inc-kd-imgsensor-h配置"><a href="#1-kernel-4-4-drivers-misc-mediatek-imgsensor-inc-kd-imgsensor-h配置" class="headerlink" title="1.kernel-4.4/drivers/misc/mediatek/imgsensor/inc/kd_imgsensor.h配置"></a>1.kernel-4.4/drivers/misc/mediatek/imgsensor/inc/kd_imgsensor.h配置</h3><pre><code>#define S5K4H8_SENSOR_ID                        0x4088
 
-#define SENSOR_DRVNAME_S5K4H8_MIPI_RAW          &quot;s5k4h8_mipi_raw&quot;</code></pre><h3 id="2-项目对应kernel-4-4-arch-arm-configs-…-xxx-defconfig配置"><a href="#2-项目对应kernel-4-4-arch-arm-configs-…-xxx-defconfig配置" class="headerlink" title="2.项目对应kernel-4.4/arch/arm/configs/…/xxx_defconfig配置"></a>2.项目对应kernel-4.4/arch/arm/configs/…/xxx_defconfig配置</h3><p>可通过查看device目录下项目mk文件里 KERNEL_DEFCONFIG 指向的是哪个config文件<br>CONFIG_CUSTOM_KERNEL_IMGSENSOR=”s5k4h8_mipi_raw”</p>
+<hr>
+<h2 id="MTK平台"><a href="#MTK平台" class="headerlink" title="MTK平台"></a>MTK平台</h2><h3 id="1-kernel-4-4-drivers-misc-mediatek-imgsensor-inc-kd-imgsensor-h配置"><a href="#1-kernel-4-4-drivers-misc-mediatek-imgsensor-inc-kd-imgsensor-h配置" class="headerlink" title="1.kernel-4.4/drivers/misc/mediatek/imgsensor/inc/kd_imgsensor.h配置"></a>1.kernel-4.4/drivers/misc/mediatek/imgsensor/inc/kd_imgsensor.h配置</h3><figure class="highlight h"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs h"><span class="hljs-meta">#<span class="hljs-meta-keyword">define</span> S5K4H8_SENSOR_ID                        0x4088</span><br><br><span class="hljs-meta">#<span class="hljs-meta-keyword">define</span> SENSOR_DRVNAME_S5K4H8_MIPI_RAW          <span class="hljs-meta-string">"s5k4h8_mipi_raw"</span></span><br></code></pre></td></tr></table></figure>
+
+
+<h3 id="2-项目对应kernel-4-4-arch-arm-configs-…-xxx-defconfig配置"><a href="#2-项目对应kernel-4-4-arch-arm-configs-…-xxx-defconfig配置" class="headerlink" title="2.项目对应kernel-4.4/arch/arm/configs/…/xxx_defconfig配置"></a>2.项目对应kernel-4.4/arch/arm/configs/…/xxx_defconfig配置</h3><p>可通过查看device目录下项目mk文件里 KERNEL_DEFCONFIG 指向的是哪个config文件<br>CONFIG_CUSTOM_KERNEL_IMGSENSOR=”s5k4h8_mipi_raw”</p>
 <p>带debug标签的用于编译过程中查看调试信息</p>
-<h3 id="3-项目对应ProjectConfig-mk配置"><a href="#3-项目对应ProjectConfig-mk配置" class="headerlink" title="3.项目对应ProjectConfig.mk配置"></a>3.项目对应ProjectConfig.mk配置</h3><pre><code>CUSTOM_HAL_IMGSENSOR = s5k4h8_mipi_raw
-CUSTOM_HAL_MAIN_IMGSENSOR = s5k4h8_mipi_raw
-CUSTOM_KERNEL_IMGSENSOR = s5k4h8_mipi_raw
-CUSTOM_KERNEL_MAIN_IMGSENSOR = s5k4h8_mipi_raw</code></pre><h3 id="4-kernel-4-4-drivers-misc-mediatek-imgsensor-src-xxx-xxx-imgsensor-sensor-list-c添加"><a href="#4-kernel-4-4-drivers-misc-mediatek-imgsensor-src-xxx-xxx-imgsensor-sensor-list-c添加" class="headerlink" title="4.kernel-4.4/drivers/misc/mediatek/imgsensor/src/xxx/xxx/imgsensor_sensor_list.c添加"></a>4.kernel-4.4/drivers/misc/mediatek/imgsensor/src/xxx/xxx/imgsensor_sensor_list.c添加</h3><pre><code>#if defined(S5K4H8_MIPI_RAW)
-    {S5K4H8_SENSOR_ID, SENSOR_DRVNAME_S5K4H8_MIPI_RAW, S5K4H8_MIPI_RAW_SensorInit},
-#endif</code></pre><h3 id="5-kernel-4-4-drivers-misc-mediatek-imgsensor-src-xxx-xxx-imgsensor-sensor-list-h添加"><a href="#5-kernel-4-4-drivers-misc-mediatek-imgsensor-src-xxx-xxx-imgsensor-sensor-list-h添加" class="headerlink" title="5.kernel-4.4/drivers/misc/mediatek/imgsensor/src/xxx/xxx/imgsensor_sensor_list.h添加"></a>5.kernel-4.4/drivers/misc/mediatek/imgsensor/src/xxx/xxx/imgsensor_sensor_list.h添加</h3><pre><code>UINT32 S5K4H8_MIPI_RAW_SensorInit(PSENSOR_FUNCTION_STRUCT *pfFunc);</code></pre><h3 id="6-kernel-4-4-drivers-misc-mediatek-imgsensor-src-xxx-xxx-配置和添加Camera-sensor驱动代码"><a href="#6-kernel-4-4-drivers-misc-mediatek-imgsensor-src-xxx-xxx-配置和添加Camera-sensor驱动代码" class="headerlink" title="6.kernel-4.4/drivers/misc/mediatek/imgsensor/src/xxx/xxx 配置和添加Camera sensor驱动代码"></a>6.kernel-4.4/drivers/misc/mediatek/imgsensor/src/xxx/xxx 配置和添加Camera sensor驱动代码</h3><h3 id="7-kernel-4-4-drivers-misc-mediatek-imgsensor-src-xxx-xxx-imgsensor-cfg-table-c-配置上下电时序"><a href="#7-kernel-4-4-drivers-misc-mediatek-imgsensor-src-xxx-xxx-imgsensor-cfg-table-c-配置上下电时序" class="headerlink" title="7.kernel-4.4/drivers/misc/mediatek/imgsensor/src/xxx/xxx/imgsensor_cfg_table.c 配置上下电时序"></a>7.kernel-4.4/drivers/misc/mediatek/imgsensor/src/xxx/xxx/imgsensor_cfg_table.c 配置上下电时序</h3><pre><code>#if defined(S5K4H8_MIPI_RAW)
-        {
-            SENSOR_DRVNAME_S5K4H8_MIPI_RAW,
-            {                            
-                {SensorMCLK, Vol_High, 0},                
-                {PDN, Vol_Low, 5},
-                {RST, Vol_Low, 5},
-                {DVDD, Vol_1200, 0},
-                {AVDD, Vol_2800, 0},
-                {DOVDD, Vol_1800, 5},
-                {AFVDD, Vol_2800, 0},
-                {PDN, Vol_High, 5},
-                {RST, Vol_High, 5}                
-            },
-        },
-#endif</code></pre><h3 id="8-vendor-mediatek-proprietary-custom-xxxx-hal-imgsensor-添加对应Camera驱动代码"><a href="#8-vendor-mediatek-proprietary-custom-xxxx-hal-imgsensor-添加对应Camera驱动代码" class="headerlink" title="8.vendor/mediatek/proprietary/custom/xxxx/hal/imgsensor/ 添加对应Camera驱动代码"></a>8.vendor/mediatek/proprietary/custom/xxxx/hal/imgsensor/ 添加对应Camera驱动代码</h3><h3 id="9-vendor-mediatek-proprietary-custom-xxxx-hal-imgsensor-src-sensorlist-cpp添加"><a href="#9-vendor-mediatek-proprietary-custom-xxxx-hal-imgsensor-src-sensorlist-cpp添加" class="headerlink" title="9.vendor/mediatek/proprietary/custom/xxxx/hal/imgsensor_src/sensorlist.cpp添加"></a>9.vendor/mediatek/proprietary/custom/xxxx/hal/imgsensor_src/sensorlist.cpp添加</h3><pre><code>#if defined(S5K4H8_MIPI_RAW)
-    RAW_INFO(S5K4H8_SENSOR_ID, SENSOR_DRVNAME_S5K4H8_MIPI_RAW, S5K4H8_CAM_CALGetCalData),
-#endif</code></pre><h3 id="10-vendor-mediatek-proprietary-custom-xxxx-hal-lens-src-lenslist-cpp添加"><a href="#10-vendor-mediatek-proprietary-custom-xxxx-hal-lens-src-lenslist-cpp添加" class="headerlink" title="10.vendor/mediatek/proprietary/custom/xxxx/hal/lens/src/lenslist.cpp添加"></a>10.vendor/mediatek/proprietary/custom/xxxx/hal/lens/src/lenslist.cpp添加</h3><pre><code>#if defined(DW9714AF_S5K4H8_SUNWIN_P130)
-    extern PFUNC_GETLENSDEFAULT pDW9714AF_S5K4H8_SUNWIN_P130_getDefaultData;
-#endif</code></pre>
+<h3 id="3-项目对应ProjectConfig-mk配置"><a href="#3-项目对应ProjectConfig-mk配置" class="headerlink" title="3.项目对应ProjectConfig.mk配置"></a>3.项目对应ProjectConfig.mk配置</h3><figure class="highlight mk"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs mk">CUSTOM_HAL_IMGSENSOR = s5k4h8_mipi_raw<br>CUSTOM_HAL_MAIN_IMGSENSOR = s5k4h8_mipi_raw<br>CUSTOM_KERNEL_IMGSENSOR = s5k4h8_mipi_raw<br>CUSTOM_KERNEL_MAIN_IMGSENSOR = s5k4h8_mipi_raw<br></code></pre></td></tr></table></figure>
+
+<h3 id="4-kernel-4-4-drivers-misc-mediatek-imgsensor-src-xxx-xxx-imgsensor-sensor-list-c添加"><a href="#4-kernel-4-4-drivers-misc-mediatek-imgsensor-src-xxx-xxx-imgsensor-sensor-list-c添加" class="headerlink" title="4.kernel-4.4/drivers/misc/mediatek/imgsensor/src/xxx/xxx/imgsensor_sensor_list.c添加"></a>4.kernel-4.4/drivers/misc/mediatek/imgsensor/src/xxx/xxx/imgsensor_sensor_list.c添加</h3><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-meta">#<span class="hljs-meta-keyword">if</span> defined(S5K4H8_MIPI_RAW)</span><br>	&#123;S5K4H8_SENSOR_ID, SENSOR_DRVNAME_S5K4H8_MIPI_RAW, S5K4H8_MIPI_RAW_SensorInit&#125;,<br><span class="hljs-meta">#<span class="hljs-meta-keyword">endif</span></span><br></code></pre></td></tr></table></figure>
+
+<h3 id="5-kernel-4-4-drivers-misc-mediatek-imgsensor-src-xxx-xxx-imgsensor-sensor-list-h添加"><a href="#5-kernel-4-4-drivers-misc-mediatek-imgsensor-src-xxx-xxx-imgsensor-sensor-list-h添加" class="headerlink" title="5.kernel-4.4/drivers/misc/mediatek/imgsensor/src/xxx/xxx/imgsensor_sensor_list.h添加"></a>5.kernel-4.4/drivers/misc/mediatek/imgsensor/src/xxx/xxx/imgsensor_sensor_list.h添加</h3><figure class="highlight h"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs h"><span class="hljs-function">UINT32 <span class="hljs-title">S5K4H8_MIPI_RAW_SensorInit</span><span class="hljs-params">(PSENSOR_FUNCTION_STRUCT *pfFunc)</span></span>;<br></code></pre></td></tr></table></figure>
+
+
+<h3 id="6-kernel-4-4-drivers-misc-mediatek-imgsensor-src-xxx-xxx-配置和添加Camera-sensor驱动代码"><a href="#6-kernel-4-4-drivers-misc-mediatek-imgsensor-src-xxx-xxx-配置和添加Camera-sensor驱动代码" class="headerlink" title="6.kernel-4.4/drivers/misc/mediatek/imgsensor/src/xxx/xxx 配置和添加Camera sensor驱动代码"></a>6.kernel-4.4/drivers/misc/mediatek/imgsensor/src/xxx/xxx 配置和添加Camera sensor驱动代码</h3><h3 id="7-kernel-4-4-drivers-misc-mediatek-imgsensor-src-xxx-xxx-imgsensor-cfg-table-c-配置上下电时序"><a href="#7-kernel-4-4-drivers-misc-mediatek-imgsensor-src-xxx-xxx-imgsensor-cfg-table-c-配置上下电时序" class="headerlink" title="7.kernel-4.4/drivers/misc/mediatek/imgsensor/src/xxx/xxx/imgsensor_cfg_table.c 配置上下电时序"></a>7.kernel-4.4/drivers/misc/mediatek/imgsensor/src/xxx/xxx/imgsensor_cfg_table.c 配置上下电时序</h3><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-meta">#<span class="hljs-meta-keyword">if</span> defined(S5K4H8_MIPI_RAW)</span><br>		&#123;<br>			SENSOR_DRVNAME_S5K4H8_MIPI_RAW,<br>			&#123;							<br>				&#123;SensorMCLK, Vol_High, <span class="hljs-number">0</span>&#125;,				<br>				&#123;PDN, Vol_Low, <span class="hljs-number">5</span>&#125;,<br>				&#123;RST, Vol_Low, <span class="hljs-number">5</span>&#125;,<br>				&#123;DVDD, Vol_1200, <span class="hljs-number">0</span>&#125;,<br>				&#123;AVDD, Vol_2800, <span class="hljs-number">0</span>&#125;,<br>				&#123;DOVDD, Vol_1800, <span class="hljs-number">5</span>&#125;,<br>			    &#123;AFVDD, Vol_2800, <span class="hljs-number">0</span>&#125;,<br>				&#123;PDN, Vol_High, <span class="hljs-number">5</span>&#125;,<br>				&#123;RST, Vol_High, <span class="hljs-number">5</span>&#125;				<br>			&#125;,<br>		&#125;,<br><span class="hljs-meta">#<span class="hljs-meta-keyword">endif</span></span><br></code></pre></td></tr></table></figure>
+
+<h3 id="8-vendor-mediatek-proprietary-custom-xxxx-hal-imgsensor-添加对应Camera驱动代码"><a href="#8-vendor-mediatek-proprietary-custom-xxxx-hal-imgsensor-添加对应Camera驱动代码" class="headerlink" title="8.vendor/mediatek/proprietary/custom/xxxx/hal/imgsensor/ 添加对应Camera驱动代码"></a>8.vendor/mediatek/proprietary/custom/xxxx/hal/imgsensor/ 添加对应Camera驱动代码</h3><h3 id="9-vendor-mediatek-proprietary-custom-xxxx-hal-imgsensor-src-sensorlist-cpp添加"><a href="#9-vendor-mediatek-proprietary-custom-xxxx-hal-imgsensor-src-sensorlist-cpp添加" class="headerlink" title="9.vendor/mediatek/proprietary/custom/xxxx/hal/imgsensor_src/sensorlist.cpp添加"></a>9.vendor/mediatek/proprietary/custom/xxxx/hal/imgsensor_src/sensorlist.cpp添加</h3><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-meta">#<span class="hljs-meta-keyword">if</span> defined(S5K4H8_MIPI_RAW)</span><br>    RAW_INFO(S5K4H8_SENSOR_ID, SENSOR_DRVNAME_S5K4H8_MIPI_RAW, S5K4H8_CAM_CALGetCalData),<br><span class="hljs-meta">#<span class="hljs-meta-keyword">endif</span></span><br></code></pre></td></tr></table></figure>
+
+<h3 id="10-vendor-mediatek-proprietary-custom-xxxx-hal-lens-src-lenslist-cpp添加"><a href="#10-vendor-mediatek-proprietary-custom-xxxx-hal-lens-src-lenslist-cpp添加" class="headerlink" title="10.vendor/mediatek/proprietary/custom/xxxx/hal/lens/src/lenslist.cpp添加"></a>10.vendor/mediatek/proprietary/custom/xxxx/hal/lens/src/lenslist.cpp添加</h3><pre><code class="cpp"><span class="meta">#<span class="meta-keyword">if</span> defined(DW9714AF_S5K4H8_SUNWIN_P130)</span>
+    <span class="keyword">extern</span> PFUNC_GETLENSDEFAULT pDW9714AF_S5K4H8_SUNWIN_P130_getDefaultData;
+<span class="meta">#<span class="meta-keyword">endif</span></span></code></pre>
+
         </div>
         
         
@@ -484,44 +442,6 @@ CUSTOM_KERNEL_MAIN_IMGSENSOR = s5k4h8_mipi_raw</code></pre><h3 id="4-kernel-4-4-
         
         <article class="media">
             
-            <a href="/2020/02/28/java_certificate_verify/java_certificate_verify_and_decript/" class="media-left">
-                <p class="image is-64x64">
-                    <img class="thumbnail" src="/gallery/5.jpeg" alt="JAVA根证书验证用户证书是否可信和解密数据">
-                </p>
-            </a>
-            
-            <div class="media-content">
-                <div class="content">
-                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2020-02-27T16:00:00.000Z">2020-02-28</time></div>
-                    <a href="/2020/02/28/java_certificate_verify/java_certificate_verify_and_decript/" class="title has-link-black-ter is-size-6 has-text-weight-normal">JAVA根证书验证用户证书是否可信和解密数据</a>
-                    <p class="is-size-7 is-uppercase">
-                        <a class="has-link-grey -link" href="/categories/Java-Certificate/">Java Certificate</a>
-                    </p>
-                </div>
-            </div>
-        </article>
-        
-        <article class="media">
-            
-            <a href="/2020/02/28/uvccamera/android_uvccamera_experience_and_bug/" class="media-left">
-                <p class="image is-64x64">
-                    <img class="thumbnail" src="/gallery/3.jpeg" alt="Android UVCCamera/libuvc遇到的卡死崩溃bug和解决方法">
-                </p>
-            </a>
-            
-            <div class="media-content">
-                <div class="content">
-                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2020-02-27T16:00:00.000Z">2020-02-28</time></div>
-                    <a href="/2020/02/28/uvccamera/android_uvccamera_experience_and_bug/" class="title has-link-black-ter is-size-6 has-text-weight-normal">Android UVCCamera/libuvc遇到的卡死崩溃bug和解决方法</a>
-                    <p class="is-size-7 is-uppercase">
-                        <a class="has-link-grey -link" href="/categories/Android-UVCCamera-libuvc/">Android UVCCamera/libuvc</a>
-                    </p>
-                </div>
-            </div>
-        </article>
-        
-        <article class="media">
-            
             <a href="/2019/12/07/android_driver/camera_driver_config_experience/" class="media-left">
                 <p class="image is-64x64">
                     <img class="thumbnail" src="/gallery/11.jpeg" alt="Android Camera Driver平台(展讯、MTK)适配经验">
@@ -560,6 +480,44 @@ CUSTOM_KERNEL_MAIN_IMGSENSOR = s5k4h8_mipi_raw</code></pre><h3 id="4-kernel-4-4-
         
         <article class="media">
             
+            <a href="/2019/08/28/java_certificate_verify/java_certificate_verify_and_decript/" class="media-left">
+                <p class="image is-64x64">
+                    <img class="thumbnail" src="/gallery/5.jpeg" alt="JAVA根证书验证用户证书是否可信和解密数据">
+                </p>
+            </a>
+            
+            <div class="media-content">
+                <div class="content">
+                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2019-08-27T16:00:00.000Z">2019-08-28</time></div>
+                    <a href="/2019/08/28/java_certificate_verify/java_certificate_verify_and_decript/" class="title has-link-black-ter is-size-6 has-text-weight-normal">JAVA根证书验证用户证书是否可信和解密数据</a>
+                    <p class="is-size-7 is-uppercase">
+                        <a class="has-link-grey -link" href="/categories/Java-Certificate/">Java Certificate</a>
+                    </p>
+                </div>
+            </div>
+        </article>
+        
+        <article class="media">
+            
+            <a href="/2019/08/27/uvccamera/android_uvccamera_experience_and_bug/" class="media-left">
+                <p class="image is-64x64">
+                    <img class="thumbnail" src="/gallery/3.jpeg" alt="Android UVCCamera/libuvc遇到的卡死崩溃bug和解决方法">
+                </p>
+            </a>
+            
+            <div class="media-content">
+                <div class="content">
+                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2019-08-26T16:00:00.000Z">2019-08-27</time></div>
+                    <a href="/2019/08/27/uvccamera/android_uvccamera_experience_and_bug/" class="title has-link-black-ter is-size-6 has-text-weight-normal">Android UVCCamera/libuvc遇到的卡死崩溃bug和解决方法</a>
+                    <p class="is-size-7 is-uppercase">
+                        <a class="has-link-grey -link" href="/categories/Android-UVCCamera-libuvc/">Android UVCCamera/libuvc</a>
+                    </p>
+                </div>
+            </div>
+        </article>
+        
+        <article class="media">
+            
             <a href="/2019/04/02/android_system/android_sprd_mtk_alarm_group_whitelist/" class="media-left">
                 <p class="image is-64x64">
                     <img class="thumbnail" src="/gallery/7.jpeg" alt="Android 展讯/MTK Alarm白名单设置">
@@ -589,17 +547,6 @@ CUSTOM_KERNEL_MAIN_IMGSENSOR = s5k4h8_mipi_raw</code></pre><h3 id="4-kernel-4-4-
         <ul class="menu-list">
         
         <li>
-            <a class="level is-marginless" href="/archives/2020/02/">
-                <span class="level-start">
-                    <span class="level-item">February 2020</span>
-                </span>
-                <span class="level-end">
-                    <span class="level-item tag">2</span>
-                </span>
-            </a>
-        </li>
-        
-        <li>
             <a class="level is-marginless" href="/archives/2019/12/">
                 <span class="level-start">
                     <span class="level-item">December 2019</span>
@@ -617,6 +564,17 @@ CUSTOM_KERNEL_MAIN_IMGSENSOR = s5k4h8_mipi_raw</code></pre><h3 id="4-kernel-4-4-
                 </span>
                 <span class="level-end">
                     <span class="level-item tag">1</span>
+                </span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2019/08/">
+                <span class="level-start">
+                    <span class="level-item">August 2019</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">2</span>
                 </span>
             </a>
         </li>
@@ -906,44 +864,6 @@ CUSTOM_KERNEL_MAIN_IMGSENSOR = s5k4h8_mipi_raw</code></pre><h3 id="4-kernel-4-4-
         
         <article class="media">
             
-            <a href="/2020/02/28/java_certificate_verify/java_certificate_verify_and_decript/" class="media-left">
-                <p class="image is-64x64">
-                    <img class="thumbnail" src="/gallery/5.jpeg" alt="JAVA根证书验证用户证书是否可信和解密数据">
-                </p>
-            </a>
-            
-            <div class="media-content">
-                <div class="content">
-                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2020-02-27T16:00:00.000Z">2020-02-28</time></div>
-                    <a href="/2020/02/28/java_certificate_verify/java_certificate_verify_and_decript/" class="title has-link-black-ter is-size-6 has-text-weight-normal">JAVA根证书验证用户证书是否可信和解密数据</a>
-                    <p class="is-size-7 is-uppercase">
-                        <a class="has-link-grey -link" href="/categories/Java-Certificate/">Java Certificate</a>
-                    </p>
-                </div>
-            </div>
-        </article>
-        
-        <article class="media">
-            
-            <a href="/2020/02/28/uvccamera/android_uvccamera_experience_and_bug/" class="media-left">
-                <p class="image is-64x64">
-                    <img class="thumbnail" src="/gallery/3.jpeg" alt="Android UVCCamera/libuvc遇到的卡死崩溃bug和解决方法">
-                </p>
-            </a>
-            
-            <div class="media-content">
-                <div class="content">
-                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2020-02-27T16:00:00.000Z">2020-02-28</time></div>
-                    <a href="/2020/02/28/uvccamera/android_uvccamera_experience_and_bug/" class="title has-link-black-ter is-size-6 has-text-weight-normal">Android UVCCamera/libuvc遇到的卡死崩溃bug和解决方法</a>
-                    <p class="is-size-7 is-uppercase">
-                        <a class="has-link-grey -link" href="/categories/Android-UVCCamera-libuvc/">Android UVCCamera/libuvc</a>
-                    </p>
-                </div>
-            </div>
-        </article>
-        
-        <article class="media">
-            
             <a href="/2019/12/07/android_driver/camera_driver_config_experience/" class="media-left">
                 <p class="image is-64x64">
                     <img class="thumbnail" src="/gallery/11.jpeg" alt="Android Camera Driver平台(展讯、MTK)适配经验">
@@ -982,6 +902,44 @@ CUSTOM_KERNEL_MAIN_IMGSENSOR = s5k4h8_mipi_raw</code></pre><h3 id="4-kernel-4-4-
         
         <article class="media">
             
+            <a href="/2019/08/28/java_certificate_verify/java_certificate_verify_and_decript/" class="media-left">
+                <p class="image is-64x64">
+                    <img class="thumbnail" src="/gallery/5.jpeg" alt="JAVA根证书验证用户证书是否可信和解密数据">
+                </p>
+            </a>
+            
+            <div class="media-content">
+                <div class="content">
+                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2019-08-27T16:00:00.000Z">2019-08-28</time></div>
+                    <a href="/2019/08/28/java_certificate_verify/java_certificate_verify_and_decript/" class="title has-link-black-ter is-size-6 has-text-weight-normal">JAVA根证书验证用户证书是否可信和解密数据</a>
+                    <p class="is-size-7 is-uppercase">
+                        <a class="has-link-grey -link" href="/categories/Java-Certificate/">Java Certificate</a>
+                    </p>
+                </div>
+            </div>
+        </article>
+        
+        <article class="media">
+            
+            <a href="/2019/08/27/uvccamera/android_uvccamera_experience_and_bug/" class="media-left">
+                <p class="image is-64x64">
+                    <img class="thumbnail" src="/gallery/3.jpeg" alt="Android UVCCamera/libuvc遇到的卡死崩溃bug和解决方法">
+                </p>
+            </a>
+            
+            <div class="media-content">
+                <div class="content">
+                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2019-08-26T16:00:00.000Z">2019-08-27</time></div>
+                    <a href="/2019/08/27/uvccamera/android_uvccamera_experience_and_bug/" class="title has-link-black-ter is-size-6 has-text-weight-normal">Android UVCCamera/libuvc遇到的卡死崩溃bug和解决方法</a>
+                    <p class="is-size-7 is-uppercase">
+                        <a class="has-link-grey -link" href="/categories/Android-UVCCamera-libuvc/">Android UVCCamera/libuvc</a>
+                    </p>
+                </div>
+            </div>
+        </article>
+        
+        <article class="media">
+            
             <a href="/2019/04/02/android_system/android_sprd_mtk_alarm_group_whitelist/" class="media-left">
                 <p class="image is-64x64">
                     <img class="thumbnail" src="/gallery/7.jpeg" alt="Android 展讯/MTK Alarm白名单设置">
@@ -1011,17 +969,6 @@ CUSTOM_KERNEL_MAIN_IMGSENSOR = s5k4h8_mipi_raw</code></pre><h3 id="4-kernel-4-4-
         <ul class="menu-list">
         
         <li>
-            <a class="level is-marginless" href="/archives/2020/02/">
-                <span class="level-start">
-                    <span class="level-item">February 2020</span>
-                </span>
-                <span class="level-end">
-                    <span class="level-item tag">2</span>
-                </span>
-            </a>
-        </li>
-        
-        <li>
             <a class="level is-marginless" href="/archives/2019/12/">
                 <span class="level-start">
                     <span class="level-item">December 2019</span>
@@ -1039,6 +986,17 @@ CUSTOM_KERNEL_MAIN_IMGSENSOR = s5k4h8_mipi_raw</code></pre><h3 id="4-kernel-4-4-
                 </span>
                 <span class="level-end">
                     <span class="level-item tag">1</span>
+                </span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2019/08/">
+                <span class="level-start">
+                    <span class="level-item">August 2019</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">2</span>
                 </span>
             </a>
         </li>

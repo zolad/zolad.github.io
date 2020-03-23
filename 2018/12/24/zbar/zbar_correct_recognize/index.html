@@ -10,16 +10,16 @@
 <title>解决Zbar倾斜二维码/条形码识别不出来的情况 - Zola&#39;s Blog</title>
 
 
-    <meta name="description" content="在使用Zbar的过程中，有时会遇到二维码&#x2F;条形码倾斜45%时识别不出来的情况，然而这并不是Zbar的Bug，下面给出两种解决办法。  通过修改Zbar的扫描密度设置（推荐）Zbar在对图像识别时会逐行逐列地扫描，扫描初始化设置里提供了X轴和Y轴的扫描密度的设置，将密度值设置为1，即不跨行扫描，就可以正常识别倾斜的二维码&#x2F;条形码。   ImageScanner.setConfig(0, ZBAR_C">
+    <meta name="description" content="在使用Zbar的过程中，有时会遇到二维码&#x2F;条形码倾斜45%时识别不出来的情况，然而这并不是Zbar的Bug，下面给出两种解决办法。  通过修改Zbar的扫描密度设置（推荐）Zbar在对图像识别时会逐行逐列地扫描，扫描初始化设置里提供了X轴和Y轴的扫描密度的设置，将密度值设置为1，即不跨行扫描，就可以正常识别倾斜的二维码&#x2F;条形码。   12ImageScanner.setConfig(0, ZBAR">
 <meta property="og:type" content="article">
 <meta property="og:title" content="解决Zbar倾斜二维码&#x2F;条形码识别不出来的情况">
 <meta property="og:url" content="http://yoursite.com/2018/12/24/zbar/zbar_correct_recognize/index.html">
 <meta property="og:site_name" content="Zola&#39;s Blog">
-<meta property="og:description" content="在使用Zbar的过程中，有时会遇到二维码&#x2F;条形码倾斜45%时识别不出来的情况，然而这并不是Zbar的Bug，下面给出两种解决办法。  通过修改Zbar的扫描密度设置（推荐）Zbar在对图像识别时会逐行逐列地扫描，扫描初始化设置里提供了X轴和Y轴的扫描密度的设置，将密度值设置为1，即不跨行扫描，就可以正常识别倾斜的二维码&#x2F;条形码。   ImageScanner.setConfig(0, ZBAR_C">
+<meta property="og:description" content="在使用Zbar的过程中，有时会遇到二维码&#x2F;条形码倾斜45%时识别不出来的情况，然而这并不是Zbar的Bug，下面给出两种解决办法。  通过修改Zbar的扫描密度设置（推荐）Zbar在对图像识别时会逐行逐列地扫描，扫描初始化设置里提供了X轴和Y轴的扫描密度的设置，将密度值设置为1，即不跨行扫描，就可以正常识别倾斜的二维码&#x2F;条形码。   12ImageScanner.setConfig(0, ZBAR">
 <meta property="og:locale" content="en_US">
 <meta property="og:image" content="http://yoursite.com/gallery/2.jpeg">
 <meta property="article:published_time" content="2018-12-24T09:43:14.000Z">
-<meta property="article:modified_time" content="2020-03-21T20:15:11.094Z">
+<meta property="article:modified_time" content="2020-03-23T13:44:20.775Z">
 <meta property="article:author" content="Zola">
 <meta property="article:tag" content="Zbar">
 <meta name="twitter:card" content="summary">
@@ -37,7 +37,7 @@
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.7.2/css/bulma.css">
 <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.4.1/css/all.css">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Ubuntu:400,600|Source+Code+Pro">
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@9.12.0/styles/atom-one-dark.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@9.12.0/styles/atom-one-light.css">
 
 
     
@@ -142,7 +142,7 @@
                 <span class="level-item has-text-grey">
                     
                     
-                    4 minutes read (About 546 words)
+                    4 minutes read (About 547 words)
                 </span>
                 
                 
@@ -158,8 +158,9 @@
             <p>在使用Zbar的过程中，有时会遇到二维码/条形码倾斜45%时识别不出来的情况，然而这并不是Zbar的Bug，下面给出两种解决办法。</p>
 <hr>
 <h2 id="通过修改Zbar的扫描密度设置（推荐）"><a href="#通过修改Zbar的扫描密度设置（推荐）" class="headerlink" title="通过修改Zbar的扫描密度设置（推荐）"></a>通过修改Zbar的扫描密度设置（推荐）</h2><p>Zbar在对图像识别时会逐行逐列地扫描，扫描初始化设置里提供了X轴和Y轴的扫描密度的设置，将密度值设置为1，即不跨行扫描，就可以正常识别倾斜的二维码/条形码。  </p>
-<pre><code>ImageScanner.setConfig(0, ZBAR_CFG_X_DENSITY, 1);
-ImageScanner.setConfig(0, ZBAR_CFG_Y_DENSITY, 1);</code></pre><p>注意，这里涉及到一个识别速度的问题，很多人将这个值设置为2甚至3，就是为了可以加快识别一帧图像的速度。因为设置为2时，每2行才扫描1行，识别时间更短了，但这也会丢失细节，导致倾斜二维码识别不出来。大部分情况下，Zbar识别一帧图像的时间小于1秒，为了加快一倍的识别速度，丢失识别成功率是不值得的。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs java">ImageScanner.setConfig(<span class="hljs-number">0</span>, ZBAR_CFG_X_DENSITY, <span class="hljs-number">1</span>);<br>ImageScanner.setConfig(<span class="hljs-number">0</span>, ZBAR_CFG_Y_DENSITY, <span class="hljs-number">1</span>);<br></code></pre></td></tr></table></figure>
+
+<p>注意，这里涉及到一个识别速度的问题，很多人将这个值设置为2甚至3，就是为了可以加快识别一帧图像的速度。因为设置为2时，每2行才扫描1行，识别时间更短了，但这也会丢失细节，导致倾斜二维码识别不出来。大部分情况下，Zbar识别一帧图像的时间小于1秒，为了加快一倍的识别速度，丢失识别成功率是不值得的。</p>
 <p>使用JNI调用Zbar的情况，要注意检查Java和C代码里对Zbar的初始化设置有没有问题。  </p>
 <hr>
 <h2 id="通过图像处理矫正再识别"><a href="#通过图像处理矫正再识别" class="headerlink" title="通过图像处理矫正再识别"></a>通过图像处理矫正再识别</h2><p>将图像矫正再丢给Zbar识别，也是可以的。很多人会使用OpenCV进行图像矫正，这里提供一个处理过程：</p>
@@ -439,44 +440,6 @@ ImageScanner.setConfig(0, ZBAR_CFG_Y_DENSITY, 1);</code></pre><p>注意，这里
         
         <article class="media">
             
-            <a href="/2020/02/28/java_certificate_verify/java_certificate_verify_and_decript/" class="media-left">
-                <p class="image is-64x64">
-                    <img class="thumbnail" src="/gallery/5.jpeg" alt="JAVA根证书验证用户证书是否可信和解密数据">
-                </p>
-            </a>
-            
-            <div class="media-content">
-                <div class="content">
-                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2020-02-27T16:00:00.000Z">2020-02-28</time></div>
-                    <a href="/2020/02/28/java_certificate_verify/java_certificate_verify_and_decript/" class="title has-link-black-ter is-size-6 has-text-weight-normal">JAVA根证书验证用户证书是否可信和解密数据</a>
-                    <p class="is-size-7 is-uppercase">
-                        <a class="has-link-grey -link" href="/categories/Java-Certificate/">Java Certificate</a>
-                    </p>
-                </div>
-            </div>
-        </article>
-        
-        <article class="media">
-            
-            <a href="/2020/02/28/uvccamera/android_uvccamera_experience_and_bug/" class="media-left">
-                <p class="image is-64x64">
-                    <img class="thumbnail" src="/gallery/3.jpeg" alt="Android UVCCamera/libuvc遇到的卡死崩溃bug和解决方法">
-                </p>
-            </a>
-            
-            <div class="media-content">
-                <div class="content">
-                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2020-02-27T16:00:00.000Z">2020-02-28</time></div>
-                    <a href="/2020/02/28/uvccamera/android_uvccamera_experience_and_bug/" class="title has-link-black-ter is-size-6 has-text-weight-normal">Android UVCCamera/libuvc遇到的卡死崩溃bug和解决方法</a>
-                    <p class="is-size-7 is-uppercase">
-                        <a class="has-link-grey -link" href="/categories/Android-UVCCamera-libuvc/">Android UVCCamera/libuvc</a>
-                    </p>
-                </div>
-            </div>
-        </article>
-        
-        <article class="media">
-            
             <a href="/2019/12/07/android_driver/camera_driver_config_experience/" class="media-left">
                 <p class="image is-64x64">
                     <img class="thumbnail" src="/gallery/11.jpeg" alt="Android Camera Driver平台(展讯、MTK)适配经验">
@@ -515,6 +478,44 @@ ImageScanner.setConfig(0, ZBAR_CFG_Y_DENSITY, 1);</code></pre><p>注意，这里
         
         <article class="media">
             
+            <a href="/2019/08/28/java_certificate_verify/java_certificate_verify_and_decript/" class="media-left">
+                <p class="image is-64x64">
+                    <img class="thumbnail" src="/gallery/5.jpeg" alt="JAVA根证书验证用户证书是否可信和解密数据">
+                </p>
+            </a>
+            
+            <div class="media-content">
+                <div class="content">
+                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2019-08-27T16:00:00.000Z">2019-08-28</time></div>
+                    <a href="/2019/08/28/java_certificate_verify/java_certificate_verify_and_decript/" class="title has-link-black-ter is-size-6 has-text-weight-normal">JAVA根证书验证用户证书是否可信和解密数据</a>
+                    <p class="is-size-7 is-uppercase">
+                        <a class="has-link-grey -link" href="/categories/Java-Certificate/">Java Certificate</a>
+                    </p>
+                </div>
+            </div>
+        </article>
+        
+        <article class="media">
+            
+            <a href="/2019/08/27/uvccamera/android_uvccamera_experience_and_bug/" class="media-left">
+                <p class="image is-64x64">
+                    <img class="thumbnail" src="/gallery/3.jpeg" alt="Android UVCCamera/libuvc遇到的卡死崩溃bug和解决方法">
+                </p>
+            </a>
+            
+            <div class="media-content">
+                <div class="content">
+                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2019-08-26T16:00:00.000Z">2019-08-27</time></div>
+                    <a href="/2019/08/27/uvccamera/android_uvccamera_experience_and_bug/" class="title has-link-black-ter is-size-6 has-text-weight-normal">Android UVCCamera/libuvc遇到的卡死崩溃bug和解决方法</a>
+                    <p class="is-size-7 is-uppercase">
+                        <a class="has-link-grey -link" href="/categories/Android-UVCCamera-libuvc/">Android UVCCamera/libuvc</a>
+                    </p>
+                </div>
+            </div>
+        </article>
+        
+        <article class="media">
+            
             <a href="/2019/04/02/android_system/android_sprd_mtk_alarm_group_whitelist/" class="media-left">
                 <p class="image is-64x64">
                     <img class="thumbnail" src="/gallery/7.jpeg" alt="Android 展讯/MTK Alarm白名单设置">
@@ -544,17 +545,6 @@ ImageScanner.setConfig(0, ZBAR_CFG_Y_DENSITY, 1);</code></pre><p>注意，这里
         <ul class="menu-list">
         
         <li>
-            <a class="level is-marginless" href="/archives/2020/02/">
-                <span class="level-start">
-                    <span class="level-item">February 2020</span>
-                </span>
-                <span class="level-end">
-                    <span class="level-item tag">2</span>
-                </span>
-            </a>
-        </li>
-        
-        <li>
             <a class="level is-marginless" href="/archives/2019/12/">
                 <span class="level-start">
                     <span class="level-item">December 2019</span>
@@ -572,6 +562,17 @@ ImageScanner.setConfig(0, ZBAR_CFG_Y_DENSITY, 1);</code></pre><p>注意，这里
                 </span>
                 <span class="level-end">
                     <span class="level-item tag">1</span>
+                </span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2019/08/">
+                <span class="level-start">
+                    <span class="level-item">August 2019</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">2</span>
                 </span>
             </a>
         </li>
@@ -861,44 +862,6 @@ ImageScanner.setConfig(0, ZBAR_CFG_Y_DENSITY, 1);</code></pre><p>注意，这里
         
         <article class="media">
             
-            <a href="/2020/02/28/java_certificate_verify/java_certificate_verify_and_decript/" class="media-left">
-                <p class="image is-64x64">
-                    <img class="thumbnail" src="/gallery/5.jpeg" alt="JAVA根证书验证用户证书是否可信和解密数据">
-                </p>
-            </a>
-            
-            <div class="media-content">
-                <div class="content">
-                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2020-02-27T16:00:00.000Z">2020-02-28</time></div>
-                    <a href="/2020/02/28/java_certificate_verify/java_certificate_verify_and_decript/" class="title has-link-black-ter is-size-6 has-text-weight-normal">JAVA根证书验证用户证书是否可信和解密数据</a>
-                    <p class="is-size-7 is-uppercase">
-                        <a class="has-link-grey -link" href="/categories/Java-Certificate/">Java Certificate</a>
-                    </p>
-                </div>
-            </div>
-        </article>
-        
-        <article class="media">
-            
-            <a href="/2020/02/28/uvccamera/android_uvccamera_experience_and_bug/" class="media-left">
-                <p class="image is-64x64">
-                    <img class="thumbnail" src="/gallery/3.jpeg" alt="Android UVCCamera/libuvc遇到的卡死崩溃bug和解决方法">
-                </p>
-            </a>
-            
-            <div class="media-content">
-                <div class="content">
-                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2020-02-27T16:00:00.000Z">2020-02-28</time></div>
-                    <a href="/2020/02/28/uvccamera/android_uvccamera_experience_and_bug/" class="title has-link-black-ter is-size-6 has-text-weight-normal">Android UVCCamera/libuvc遇到的卡死崩溃bug和解决方法</a>
-                    <p class="is-size-7 is-uppercase">
-                        <a class="has-link-grey -link" href="/categories/Android-UVCCamera-libuvc/">Android UVCCamera/libuvc</a>
-                    </p>
-                </div>
-            </div>
-        </article>
-        
-        <article class="media">
-            
             <a href="/2019/12/07/android_driver/camera_driver_config_experience/" class="media-left">
                 <p class="image is-64x64">
                     <img class="thumbnail" src="/gallery/11.jpeg" alt="Android Camera Driver平台(展讯、MTK)适配经验">
@@ -937,6 +900,44 @@ ImageScanner.setConfig(0, ZBAR_CFG_Y_DENSITY, 1);</code></pre><p>注意，这里
         
         <article class="media">
             
+            <a href="/2019/08/28/java_certificate_verify/java_certificate_verify_and_decript/" class="media-left">
+                <p class="image is-64x64">
+                    <img class="thumbnail" src="/gallery/5.jpeg" alt="JAVA根证书验证用户证书是否可信和解密数据">
+                </p>
+            </a>
+            
+            <div class="media-content">
+                <div class="content">
+                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2019-08-27T16:00:00.000Z">2019-08-28</time></div>
+                    <a href="/2019/08/28/java_certificate_verify/java_certificate_verify_and_decript/" class="title has-link-black-ter is-size-6 has-text-weight-normal">JAVA根证书验证用户证书是否可信和解密数据</a>
+                    <p class="is-size-7 is-uppercase">
+                        <a class="has-link-grey -link" href="/categories/Java-Certificate/">Java Certificate</a>
+                    </p>
+                </div>
+            </div>
+        </article>
+        
+        <article class="media">
+            
+            <a href="/2019/08/27/uvccamera/android_uvccamera_experience_and_bug/" class="media-left">
+                <p class="image is-64x64">
+                    <img class="thumbnail" src="/gallery/3.jpeg" alt="Android UVCCamera/libuvc遇到的卡死崩溃bug和解决方法">
+                </p>
+            </a>
+            
+            <div class="media-content">
+                <div class="content">
+                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2019-08-26T16:00:00.000Z">2019-08-27</time></div>
+                    <a href="/2019/08/27/uvccamera/android_uvccamera_experience_and_bug/" class="title has-link-black-ter is-size-6 has-text-weight-normal">Android UVCCamera/libuvc遇到的卡死崩溃bug和解决方法</a>
+                    <p class="is-size-7 is-uppercase">
+                        <a class="has-link-grey -link" href="/categories/Android-UVCCamera-libuvc/">Android UVCCamera/libuvc</a>
+                    </p>
+                </div>
+            </div>
+        </article>
+        
+        <article class="media">
+            
             <a href="/2019/04/02/android_system/android_sprd_mtk_alarm_group_whitelist/" class="media-left">
                 <p class="image is-64x64">
                     <img class="thumbnail" src="/gallery/7.jpeg" alt="Android 展讯/MTK Alarm白名单设置">
@@ -966,17 +967,6 @@ ImageScanner.setConfig(0, ZBAR_CFG_Y_DENSITY, 1);</code></pre><p>注意，这里
         <ul class="menu-list">
         
         <li>
-            <a class="level is-marginless" href="/archives/2020/02/">
-                <span class="level-start">
-                    <span class="level-item">February 2020</span>
-                </span>
-                <span class="level-end">
-                    <span class="level-item tag">2</span>
-                </span>
-            </a>
-        </li>
-        
-        <li>
             <a class="level is-marginless" href="/archives/2019/12/">
                 <span class="level-start">
                     <span class="level-item">December 2019</span>
@@ -994,6 +984,17 @@ ImageScanner.setConfig(0, ZBAR_CFG_Y_DENSITY, 1);</code></pre><p>注意，这里
                 </span>
                 <span class="level-end">
                     <span class="level-item tag">1</span>
+                </span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2019/08/">
+                <span class="level-start">
+                    <span class="level-item">August 2019</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">2</span>
                 </span>
             </a>
         </li>

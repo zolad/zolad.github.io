@@ -34,7 +34,7 @@
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.7.2/css/bulma.css">
 <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.4.1/css/all.css">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Ubuntu:400,600|Source+Code+Pro">
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@9.12.0/styles/atom-one-dark.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@9.12.0/styles/atom-one-light.css">
 
 
     
@@ -151,7 +151,7 @@
                 <span class="level-item has-text-grey">
                     
                     
-                    4 minutes read (About 546 words)
+                    4 minutes read (About 549 words)
                 </span>
                 
                 
@@ -170,90 +170,13 @@
 <hr>
 <h3 id="白名单电话接听拦截和短信拦截"><a href="#白名单电话接听拦截和短信拦截" class="headerlink" title="白名单电话接听拦截和短信拦截"></a>白名单电话接听拦截和短信拦截</h3><p>这里直接利用BlockedNumberContract框架里的关键判断类BlockChecker，BlockChecker的isBlocked函数会返回一个bool值，根据这个bool值，BlockedNumberContract框架会决定是否拦截对应号码的电话和短信。</p>
 <p>修改位置 frameworks\opt\telephony\src\java\com\android\internal\telephony\BlockChecker.java</p>
-<pre><code>   /**
-     * Returns {@code true} if {@code phoneNumber} is blocked.
-     * &lt;p&gt;
-     * This method catches all underlying exceptions to ensure that this method never throws any
-     * exception.
-     */
-    public static boolean isBlocked(Context context, String phoneNumber) {
-        boolean isBlocked = false;
-        long startTimeNano = System.nanoTime();
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><code class="hljs java">   <span class="hljs-comment">/**</span><br><span class="hljs-comment">     * Returns &#123;<span class="hljs-doctag">@code</span> true&#125; if &#123;<span class="hljs-doctag">@code</span> phoneNumber&#125; is blocked.</span><br><span class="hljs-comment">     * &lt;p&gt;</span><br><span class="hljs-comment">     * This method catches all underlying exceptions to ensure that this method never throws any</span><br><span class="hljs-comment">     * exception.</span><br><span class="hljs-comment">     */</span><br>    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">boolean</span> <span class="hljs-title">isBlocked</span><span class="hljs-params">(Context context, String phoneNumber)</span> </span>&#123;<br>        <span class="hljs-keyword">boolean</span> isBlocked = <span class="hljs-keyword">false</span>;<br>        <span class="hljs-keyword">long</span> startTimeNano = System.nanoTime();<br><br>        <span class="hljs-keyword">try</span> &#123;<br>+        	<span class="hljs-comment">//注释掉这部分原生判断，会读取BlockedNumberContract数据库里的名单作对比</span><br>+            <span class="hljs-comment">// if (BlockedNumberContract.SystemContract.shouldSystemBlockNumber(</span><br>+           <span class="hljs-comment">//         context, phoneNumber)) &#123;</span><br>+            <span class="hljs-comment">//     Rlog.d(TAG, phoneNumber + " is blocked.");</span><br>+            <span class="hljs-comment">//     isBlocked = true;</span><br>+            <span class="hljs-comment">// &#125;</span><br><br>+             <span class="hljs-comment">//新增一个shouldBlockNumber函数，这里可以根据自己需求，从什么数据库读取白名单来判断对应号码是否该拦截</span><br>+               <span class="hljs-keyword">if</span> (shouldBlockNumber( context, phoneNumber)) &#123;<br>+                Log.d(TAG, phoneNumber + <span class="hljs-string">" is blocked."</span>);<br>+                isBlocked = <span class="hljs-keyword">true</span>;<br>+            &#125;<br>            <br><br>        &#125; <span class="hljs-keyword">catch</span> (Exception e) &#123;<br>            Rlog.e(TAG, <span class="hljs-string">"Exception checking for blocked number: "</span> + e);<br>           <br>        &#125;<br><br>        <span class="hljs-keyword">int</span> durationMillis = (<span class="hljs-keyword">int</span>) ((System.nanoTime() - startTimeNano) / <span class="hljs-number">1000000</span>);<br>        <span class="hljs-keyword">if</span> (durationMillis &gt; <span class="hljs-number">500</span> || VDBG) &#123;<br>            Rlog.d(TAG, <span class="hljs-string">"Blocked number lookup took: "</span> + durationMillis + <span class="hljs-string">" ms."</span>);<br>        &#125;<br>        <span class="hljs-keyword">return</span> isBlocked;<br>    &#125;<br></code></pre></td></tr></table></figure>
 
-        try {
-+            //注释掉这部分原生判断，会读取BlockedNumberContract数据库里的名单作对比
-+            // if (BlockedNumberContract.SystemContract.shouldSystemBlockNumber(
-+           //         context, phoneNumber)) {
-+            //     Rlog.d(TAG, phoneNumber + &quot; is blocked.&quot;);
-+            //     isBlocked = true;
-+            // }
-
-+             //新增一个shouldBlockNumber函数，这里可以根据自己需求，从什么数据库读取白名单来判断对应号码是否该拦截
-+               if (shouldBlockNumber( context, phoneNumber)) {
-+                Log.d(TAG, phoneNumber + &quot; is blocked.&quot;);
-+                isBlocked = true;
-+            }
-
-
-        } catch (Exception e) {
-            Rlog.e(TAG, &quot;Exception checking for blocked number: &quot; + e);
-
-        }
-
-        int durationMillis = (int) ((System.nanoTime() - startTimeNano) / 1000000);
-        if (durationMillis &gt; 500 || VDBG) {
-            Rlog.d(TAG, &quot;Blocked number lookup took: &quot; + durationMillis + &quot; ms.&quot;);
-        }
-        return isBlocked;
-    }</code></pre><p>如果不想短信受控制，可以修改<br>frameworks/opt/telephony/src/java/com/android/internal/telephony/InboundSmsHandler.java</p>
-<pre><code>-            block = BlockChecker.isBlocked(mContext, tracker.getDisplayAddress());
-+            // not block 
-+           // block = BlockChecker.isBlocked(mContext, tracker.getDisplayAddress());
-
-
--                        block = BlockChecker.isBlocked(mContext,
--                                cursor.getString(PDU_SEQUENCE_PORT_PROJECTION_INDEX_MAPPING
--                                        .get(DISPLAY_ADDRESS_COLUMN)));
-
-+        // not block 
-+                    //    block = BlockChecker.isBlocked(mContext,
-+                    //            cursor.getString(PDU_SEQUENCE_PORT_PROJECTION_INDEX_MAPPING
-+                    //                    .get(DISPLAY_ADDRESS_COLUMN)));
-</code></pre><p>frameworks/opt/telephony/src/java/com/android/internal/telephony/WapPushOverSms.java</p>
-<pre><code>-                if (nInd.getFrom() != null
--                        &amp;&amp; BlockChecker.isBlocked(mContext, nInd.getFrom().getString())) {
-+
-+        // not block 
-+        // &amp;&amp; BlockChecker.isBlocked(mContext, nInd.getFrom().getString())
-+                if (nInd.getFrom() != null) {</code></pre><hr>
+<p>如果不想短信受控制，可以修改<br>frameworks/opt/telephony/src/java/com/android/internal/telephony/InboundSmsHandler.java</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><code class="hljs java">-            block = BlockChecker.isBlocked(mContext, tracker.getDisplayAddress());<br>+		    <span class="hljs-comment">// not block </span><br>+           <span class="hljs-comment">// block = BlockChecker.isBlocked(mContext, tracker.getDisplayAddress());</span><br><br><br>-                        block = BlockChecker.isBlocked(mContext,<br>-                                cursor.getString(PDU_SEQUENCE_PORT_PROJECTION_INDEX_MAPPING<br>-                                        .get(DISPLAY_ADDRESS_COLUMN)));<br><br>+		<span class="hljs-comment">// not block </span><br>+                    <span class="hljs-comment">//    block = BlockChecker.isBlocked(mContext,</span><br>+                    <span class="hljs-comment">//            cursor.getString(PDU_SEQUENCE_PORT_PROJECTION_INDEX_MAPPING</span><br>+                    <span class="hljs-comment">//                    .get(DISPLAY_ADDRESS_COLUMN)));</span><br><br>``` <br><br><br>frameworks/opt/telephony/src/java/com/android/internal/telephony/WapPushOverSms.java<br>``` <br>-                <span class="hljs-keyword">if</span> (nInd.getFrom() != <span class="hljs-keyword">null</span><br>-                        &amp;&amp; BlockChecker.isBlocked(mContext, nInd.getFrom().getString())) &#123;<br>+<br>+		<span class="hljs-comment">// not block </span><br>+		<span class="hljs-comment">// &amp;&amp; BlockChecker.isBlocked(mContext, nInd.getFrom().getString())</span><br>+                <span class="hljs-keyword">if</span> (nInd.getFrom() != <span class="hljs-keyword">null</span>) &#123;<br></code></pre></td></tr></table></figure>
+<hr>
 <h3 id="电话拨号拦截"><a href="#电话拨号拦截" class="headerlink" title="电话拨号拦截"></a>电话拨号拦截</h3><p>修改位置 proprietary/packages/services/Telecomm/src/com/android/server/telecom/CallIntentProcessor.java</p>
-<pre><code>    /**
-     * Processes CALL, CALL_PRIVILEGED, and CALL_EMERGENCY intents.
-     *
-     * @param intent Call intent containing data about the handle to call.
-     */
-    static void processOutgoingCallIntent(
-            Context context,
-            CallsManager callsManager,
-            Intent intent) {
-
-
-
-                    if (phoneNumber != null) {
-            if (!PhoneNumberUtils.isUriNumber(phoneNumber)) {  
-               phoneNumber = PhoneNumberUtils.convertAndStrip(phoneNumber);  
-            }  
-        }
-
-+        if (shouldBlockNumber(context,phoneNumber)) {
-+                
-+                Log.d(CallIntentProcessor.class,phoneNumber + &quot; is blocked.&quot;);
-+
-+                return;
-+        }
-
-
-    }</code></pre>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><code class="hljs java">    <span class="hljs-comment">/**</span><br><span class="hljs-comment">     * Processes CALL, CALL_PRIVILEGED, and CALL_EMERGENCY intents.</span><br><span class="hljs-comment">     *</span><br><span class="hljs-comment">     * <span class="hljs-doctag">@param</span> intent Call intent containing data about the handle to call.</span><br><span class="hljs-comment">     */</span><br>    <span class="hljs-function"><span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title">processOutgoingCallIntent</span><span class="hljs-params">(</span></span><br><span class="hljs-function"><span class="hljs-params">            Context context,</span></span><br><span class="hljs-function"><span class="hljs-params">            CallsManager callsManager,</span></span><br><span class="hljs-function"><span class="hljs-params">            Intent intent)</span> </span>&#123;<br><br><br><br>            	    <span class="hljs-keyword">if</span> (phoneNumber != <span class="hljs-keyword">null</span>) &#123;<br>            <span class="hljs-keyword">if</span> (!PhoneNumberUtils.isUriNumber(phoneNumber)) &#123;  <br>               phoneNumber = PhoneNumberUtils.convertAndStrip(phoneNumber);  <br>            &#125;  <br>        &#125;<br><br>+        <span class="hljs-keyword">if</span> (shouldBlockNumber(context,phoneNumber)) &#123;<br>+                <br>+                Log.d(CallIntentProcessor.class,phoneNumber + " is blocked.");<br>+<br>+                <span class="hljs-keyword">return</span>;<br>+        &#125;<br><br><br>    &#125;<br></code></pre></td></tr></table></figure>
         </div>
         
         
@@ -291,7 +214,7 @@
                 <span class="level-item has-text-grey">
                     
                     
-                    6 minutes read (About 856 words)
+                    6 minutes read (About 860 words)
                 </span>
                 
                 
@@ -308,16 +231,7 @@
 <hr>
 <h3 id="修改下拉快捷菜单栏的菜单列表"><a href="#修改下拉快捷菜单栏的菜单列表" class="headerlink" title="修改下拉快捷菜单栏的菜单列表:"></a>修改下拉快捷菜单栏的菜单列表:</h3><p>主要搜索qstile相关的类</p>
 <p>xxxx/packages/apps/SystemUI/res/values/config.xml</p>
-<!-- The default tiles to display in QuickSettings -->
-<string name="quick_settings_tiles_default" translatable="false">
-wifi,bt,dnd,rotation,battery,cell,cast
-</string>
-
-<!-- Tiles native to System UI. Order should match "quick_settings_tiles_default" -->
-<string name="quick_settings_tiles_stock" translatable="false">
-wifi,cell,battery,dnd,rotation,bt,location,hotspot,inversion,saver,work,cast,night
-</string>
-
+<figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs java">&lt;!-- The <span class="hljs-keyword">default</span> tiles to display in QuickSettings --&gt;<br>&lt;string name=<span class="hljs-string">"quick_settings_tiles_default"</span> translatable=<span class="hljs-string">"false"</span>&gt;<br>wifi,bt,dnd,rotation,battery,cell,cast<br>&lt;/string&gt;<br><br>&lt;!-- Tiles <span class="hljs-keyword">native</span> to System UI. Order should match <span class="hljs-string">"quick_settings_tiles_default"</span> --&gt;<br>&lt;string name=<span class="hljs-string">"quick_settings_tiles_stock"</span> translatable=<span class="hljs-string">"false"</span>&gt;<br>wifi,cell,battery,dnd,rotation,bt,location,hotspot,inversion,saver,work,cast,night<br>&lt;/string&gt;<br></code></pre></td></tr></table></figure>
 <hr>
 <h3 id="如何在framework层获取当前api被调用时的进程对应的app的application-context"><a href="#如何在framework层获取当前api被调用时的进程对应的app的application-context" class="headerlink" title="如何在framework层获取当前api被调用时的进程对应的app的application context:"></a>如何在framework层获取当前api被调用时的进程对应的app的application context:</h3><p>ActivityThread.currentActivityThread().getApplication()</p>
 <hr>
@@ -327,35 +241,9 @@ wifi,cell,battery,dnd,rotation,bt,location,hotspot,inversion,saver,work,cast,nig
 <p>InCallFragment ，InCallButtonGridFragment是关键类，有很多代理类和presenter类</p>
 <hr>
 <h3 id="UsbManager在连接usb设备时需要request权限才能连接到usb设备-如何跳过申请权限的弹框-默认赋予权限呢"><a href="#UsbManager在连接usb设备时需要request权限才能连接到usb设备-如何跳过申请权限的弹框-默认赋予权限呢" class="headerlink" title="UsbManager在连接usb设备时需要request权限才能连接到usb设备,如何跳过申请权限的弹框,默认赋予权限呢"></a>UsbManager在连接usb设备时需要request权限才能连接到usb设备,如何跳过申请权限的弹框,默认赋予权限呢</h3><p>可以修改framework下的UsbUserSettingsManager:</p>
-<pre><code>  // Temporary mapping USB device name to list of UIDs with permissions for the device
-    private final HashMap&lt;String, SparseBooleanArray&gt; mDevicePermissionMap =
-            new HashMap&lt;&gt;();
-    // Temporary mapping UsbAccessory to list of UIDs with permissions for the accessory
-    private final HashMap&lt;UsbAccessory, SparseBooleanArray&gt; mAccessoryPermissionMap =
-            new HashMap&lt;&gt;();
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><code class="hljs java">  <span class="hljs-comment">// Temporary mapping USB device name to list of UIDs with permissions for the device</span><br>    <span class="hljs-keyword">private</span> <span class="hljs-keyword">final</span> HashMap&lt;String, SparseBooleanArray&gt; mDevicePermissionMap =<br>            <span class="hljs-keyword">new</span> HashMap&lt;&gt;();<br>    <span class="hljs-comment">// Temporary mapping UsbAccessory to list of UIDs with permissions for the accessory</span><br>    <span class="hljs-keyword">private</span> <span class="hljs-keyword">final</span> HashMap&lt;UsbAccessory, SparseBooleanArray&gt; mAccessoryPermissionMap =<br>            <span class="hljs-keyword">new</span> HashMap&lt;&gt;();<br><br>两个hashmap分别储存的uid和对应的usbdevice,只要存在即允许了权限<br>    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">boolean</span> <span class="hljs-title">hasPermission</span><span class="hljs-params">(UsbDevice device, String packageName, <span class="hljs-keyword">int</span> uid)</span> </span>&#123;<br>        <span class="hljs-keyword">synchronized</span> (mLock) &#123;<br>            <span class="hljs-keyword">if</span> (isCameraDevicePresent(device)) &#123;<br>		<span class="hljs-comment">//camera权限,usb camera需要额外的camera权限</span><br>                <span class="hljs-keyword">if</span> (!isCameraPermissionGranted(packageName, uid)) &#123;<br>                    <span class="hljs-keyword">return</span> <span class="hljs-keyword">false</span>;<br>                &#125;<br>            &#125;<br>		<span class="hljs-comment">//如果是系统uid,或者mDisablePermissionDialogs 设置禁用usb权限询问框,则默认拥有权限</span><br>            <span class="hljs-keyword">if</span> (uid == Process.SYSTEM_UID || mDisablePermissionDialogs) &#123;<br>                <span class="hljs-keyword">return</span> <span class="hljs-keyword">true</span>;<br>            &#125;<br>		<span class="hljs-comment">//获取对应usbdevice的已允许权限uid,如果uid存在则判断拥有权限</span><br>            SparseBooleanArray uidList = mDevicePermissionMap.get(device.getDeviceName());<br>            <span class="hljs-keyword">if</span> (uidList == <span class="hljs-keyword">null</span>) &#123;<br>                <span class="hljs-keyword">return</span> <span class="hljs-keyword">false</span>;<br>            &#125;<br>            <span class="hljs-keyword">return</span> uidList.get(uid);<br> <br>        &#125;<br>    &#125;<br></code></pre></td></tr></table></figure>
 
-两个hashmap分别储存的uid和对应的usbdevice,只要存在即允许了权限
-    public boolean hasPermission(UsbDevice device, String packageName, int uid) {
-        synchronized (mLock) {
-            if (isCameraDevicePresent(device)) {
-        //camera权限,usb camera需要额外的camera权限
-                if (!isCameraPermissionGranted(packageName, uid)) {
-                    return false;
-                }
-            }
-        //如果是系统uid,或者mDisablePermissionDialogs 设置禁用usb权限询问框,则默认拥有权限
-            if (uid == Process.SYSTEM_UID || mDisablePermissionDialogs) {
-                return true;
-            }
-        //获取对应usbdevice的已允许权限uid,如果uid存在则判断拥有权限
-            SparseBooleanArray uidList = mDevicePermissionMap.get(device.getDeviceName());
-            if (uidList == null) {
-                return false;
-            }
-            return uidList.get(uid);
-
-        }
-    }</code></pre><hr>
+<hr>
 <h3 id="系统编译自定义覆盖代码"><a href="#系统编译自定义覆盖代码" class="headerlink" title="系统编译自定义覆盖代码"></a>系统编译自定义覆盖代码</h3><p>资源文件：</p>
 <p>Android Overlay机制允许在不修改packages中apk的情况下，来自定义 framework/package/vendor中的资源文件，实现资源的定制。来达到显示不同的UI得目的</p>
 <p>PRODUCT_PACKAGE_OVERLAYS :=  device/vendor-name/device-name/product-name/overlay</p>
@@ -366,45 +254,17 @@ wifi,cell,battery,dnd,rotation,bt,location,hotspot,inversion,saver,work,cast,nig
 <p>通过修改 envsetup 和 lunch执行的mk文件，比如在build/core/envsetup.mk添加复制替换代码：</p>
 <p>$(shell \cp -rf vendor/mediatek/xxxx/Camera.java frameworks/base/core/java/android/hardware/Camera.java)</p>
 <hr>
-<h3 id="通讯录如何判断是否是sim卡储存的号码："><a href="#通讯录如何判断是否是sim卡储存的号码：" class="headerlink" title="通讯录如何判断是否是sim卡储存的号码："></a>通讯录如何判断是否是sim卡储存的号码：</h3><pre><code> private static final String ACCOUNT_TYPE_SIM = &quot;SIM Account&quot;;
- private static final String ACCOUNT_TYPE_USIM = &quot;USIM Account&quot;;
- private static final String ACCOUNT_TYPE_RUIM = &quot;RUIM Account&quot;;
- private static final String ACCOUNT_TYPE_CSIM = &quot;CSIM Account&quot;;
+<h3 id="通讯录如何判断是否是sim卡储存的号码："><a href="#通讯录如何判断是否是sim卡储存的号码：" class="headerlink" title="通讯录如何判断是否是sim卡储存的号码："></a>通讯录如何判断是否是sim卡储存的号码：</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><code class="hljs java"> <span class="hljs-keyword">private</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">final</span> String ACCOUNT_TYPE_SIM = <span class="hljs-string">"SIM Account"</span>;<br> <span class="hljs-keyword">private</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">final</span> String ACCOUNT_TYPE_USIM = <span class="hljs-string">"USIM Account"</span>;<br> <span class="hljs-keyword">private</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">final</span> String ACCOUNT_TYPE_RUIM = <span class="hljs-string">"RUIM Account"</span>;<br> <span class="hljs-keyword">private</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">final</span> String ACCOUNT_TYPE_CSIM = <span class="hljs-string">"CSIM Account"</span>;<br><br><span class="hljs-function"><span class="hljs-keyword">private</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">boolean</span> <span class="hljs-title">isAccountTypeIccCard</span><span class="hljs-params">(String accountTypeString)</span> </span>&#123;<br>     <span class="hljs-keyword">boolean</span> isIccCardAccount = (ACCOUNT_TYPE_SIM.equals(accountTypeString)<br>             || ACCOUNT_TYPE_USIM.equals(accountTypeString)<br>             || ACCOUNT_TYPE_RUIM.equals(accountTypeString)<br>             || ACCOUNT_TYPE_CSIM.equals(accountTypeString));<br>     <span class="hljs-comment">//Log.d(TAG, "account " + accountTypeString + " is IccCard? " + isIccCardAccount);</span><br>     <span class="hljs-keyword">return</span> isIccCardAccount;<br> &#125;<br></code></pre></td></tr></table></figure>
 
-private static boolean isAccountTypeIccCard(String accountTypeString) {
-     boolean isIccCardAccount = (ACCOUNT_TYPE_SIM.equals(accountTypeString)
-             || ACCOUNT_TYPE_USIM.equals(accountTypeString)
-             || ACCOUNT_TYPE_RUIM.equals(accountTypeString)
-             || ACCOUNT_TYPE_CSIM.equals(accountTypeString));
-     //Log.d(TAG, &quot;account &quot; + accountTypeString + &quot; is IccCard? &quot; + isIccCardAccount);
-     return isIccCardAccount;
- }</code></pre><hr>
+<hr>
 <h3 id="app监听短信接收，只能监听到短短信，监听不到长短信："><a href="#app监听短信接收，只能监听到短短信，监听不到长短信：" class="headerlink" title="app监听短信接收，只能监听到短短信，监听不到长短信："></a>app监听短信接收，只能监听到短短信，监听不到长短信：</h3><p>检查系统短信应用Mms，长短信是需要系统短信应用去操作拼接的</p>
 <hr>
 <h3 id="修改系统蓝牙功能支持类型"><a href="#修改系统蓝牙功能支持类型" class="headerlink" title="修改系统蓝牙功能支持类型"></a>修改系统蓝牙功能支持类型</h3><p>vendor/xxxx/proprietary/packages/apps/Bluetooth/res/values/config.xml</p>
 <p>修改如下对应功能支持的值</p>
-<pre><code>&lt;bool name=&quot;profile_supported_a2dp&quot;&gt;true&lt;/bool&gt;
-&lt;bool name=&quot;profile_supported_a2dp_sink&quot;&gt;false&lt;/bool&gt;
-&lt;bool name=&quot;profile_supported_hdp&quot;&gt;false&lt;/bool&gt;
-&lt;bool name=&quot;profile_supported_hs_hfp&quot;&gt;true&lt;/bool&gt;
-&lt;bool name=&quot;profile_supported_hfpclient&quot;&gt;false&lt;/bool&gt;
-&lt;bool name=&quot;profile_supported_hid&quot;&gt;false&lt;/bool&gt;
-&lt;bool name=&quot;profile_supported_opp&quot;&gt;false&lt;/bool&gt;
-&lt;bool name=&quot;profile_supported_pan&quot;&gt;false&lt;/bool&gt;
-&lt;bool name=&quot;profile_supported_pbap&quot;&gt;false&lt;/bool&gt;
-&lt;bool name=&quot;profile_supported_gatt&quot;&gt;true&lt;/bool&gt;
-&lt;bool name=&quot;pbap_include_photos_in_vcard&quot;&gt;false&lt;/bool&gt;
-&lt;bool name=&quot;pbap_use_profile_for_owner_vcard&quot;&gt;false&lt;/bool&gt;
-&lt;bool name=&quot;profile_supported_map&quot;&gt;false&lt;/bool&gt;
-&lt;bool name=&quot;profile_supported_avrcp_controller&quot;&gt;false&lt;/bool&gt;
-&lt;bool name=&quot;profile_supported_sap&quot;&gt;false&lt;/bool&gt;
-&lt;bool name=&quot;profile_supported_pbapclient&quot;&gt;false&lt;/bool&gt;
-&lt;bool name=&quot;profile_supported_mapmce&quot;&gt;false&lt;/bool&gt;
-&lt;bool name=&quot;profile_supported_hidd&quot;&gt;false&lt;/bool&gt;</code></pre><hr>
-<hr>
-<hr>
-<hr>
-<hr>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><code class="hljs xml"><span class="hljs-tag">&lt;<span class="hljs-name">bool</span> <span class="hljs-attr">name</span>=<span class="hljs-string">"profile_supported_a2dp"</span>&gt;</span>true<span class="hljs-tag">&lt;/<span class="hljs-name">bool</span>&gt;</span><br><span class="hljs-tag">&lt;<span class="hljs-name">bool</span> <span class="hljs-attr">name</span>=<span class="hljs-string">"profile_supported_a2dp_sink"</span>&gt;</span>false<span class="hljs-tag">&lt;/<span class="hljs-name">bool</span>&gt;</span><br><span class="hljs-tag">&lt;<span class="hljs-name">bool</span> <span class="hljs-attr">name</span>=<span class="hljs-string">"profile_supported_hdp"</span>&gt;</span>false<span class="hljs-tag">&lt;/<span class="hljs-name">bool</span>&gt;</span><br><span class="hljs-tag">&lt;<span class="hljs-name">bool</span> <span class="hljs-attr">name</span>=<span class="hljs-string">"profile_supported_hs_hfp"</span>&gt;</span>true<span class="hljs-tag">&lt;/<span class="hljs-name">bool</span>&gt;</span><br><span class="hljs-tag">&lt;<span class="hljs-name">bool</span> <span class="hljs-attr">name</span>=<span class="hljs-string">"profile_supported_hfpclient"</span>&gt;</span>false<span class="hljs-tag">&lt;/<span class="hljs-name">bool</span>&gt;</span><br><span class="hljs-tag">&lt;<span class="hljs-name">bool</span> <span class="hljs-attr">name</span>=<span class="hljs-string">"profile_supported_hid"</span>&gt;</span>false<span class="hljs-tag">&lt;/<span class="hljs-name">bool</span>&gt;</span><br><span class="hljs-tag">&lt;<span class="hljs-name">bool</span> <span class="hljs-attr">name</span>=<span class="hljs-string">"profile_supported_opp"</span>&gt;</span>false<span class="hljs-tag">&lt;/<span class="hljs-name">bool</span>&gt;</span><br><span class="hljs-tag">&lt;<span class="hljs-name">bool</span> <span class="hljs-attr">name</span>=<span class="hljs-string">"profile_supported_pan"</span>&gt;</span>false<span class="hljs-tag">&lt;/<span class="hljs-name">bool</span>&gt;</span><br><span class="hljs-tag">&lt;<span class="hljs-name">bool</span> <span class="hljs-attr">name</span>=<span class="hljs-string">"profile_supported_pbap"</span>&gt;</span>false<span class="hljs-tag">&lt;/<span class="hljs-name">bool</span>&gt;</span><br><span class="hljs-tag">&lt;<span class="hljs-name">bool</span> <span class="hljs-attr">name</span>=<span class="hljs-string">"profile_supported_gatt"</span>&gt;</span>true<span class="hljs-tag">&lt;/<span class="hljs-name">bool</span>&gt;</span><br><span class="hljs-tag">&lt;<span class="hljs-name">bool</span> <span class="hljs-attr">name</span>=<span class="hljs-string">"pbap_include_photos_in_vcard"</span>&gt;</span>false<span class="hljs-tag">&lt;/<span class="hljs-name">bool</span>&gt;</span><br><span class="hljs-tag">&lt;<span class="hljs-name">bool</span> <span class="hljs-attr">name</span>=<span class="hljs-string">"pbap_use_profile_for_owner_vcard"</span>&gt;</span>false<span class="hljs-tag">&lt;/<span class="hljs-name">bool</span>&gt;</span><br><span class="hljs-tag">&lt;<span class="hljs-name">bool</span> <span class="hljs-attr">name</span>=<span class="hljs-string">"profile_supported_map"</span>&gt;</span>false<span class="hljs-tag">&lt;/<span class="hljs-name">bool</span>&gt;</span><br><span class="hljs-tag">&lt;<span class="hljs-name">bool</span> <span class="hljs-attr">name</span>=<span class="hljs-string">"profile_supported_avrcp_controller"</span>&gt;</span>false<span class="hljs-tag">&lt;/<span class="hljs-name">bool</span>&gt;</span><br><span class="hljs-tag">&lt;<span class="hljs-name">bool</span> <span class="hljs-attr">name</span>=<span class="hljs-string">"profile_supported_sap"</span>&gt;</span>false<span class="hljs-tag">&lt;/<span class="hljs-name">bool</span>&gt;</span><br><span class="hljs-tag">&lt;<span class="hljs-name">bool</span> <span class="hljs-attr">name</span>=<span class="hljs-string">"profile_supported_pbapclient"</span>&gt;</span>false<span class="hljs-tag">&lt;/<span class="hljs-name">bool</span>&gt;</span><br><span class="hljs-tag">&lt;<span class="hljs-name">bool</span> <span class="hljs-attr">name</span>=<span class="hljs-string">"profile_supported_mapmce"</span>&gt;</span>false<span class="hljs-tag">&lt;/<span class="hljs-name">bool</span>&gt;</span><br><span class="hljs-tag">&lt;<span class="hljs-name">bool</span> <span class="hljs-attr">name</span>=<span class="hljs-string">"profile_supported_hidd"</span>&gt;</span>false<span class="hljs-tag">&lt;/<span class="hljs-name">bool</span>&gt;</span><br></code></pre></td></tr></table></figure>
+
+
+
 <hr>
 <hr>
 
@@ -652,44 +512,6 @@ private static boolean isAccountTypeIccCard(String accountTypeString) {
         
         <article class="media">
             
-            <a href="/2020/02/28/java_certificate_verify/java_certificate_verify_and_decript/" class="media-left">
-                <p class="image is-64x64">
-                    <img class="thumbnail" src="/gallery/5.jpeg" alt="JAVA根证书验证用户证书是否可信和解密数据">
-                </p>
-            </a>
-            
-            <div class="media-content">
-                <div class="content">
-                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2020-02-27T16:00:00.000Z">2020-02-28</time></div>
-                    <a href="/2020/02/28/java_certificate_verify/java_certificate_verify_and_decript/" class="title has-link-black-ter is-size-6 has-text-weight-normal">JAVA根证书验证用户证书是否可信和解密数据</a>
-                    <p class="is-size-7 is-uppercase">
-                        <a class="has-link-grey -link" href="/categories/Java-Certificate/">Java Certificate</a>
-                    </p>
-                </div>
-            </div>
-        </article>
-        
-        <article class="media">
-            
-            <a href="/2020/02/28/uvccamera/android_uvccamera_experience_and_bug/" class="media-left">
-                <p class="image is-64x64">
-                    <img class="thumbnail" src="/gallery/3.jpeg" alt="Android UVCCamera/libuvc遇到的卡死崩溃bug和解决方法">
-                </p>
-            </a>
-            
-            <div class="media-content">
-                <div class="content">
-                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2020-02-27T16:00:00.000Z">2020-02-28</time></div>
-                    <a href="/2020/02/28/uvccamera/android_uvccamera_experience_and_bug/" class="title has-link-black-ter is-size-6 has-text-weight-normal">Android UVCCamera/libuvc遇到的卡死崩溃bug和解决方法</a>
-                    <p class="is-size-7 is-uppercase">
-                        <a class="has-link-grey -link" href="/categories/Android-UVCCamera-libuvc/">Android UVCCamera/libuvc</a>
-                    </p>
-                </div>
-            </div>
-        </article>
-        
-        <article class="media">
-            
             <a href="/2019/12/07/android_driver/camera_driver_config_experience/" class="media-left">
                 <p class="image is-64x64">
                     <img class="thumbnail" src="/gallery/11.jpeg" alt="Android Camera Driver平台(展讯、MTK)适配经验">
@@ -728,6 +550,44 @@ private static boolean isAccountTypeIccCard(String accountTypeString) {
         
         <article class="media">
             
+            <a href="/2019/08/28/java_certificate_verify/java_certificate_verify_and_decript/" class="media-left">
+                <p class="image is-64x64">
+                    <img class="thumbnail" src="/gallery/5.jpeg" alt="JAVA根证书验证用户证书是否可信和解密数据">
+                </p>
+            </a>
+            
+            <div class="media-content">
+                <div class="content">
+                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2019-08-27T16:00:00.000Z">2019-08-28</time></div>
+                    <a href="/2019/08/28/java_certificate_verify/java_certificate_verify_and_decript/" class="title has-link-black-ter is-size-6 has-text-weight-normal">JAVA根证书验证用户证书是否可信和解密数据</a>
+                    <p class="is-size-7 is-uppercase">
+                        <a class="has-link-grey -link" href="/categories/Java-Certificate/">Java Certificate</a>
+                    </p>
+                </div>
+            </div>
+        </article>
+        
+        <article class="media">
+            
+            <a href="/2019/08/27/uvccamera/android_uvccamera_experience_and_bug/" class="media-left">
+                <p class="image is-64x64">
+                    <img class="thumbnail" src="/gallery/3.jpeg" alt="Android UVCCamera/libuvc遇到的卡死崩溃bug和解决方法">
+                </p>
+            </a>
+            
+            <div class="media-content">
+                <div class="content">
+                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2019-08-26T16:00:00.000Z">2019-08-27</time></div>
+                    <a href="/2019/08/27/uvccamera/android_uvccamera_experience_and_bug/" class="title has-link-black-ter is-size-6 has-text-weight-normal">Android UVCCamera/libuvc遇到的卡死崩溃bug和解决方法</a>
+                    <p class="is-size-7 is-uppercase">
+                        <a class="has-link-grey -link" href="/categories/Android-UVCCamera-libuvc/">Android UVCCamera/libuvc</a>
+                    </p>
+                </div>
+            </div>
+        </article>
+        
+        <article class="media">
+            
             <a href="/2019/04/02/android_system/android_sprd_mtk_alarm_group_whitelist/" class="media-left">
                 <p class="image is-64x64">
                     <img class="thumbnail" src="/gallery/7.jpeg" alt="Android 展讯/MTK Alarm白名单设置">
@@ -757,17 +617,6 @@ private static boolean isAccountTypeIccCard(String accountTypeString) {
         <ul class="menu-list">
         
         <li>
-            <a class="level is-marginless" href="/archives/2020/02/">
-                <span class="level-start">
-                    <span class="level-item">February 2020</span>
-                </span>
-                <span class="level-end">
-                    <span class="level-item tag">2</span>
-                </span>
-            </a>
-        </li>
-        
-        <li>
             <a class="level is-marginless" href="/archives/2019/12/">
                 <span class="level-start">
                     <span class="level-item">December 2019</span>
@@ -785,6 +634,17 @@ private static boolean isAccountTypeIccCard(String accountTypeString) {
                 </span>
                 <span class="level-end">
                     <span class="level-item tag">1</span>
+                </span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2019/08/">
+                <span class="level-start">
+                    <span class="level-item">August 2019</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">2</span>
                 </span>
             </a>
         </li>
@@ -1074,44 +934,6 @@ private static boolean isAccountTypeIccCard(String accountTypeString) {
         
         <article class="media">
             
-            <a href="/2020/02/28/java_certificate_verify/java_certificate_verify_and_decript/" class="media-left">
-                <p class="image is-64x64">
-                    <img class="thumbnail" src="/gallery/5.jpeg" alt="JAVA根证书验证用户证书是否可信和解密数据">
-                </p>
-            </a>
-            
-            <div class="media-content">
-                <div class="content">
-                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2020-02-27T16:00:00.000Z">2020-02-28</time></div>
-                    <a href="/2020/02/28/java_certificate_verify/java_certificate_verify_and_decript/" class="title has-link-black-ter is-size-6 has-text-weight-normal">JAVA根证书验证用户证书是否可信和解密数据</a>
-                    <p class="is-size-7 is-uppercase">
-                        <a class="has-link-grey -link" href="/categories/Java-Certificate/">Java Certificate</a>
-                    </p>
-                </div>
-            </div>
-        </article>
-        
-        <article class="media">
-            
-            <a href="/2020/02/28/uvccamera/android_uvccamera_experience_and_bug/" class="media-left">
-                <p class="image is-64x64">
-                    <img class="thumbnail" src="/gallery/3.jpeg" alt="Android UVCCamera/libuvc遇到的卡死崩溃bug和解决方法">
-                </p>
-            </a>
-            
-            <div class="media-content">
-                <div class="content">
-                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2020-02-27T16:00:00.000Z">2020-02-28</time></div>
-                    <a href="/2020/02/28/uvccamera/android_uvccamera_experience_and_bug/" class="title has-link-black-ter is-size-6 has-text-weight-normal">Android UVCCamera/libuvc遇到的卡死崩溃bug和解决方法</a>
-                    <p class="is-size-7 is-uppercase">
-                        <a class="has-link-grey -link" href="/categories/Android-UVCCamera-libuvc/">Android UVCCamera/libuvc</a>
-                    </p>
-                </div>
-            </div>
-        </article>
-        
-        <article class="media">
-            
             <a href="/2019/12/07/android_driver/camera_driver_config_experience/" class="media-left">
                 <p class="image is-64x64">
                     <img class="thumbnail" src="/gallery/11.jpeg" alt="Android Camera Driver平台(展讯、MTK)适配经验">
@@ -1150,6 +972,44 @@ private static boolean isAccountTypeIccCard(String accountTypeString) {
         
         <article class="media">
             
+            <a href="/2019/08/28/java_certificate_verify/java_certificate_verify_and_decript/" class="media-left">
+                <p class="image is-64x64">
+                    <img class="thumbnail" src="/gallery/5.jpeg" alt="JAVA根证书验证用户证书是否可信和解密数据">
+                </p>
+            </a>
+            
+            <div class="media-content">
+                <div class="content">
+                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2019-08-27T16:00:00.000Z">2019-08-28</time></div>
+                    <a href="/2019/08/28/java_certificate_verify/java_certificate_verify_and_decript/" class="title has-link-black-ter is-size-6 has-text-weight-normal">JAVA根证书验证用户证书是否可信和解密数据</a>
+                    <p class="is-size-7 is-uppercase">
+                        <a class="has-link-grey -link" href="/categories/Java-Certificate/">Java Certificate</a>
+                    </p>
+                </div>
+            </div>
+        </article>
+        
+        <article class="media">
+            
+            <a href="/2019/08/27/uvccamera/android_uvccamera_experience_and_bug/" class="media-left">
+                <p class="image is-64x64">
+                    <img class="thumbnail" src="/gallery/3.jpeg" alt="Android UVCCamera/libuvc遇到的卡死崩溃bug和解决方法">
+                </p>
+            </a>
+            
+            <div class="media-content">
+                <div class="content">
+                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2019-08-26T16:00:00.000Z">2019-08-27</time></div>
+                    <a href="/2019/08/27/uvccamera/android_uvccamera_experience_and_bug/" class="title has-link-black-ter is-size-6 has-text-weight-normal">Android UVCCamera/libuvc遇到的卡死崩溃bug和解决方法</a>
+                    <p class="is-size-7 is-uppercase">
+                        <a class="has-link-grey -link" href="/categories/Android-UVCCamera-libuvc/">Android UVCCamera/libuvc</a>
+                    </p>
+                </div>
+            </div>
+        </article>
+        
+        <article class="media">
+            
             <a href="/2019/04/02/android_system/android_sprd_mtk_alarm_group_whitelist/" class="media-left">
                 <p class="image is-64x64">
                     <img class="thumbnail" src="/gallery/7.jpeg" alt="Android 展讯/MTK Alarm白名单设置">
@@ -1179,17 +1039,6 @@ private static boolean isAccountTypeIccCard(String accountTypeString) {
         <ul class="menu-list">
         
         <li>
-            <a class="level is-marginless" href="/archives/2020/02/">
-                <span class="level-start">
-                    <span class="level-item">February 2020</span>
-                </span>
-                <span class="level-end">
-                    <span class="level-item tag">2</span>
-                </span>
-            </a>
-        </li>
-        
-        <li>
             <a class="level is-marginless" href="/archives/2019/12/">
                 <span class="level-start">
                     <span class="level-item">December 2019</span>
@@ -1207,6 +1056,17 @@ private static boolean isAccountTypeIccCard(String accountTypeString) {
                 </span>
                 <span class="level-end">
                     <span class="level-item tag">1</span>
+                </span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2019/08/">
+                <span class="level-start">
+                    <span class="level-item">August 2019</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">2</span>
                 </span>
             </a>
         </li>
