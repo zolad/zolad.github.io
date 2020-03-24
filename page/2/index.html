@@ -121,6 +121,64 @@
 <div class="card">
     
     <div class="card-image">
+        <a href="/2018/12/19/opencv/opencv_correct_image/" class="image is-7by1">
+            <img class="thumbnail" src="/gallery/4.jpeg" alt="使用OpenCV对二维码/条形码进行矫正">
+        </a>
+    </div>
+    
+    <div class="card-content article ">
+        
+        <div class="level article-meta is-size-7 is-uppercase is-mobile is-overflow-x-auto">
+            <div class="level-left">
+                <time class="level-item has-text-grey" datetime="2018-12-19T09:00:00.000Z">2018-12-19</time>
+                
+                <div class="level-item">
+                <a class="has-link-grey -link" href="/categories/OpenCV/">OpenCV</a>
+                </div>
+                
+                
+                <span class="level-item has-text-grey">
+                    
+                    
+                    4 minutes read (About 592 words)
+                </span>
+                
+                
+            </div>
+        </div>
+        
+        <h1 class="title is-size-3 is-size-4-mobile has-text-weight-normal">
+            
+                <a class="has-link-black-ter" href="/2018/12/19/opencv/opencv_correct_image/">使用OpenCV对二维码/条形码进行矫正</a>
+            
+        </h1>
+        <div class="content">
+            <p>OpenCV提供了很多图像处理的API，我们可以利用这些API做一些矫正四边形物体比如二维码/条码的工作。</p>
+<p>大概过程如下：</p>
+<p>resize（图像尺寸缩小）-&gt;threshold（二值化）-&gt;erode（几次膨胀腐蚀）-&gt;HoughLines（寻找直线）-&gt;筛除出二维码/一维码的边线，计算出边线的倾斜角度-&gt;warpAffine（对原图像进行仿射变换）</p>
+<p>下面贴具体的代码：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-function"><span class="hljs-keyword">void</span> <span class="hljs-title">correctImage</span><span class="hljs-params">(<span class="hljs-keyword">unsigned</span> <span class="hljs-keyword">char</span> *nv21, <span class="hljs-keyword">int</span> <span class="hljs-built_in">width</span>, <span class="hljs-keyword">int</span> <span class="hljs-built_in">height</span>, <span class="hljs-keyword">unsigned</span> <span class="hljs-keyword">char</span> *dest)</span> </span>&#123;<br><br>    <span class="hljs-keyword">int</span> resizeWidth = <span class="hljs-built_in">width</span>/<span class="hljs-number">2</span>;<br>    <span class="hljs-keyword">int</span> resizeHeight = <span class="hljs-built_in">height</span>/<span class="hljs-number">2</span>;<br><br>    <span class="hljs-comment">//初始化需要使用的Mat</span><br>    <span class="hljs-function">Mat <span class="hljs-title">imgMat</span><span class="hljs-params">(<span class="hljs-built_in">height</span> * <span class="hljs-number">3</span> / <span class="hljs-number">2</span>, <span class="hljs-built_in">width</span>, CV_8UC1, nv21)</span></span>;<br>    <span class="hljs-comment">//灰度图Mat</span><br>    <span class="hljs-function">Mat <span class="hljs-title">grayMat</span><span class="hljs-params">(<span class="hljs-built_in">height</span>, <span class="hljs-built_in">width</span>, CV_8UC1)</span></span>;<br>    <span class="hljs-comment">//最终结果的Mat</span><br>    <span class="hljs-function">Mat <span class="hljs-title">resultMat</span><span class="hljs-params">(<span class="hljs-built_in">height</span>, <span class="hljs-built_in">width</span>, CV_8UC1,dest)</span></span>;<br>    <span class="hljs-comment">//过程Mat</span><br>    <span class="hljs-function">Mat <span class="hljs-title">innerMat</span><span class="hljs-params">(resizeHeight, resizeWidth, CV_8UC1)</span></span>;<br>    <span class="hljs-function">Mat <span class="hljs-title">binMat</span><span class="hljs-params">(resizeHeight, resizeWidth, CV_8UC1)</span></span>;<br><br>    <span class="hljs-comment">//将yuv420sp转为灰度图</span><br>    cvtColor(imgMat, grayMat, CV_YUV420sp2GRAY);<br><br>    <span class="hljs-comment">//缩小图像尺寸以减少后面图像处理工作的耗时</span><br>    resize(grayMat, innerMat, Size(resizeWidth, resizeHeight));<br><br>    <span class="hljs-comment">//自适应二值化参数</span><br>    <span class="hljs-keyword">int</span> blockSize = <span class="hljs-number">3</span>;<br>	<span class="hljs-keyword">int</span> constValue = <span class="hljs-number">5</span>;<br>	<span class="hljs-keyword">const</span> <span class="hljs-keyword">int</span> maxVal = <span class="hljs-number">255</span>;<br><br>    <span class="hljs-comment">//自适应二值化</span><br>    adaptiveThreshold(innerMat, binMat, maxVal,ADAPTIVE_THRESH_GAUSSIAN_C, THRESH_BINARY,<br>		blockSize, constValue);<br><br>    <span class="hljs-keyword">int</span> rectWidth = resizeWidth / <span class="hljs-number">5</span>;<br>    <span class="hljs-keyword">int</span> rectHeight = resizeHeight / <span class="hljs-number">5</span>;<br>    <span class="hljs-keyword">int</span> centerX = resizeWidth / <span class="hljs-number">2</span>, centerY = resizeHeight / <span class="hljs-number">2</span>;<br><br>    Mat element = getStructuringElement(<span class="hljs-number">2</span>, Size(<span class="hljs-number">7</span>, <span class="hljs-number">7</span>));<br><br>    <span class="hljs-comment">//膨胀腐蚀</span><br>    <span class="hljs-keyword">for</span> (<span class="hljs-keyword">int</span> i = <span class="hljs-number">0</span>; i &lt; <span class="hljs-number">2</span>; i++) &#123;<br>        erode(innerMat, innerMat, element);<br>        i++;<br>    &#125;<br><br>    erode(innerMat, binMat, element);<br>    binMat = innerMat - binMat;<br><br>    <span class="hljs-comment">//寻找直线</span><br>    <span class="hljs-built_in">vector</span>&lt;Vec2f&gt; lines;<br>    HoughLines(binMat, lines, <span class="hljs-number">1</span>, CV_PI / <span class="hljs-number">150</span>, <span class="hljs-number">90</span>, <span class="hljs-number">0</span>, <span class="hljs-number">0</span>);<br>    LOGV(<span class="hljs-string">"OpenCV_CorrectImage寻找边线，边线数量:%d"</span>, lines.<span class="hljs-built_in">size</span>());<br><br>    <span class="hljs-comment">//由于边线可能有很多，这里最多取8条边线来计算角度</span><br>    <span class="hljs-keyword">int</span> lineNum = lines.<span class="hljs-built_in">size</span>() &gt; <span class="hljs-number">8</span> ? <span class="hljs-number">8</span> : lines.<span class="hljs-built_in">size</span>();<br>    <span class="hljs-keyword">float</span> sum = <span class="hljs-number">0</span>;<br><br>    <span class="hljs-comment">//num参数记录倾斜的线条的数量</span><br>    <span class="hljs-keyword">int</span> num = <span class="hljs-number">0</span>;<br>    <span class="hljs-keyword">for</span> (<span class="hljs-keyword">int</span> i = <span class="hljs-number">0</span>; i &lt; lineNum; i++) &#123;<br>     <br>        <span class="hljs-keyword">float</span> theta = lines[i][<span class="hljs-number">1</span>];<br>        <span class="hljs-comment">//各个角度对应的theta值,相当于:角度/180*PI</span><br>        <span class="hljs-comment">//90-&gt;1.5708</span><br>        <span class="hljs-comment">//100 -&gt; 1.7453</span><br>        <span class="hljs-comment">//80 -&gt; 1.3963</span><br>        <span class="hljs-comment">//95-&gt;1.6580</span><br>        <span class="hljs-comment">//85-&gt;1.4835</span><br>        <span class="hljs-comment">//0 -&gt;0</span><br>        <span class="hljs-comment">//5-&gt;0.0872</span><br>        <span class="hljs-comment">//10 -&gt; 0.1745</span><br>        <span class="hljs-comment">//12  -&gt;0.209</span><br>        <span class="hljs-comment">//15 -&gt;0.2618</span><br>        <span class="hljs-comment">//180-&gt; 3.1415</span><br>        <span class="hljs-comment">//170 -&gt;2.967</span><br><br>        <span class="hljs-comment">// 过滤掉角度正常的，0-15度，80-100 ,170-180</span><br>        <span class="hljs-keyword">if</span> ((theta &gt;= <span class="hljs-number">0</span> &amp;&amp; theta &lt;= <span class="hljs-number">0.2618</span>) || (theta &gt;= <span class="hljs-number">1.3963</span> &amp;&amp; theta &lt;= <span class="hljs-number">1.7453</span>) ||<br>            (theta &gt;= <span class="hljs-number">2.967</span> &amp;&amp; theta &lt;= <span class="hljs-number">3.1416</span>)) &#123;<br>        &#125; <span class="hljs-keyword">else</span> &#123;<br>            <span class="hljs-keyword">if</span> (theta &gt;= <span class="hljs-number">1.5708</span>)<br>                theta = theta - <span class="hljs-number">1.5708</span>;<br>            LOGV(<span class="hljs-string">"OpenCV_CorrectImage寻找边线，角度:%f"</span>, theta);<br>            sum += theta;<br>            num += <span class="hljs-number">1</span>;<br>        &#125;<br>    &#125;<br><br>    <span class="hljs-comment">//需要矫正</span><br>    <span class="hljs-keyword">if</span> (num &gt; <span class="hljs-number">0</span>) &#123;<br>        <span class="hljs-keyword">float</span> average = sum / num;<br>        <span class="hljs-comment">//转成角度</span><br>        <span class="hljs-keyword">double</span> angle = average / CV_PI * <span class="hljs-number">180</span>;<br>        LOGV(<span class="hljs-string">"OpenCV_CorrectImage寻找边线，角度:%f"</span>, angle);<br><br>        <span class="hljs-comment">//如果矫正角度大于5才矫正</span><br>        <span class="hljs-keyword">if</span> (angle &gt; <span class="hljs-number">5</span>) &#123;<br>            Point2f center;<br>            center.x = <span class="hljs-keyword">float</span>(<span class="hljs-built_in">width</span> / <span class="hljs-number">2.0</span>);<br>            center.y = <span class="hljs-keyword">float</span>(<span class="hljs-built_in">height</span> / <span class="hljs-number">2.0</span>);<br>            Mat M = getRotationMatrix2D(center, angle, <span class="hljs-number">1</span>);<br>            <span class="hljs-comment">//仿射变换，背景色填充为黑色</span><br>            warpAffine(grayMat, resultMat, M, resultMat.<span class="hljs-built_in">size</span>(), <span class="hljs-number">1</span>, <span class="hljs-number">0</span>, Scalar(<span class="hljs-number">255</span>));          <br>            LOGV(<span class="hljs-string">"OpenCV_CorrectImage角度变换完成"</span>);<br>        &#125;<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>OpenCV很多图像处理的API有各种各样的参数，不同的参数会适合不同的场景，所以以上代码也不可能适应所有场景下的二维码/条码图片。</p>
+
+        </div>
+        
+        
+        
+    </div>
+</div>
+
+
+
+
+
+
+
+
+    
+<div class="card">
+    
+    <div class="card-image">
         <a href="/2018/12/13/zbar/zbar_usage_and_bug/" class="image is-7by1">
             <img class="thumbnail" src="/gallery/1.jpeg" alt="Zbar的使用建议及如何回避存在的Bug">
         </a>
@@ -244,6 +302,88 @@
 
 <p>&nbsp;</p>
 <p>这里还得说下，因为平台的不同，编译过程的参数、指令、文件都可能有差异，最好是根据/build/core/Makefile里的过程走，也可以参照其他kernel编译的相关文章。</p>
+
+        </div>
+        
+        
+        
+    </div>
+</div>
+
+
+
+
+
+
+
+
+    
+<div class="card">
+    
+    <div class="card-image">
+        <a href="/2018/05/19/opengl/opengl_experience/" class="image is-7by1">
+            <img class="thumbnail" src="/gallery/15.jpeg" alt="记录下使用OpenGL的经验">
+        </a>
+    </div>
+    
+    <div class="card-content article ">
+        
+        <div class="level article-meta is-size-7 is-uppercase is-mobile is-overflow-x-auto">
+            <div class="level-left">
+                <time class="level-item has-text-grey" datetime="2018-05-18T16:00:00.000Z">2018-05-19</time>
+                
+                <div class="level-item">
+                <a class="has-link-grey -link" href="/categories/OpenGL/">OpenGL</a>
+                </div>
+                
+                
+                <span class="level-item has-text-grey">
+                    
+                    
+                    4 minutes read (About 566 words)
+                </span>
+                
+                
+            </div>
+        </div>
+        
+        <h1 class="title is-size-3 is-size-4-mobile has-text-weight-normal">
+            
+                <a class="has-link-black-ter" href="/2018/05/19/opengl/opengl_experience/">记录下使用OpenGL的经验</a>
+            
+        </h1>
+        <div class="content">
+            <p>此篇文章记录下自己在android平台上使用opengl的经验，顺便记录下自己开源项目使用opengl的思路，内容会很零碎，因为只是随便整理记录下。</p>
+<hr>
+<p>opengl里的program 是可以复用的</p>
+<p>但是shader一旦绑定是不能复用的，一个program绑定一个顶点shader和一个片段shader</p>
+<hr>
+<p>opengl滤镜制作</p>
+<p>滤镜实际就是对图像的像素点色彩值进行多次加工，代码实现上就是自定义shader进行色彩处理</p>
+<p>例如亮度，就是r,g,b分别加上亮度r+0.1 ,g+0.1,b+0.1<br>hsv是把rgb转hsv，再叠加</p>
+<p>另外可以使用混合模式，减少渲染次数</p>
+<ul>
+<li><p><a href="https://cloud.tencent.com/developer/article/1132385">https://cloud.tencent.com/developer/article/1132385</a> “终端图像处理系列 - OpenGL混合模式的使用”</p>
+</li>
+<li><p><a href="https://blog.csdn.net/junzia/article/details/76580379">https://blog.csdn.net/junzia/article/details/76580379</a> “Android OpenGLES2.0（十八）——轻松搞定Blend颜色混合”</p>
+</li>
+</ul>
+<hr>
+<p>自己的开源项目BubbleTextureview实现思路</p>
+<p>具体是自定义绘制了一个气泡状的模型GLbubbleGeometry，另外基于GLTextureView，将TextureView的图像数据当纹理显示。</p>
+<p>GLtextureView 是模仿根据Glsurfaceview 改过来的，新建了一个Glthread 去链接EGL, 相关知识搜索OPENGL GLtextureView相关文章。</p>
+<p><img src="/opengl/BubbleTextureview1.png" alt="GLbubbleGeometry顶点"></p>
+<p>float[] vertices = new float[verticesSize]; 保存了所有顶点，不重复<br>short[] indices = new short[indicesSize]; 保存了三角形绘制的点顺序具体就是0，1，2，3，2，3，4，3，4，5 .。。。 这样，绘制根据这个点顺序去绘制</p>
+<p>topleftradius 是0-1的百分比圆角半径长度，适应opengl的0-1坐标系</p>
+<p>求圆角的多个三角形点坐标时用<br>vertices[currentOffset + 5] = center[0] + radius[0] * (float) Math.cos(rads);<br>x坐标为 中心点 +  半径*cos角度</p>
+<p>vertices[currentOffset + 6] = center[1] + radius[1] * (float) Math.sin(rads);<br>y坐标为 中心点 +  半径*sin角度</p>
+<p>π就是逆时针180°，-π就是顺时针180°</p>
+<p><img src="/opengl/BubbleTextureview2.png" alt="GLbubbleGeometry 圆角坐标计算"></p>
+<hr>
+<p>MediaCodec 要将surface里的数据转为混合为mp4,必须要4.3以上的手机<br>，因为EGLExt.eglPresentationTimeANDROID(mEGLDisplay, mEGLSurface, nsecs);</p>
+<p>这个设置surface时间的方法是必须api18的.</p>
+<p>如果不用MediaMuxer混合视频，可以用mp4parser这个开源库，就能在4.1的手机上转码视频为mp4</p>
+<hr>
 
         </div>
         
@@ -413,7 +553,7 @@
                     </p>
                     <a href="/archives">
                         <p class="title has-text-weight-normal">
-                            13
+                            15
                         </p>
                     </a>
                 </div>
@@ -425,7 +565,7 @@
                     </p>
                     <a href="/categories">
                         <p class="title has-text-weight-normal">
-                            9
+                            10
                         </p>
                     </a>
                 </div>
@@ -437,7 +577,7 @@
                     </p>
                     <a href="/tags">
                         <p class="title has-text-weight-normal">
-                            26
+                            29
                         </p>
                     </a>
                 </div>
@@ -530,7 +670,7 @@
                 <span class="level-item">Android System</span>
             </span>
             <span class="level-end">
-                <span class="level-item tag">2</span>
+                <span class="level-item tag">3</span>
             </span>
         </a></li><li>
         <a class="level is-marginless" href="/categories/Android-System-App/">
@@ -549,9 +689,9 @@
                 <span class="level-item tag">1</span>
             </span>
         </a></li><li>
-        <a class="level is-marginless" href="/categories/Java-Certificate/">
+        <a class="level is-marginless" href="/categories/Java/">
             <span class="level-start">
-                <span class="level-item">Java Certificate</span>
+                <span class="level-item">Java</span>
             </span>
             <span class="level-end">
                 <span class="level-item tag">1</span>
@@ -560,6 +700,14 @@
         <a class="level is-marginless" href="/categories/OpenCV/">
             <span class="level-start">
                 <span class="level-item">OpenCV</span>
+            </span>
+            <span class="level-end">
+                <span class="level-item tag">1</span>
+            </span>
+        </a></li><li>
+        <a class="level is-marginless" href="/categories/OpenGL/">
+            <span class="level-start">
+                <span class="level-item">OpenGL</span>
             </span>
             <span class="level-end">
                 <span class="level-item tag">1</span>
@@ -583,7 +731,7 @@
         <h3 class="menu-label">
             Tag Cloud
         </h3>
-        <a href="/tags/Alarm/" style="font-size: 10px;">Alarm</a> <a href="/tags/Android/" style="font-size: 20px;">Android</a> <a href="/tags/Android-Camera-Driver/" style="font-size: 10px;">Android Camera Driver</a> <a href="/tags/Android-Driver/" style="font-size: 10px;">Android Driver</a> <a href="/tags/Android-Java-framework/" style="font-size: 10px;">Android Java framework</a> <a href="/tags/Android-Kernel/" style="font-size: 10px;">Android Kernel</a> <a href="/tags/Android-KitKat/" style="font-size: 10px;">Android KitKat</a> <a href="/tags/Android-Map/" style="font-size: 10px;">Android Map</a> <a href="/tags/Android-System/" style="font-size: 10px;">Android System</a> <a href="/tags/Android-System-App/" style="font-size: 10px;">Android System App</a> <a href="/tags/Certificate-Verify/" style="font-size: 10px;">Certificate Verify</a> <a href="/tags/Decript/" style="font-size: 10px;">Decript</a> <a href="/tags/Dialer/" style="font-size: 10px;">Dialer</a> <a href="/tags/Incall/" style="font-size: 10px;">Incall</a> <a href="/tags/Java/" style="font-size: 10px;">Java</a> <a href="/tags/Key/" style="font-size: 10px;">Key</a> <a href="/tags/Map-SDK/" style="font-size: 10px;">Map SDK</a> <a href="/tags/MapView/" style="font-size: 10px;">MapView</a> <a href="/tags/OpenCV/" style="font-size: 10px;">OpenCV</a> <a href="/tags/PhoneNumber-WhiteList/" style="font-size: 10px;">PhoneNumber WhiteList</a> <a href="/tags/Power-Save/" style="font-size: 10px;">Power Save</a> <a href="/tags/SPRD/" style="font-size: 10px;">SPRD</a> <a href="/tags/UVCCamera/" style="font-size: 10px;">UVCCamera</a> <a href="/tags/Video-Call/" style="font-size: 10px;">Video Call</a> <a href="/tags/Zbar/" style="font-size: 20px;">Zbar</a> <a href="/tags/libuvc/" style="font-size: 10px;">libuvc</a>
+        <a href="/tags/Alarm/" style="font-size: 10px;">Alarm</a> <a href="/tags/Android/" style="font-size: 20px;">Android</a> <a href="/tags/Android-Camera-Driver/" style="font-size: 10px;">Android Camera Driver</a> <a href="/tags/Android-Driver/" style="font-size: 10px;">Android Driver</a> <a href="/tags/Android-Java-framework/" style="font-size: 10px;">Android Java framework</a> <a href="/tags/Android-Kernel/" style="font-size: 10px;">Android Kernel</a> <a href="/tags/Android-KitKat/" style="font-size: 10px;">Android KitKat</a> <a href="/tags/Android-Map/" style="font-size: 10px;">Android Map</a> <a href="/tags/Android-OpenGL/" style="font-size: 10px;">Android OpenGL</a> <a href="/tags/Android-System/" style="font-size: 20px;">Android System</a> <a href="/tags/Android-System-App/" style="font-size: 10px;">Android System App</a> <a href="/tags/Boot-Flow/" style="font-size: 10px;">Boot Flow</a> <a href="/tags/Certificate-Verify/" style="font-size: 10px;">Certificate Verify</a> <a href="/tags/Decript/" style="font-size: 10px;">Decript</a> <a href="/tags/Dialer/" style="font-size: 10px;">Dialer</a> <a href="/tags/Incall/" style="font-size: 10px;">Incall</a> <a href="/tags/Java/" style="font-size: 10px;">Java</a> <a href="/tags/Key/" style="font-size: 10px;">Key</a> <a href="/tags/Map-SDK/" style="font-size: 10px;">Map SDK</a> <a href="/tags/MapView/" style="font-size: 10px;">MapView</a> <a href="/tags/OpenCV/" style="font-size: 10px;">OpenCV</a> <a href="/tags/PhoneNumber-WhiteList/" style="font-size: 10px;">PhoneNumber WhiteList</a> <a href="/tags/Power-Save/" style="font-size: 10px;">Power Save</a> <a href="/tags/SPRD/" style="font-size: 10px;">SPRD</a> <a href="/tags/StartUp/" style="font-size: 10px;">StartUp</a> <a href="/tags/UVCCamera/" style="font-size: 10px;">UVCCamera</a> <a href="/tags/Video-Call/" style="font-size: 10px;">Video Call</a> <a href="/tags/Zbar/" style="font-size: 20px;">Zbar</a> <a href="/tags/libuvc/" style="font-size: 10px;">libuvc</a>
     </div>
 </div>
     
@@ -617,7 +765,7 @@
         
         <article class="media">
             
-            <a href="/2019/11/06/android_system_app/android_dialer_app_video_incall/" class="media-left">
+            <a href="/2019/11/06/android_java_framework/android_dialer_app_video_incall/" class="media-left">
                 <p class="image is-64x64">
                     <img class="thumbnail" src="/gallery/6.jpeg" alt="Android如何屏蔽通话界面的视频彩铃">
                 </p>
@@ -626,7 +774,7 @@
             <div class="media-content">
                 <div class="content">
                     <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2019-11-06T09:36:14.000Z">2019-11-06</time></div>
-                    <a href="/2019/11/06/android_system_app/android_dialer_app_video_incall/" class="title has-link-black-ter is-size-6 has-text-weight-normal">Android如何屏蔽通话界面的视频彩铃</a>
+                    <a href="/2019/11/06/android_java_framework/android_dialer_app_video_incall/" class="title has-link-black-ter is-size-6 has-text-weight-normal">Android如何屏蔽通话界面的视频彩铃</a>
                     <p class="is-size-7 is-uppercase">
                         <a class="has-link-grey -link" href="/categories/Android-System-App/">Android System App</a>
                     </p>
@@ -636,7 +784,7 @@
         
         <article class="media">
             
-            <a href="/2019/08/28/java_certificate_verify/java_certificate_verify_and_decript/" class="media-left">
+            <a href="/2019/08/28/java/java_certificate_verify_and_decript/" class="media-left">
                 <p class="image is-64x64">
                     <img class="thumbnail" src="/gallery/5.jpeg" alt="JAVA根证书验证用户证书是否可信和解密数据">
                 </p>
@@ -645,9 +793,9 @@
             <div class="media-content">
                 <div class="content">
                     <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2019-08-27T16:00:00.000Z">2019-08-28</time></div>
-                    <a href="/2019/08/28/java_certificate_verify/java_certificate_verify_and_decript/" class="title has-link-black-ter is-size-6 has-text-weight-normal">JAVA根证书验证用户证书是否可信和解密数据</a>
+                    <a href="/2019/08/28/java/java_certificate_verify_and_decript/" class="title has-link-black-ter is-size-6 has-text-weight-normal">JAVA根证书验证用户证书是否可信和解密数据</a>
                     <p class="is-size-7 is-uppercase">
-                        <a class="has-link-grey -link" href="/categories/Java-Certificate/">Java Certificate</a>
+                        <a class="has-link-grey -link" href="/categories/Java/">Java</a>
                     </p>
                 </div>
             </div>
@@ -674,16 +822,16 @@
         
         <article class="media">
             
-            <a href="/2019/04/02/android_system/android_sprd_mtk_alarm_group_whitelist/" class="media-left">
+            <a href="/2019/05/13/android_system/android_boot_flow_self_note/" class="media-left">
                 <p class="image is-64x64">
-                    <img class="thumbnail" src="/gallery/7.jpeg" alt="Android 展讯/MTK Alarm白名单设置">
+                    <img class="thumbnail" src="/gallery/14.jpeg" alt="Android启动流程-个人笔记">
                 </p>
             </a>
             
             <div class="media-content">
                 <div class="content">
-                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2019-04-01T16:00:00.000Z">2019-04-02</time></div>
-                    <a href="/2019/04/02/android_system/android_sprd_mtk_alarm_group_whitelist/" class="title has-link-black-ter is-size-6 has-text-weight-normal">Android 展讯/MTK Alarm白名单设置</a>
+                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2019-05-12T16:00:00.000Z">2019-05-13</time></div>
+                    <a href="/2019/05/13/android_system/android_boot_flow_self_note/" class="title has-link-black-ter is-size-6 has-text-weight-normal">Android启动流程-个人笔记</a>
                     <p class="is-size-7 is-uppercase">
                         <a class="has-link-grey -link" href="/categories/Android-System/">Android System</a>
                     </p>
@@ -736,6 +884,17 @@
         </li>
         
         <li>
+            <a class="level is-marginless" href="/archives/2019/05/">
+                <span class="level-start">
+                    <span class="level-item">May 2019</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">1</span>
+                </span>
+            </a>
+        </li>
+        
+        <li>
             <a class="level is-marginless" href="/archives/2019/04/">
                 <span class="level-start">
                     <span class="level-item">April 2019</span>
@@ -783,6 +942,17 @@
             <a class="level is-marginless" href="/archives/2018/10/">
                 <span class="level-start">
                     <span class="level-item">October 2018</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">1</span>
+                </span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2018/05/">
+                <span class="level-start">
+                    <span class="level-item">May 2018</span>
                 </span>
                 <span class="level-end">
                     <span class="level-item tag">1</span>
@@ -871,15 +1041,29 @@
                 </div>
                 
                 <div class="control">
+                    <a class="tags has-addons" href="/tags/Android-OpenGL/">
+                        <span class="tag">Android OpenGL</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
                     <a class="tags has-addons" href="/tags/Android-System/">
                         <span class="tag">Android System</span>
-                        <span class="tag is-grey">1</span>
+                        <span class="tag is-grey">2</span>
                     </a>
                 </div>
                 
                 <div class="control">
                     <a class="tags has-addons" href="/tags/Android-System-App/">
                         <span class="tag">Android System App</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Boot-Flow/">
+                        <span class="tag">Boot Flow</span>
                         <span class="tag is-grey">1</span>
                     </a>
                 </div>
@@ -964,6 +1148,13 @@
                 <div class="control">
                     <a class="tags has-addons" href="/tags/SPRD/">
                         <span class="tag">SPRD</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/StartUp/">
+                        <span class="tag">StartUp</span>
                         <span class="tag is-grey">1</span>
                     </a>
                 </div>
@@ -1039,7 +1230,7 @@
         
         <article class="media">
             
-            <a href="/2019/11/06/android_system_app/android_dialer_app_video_incall/" class="media-left">
+            <a href="/2019/11/06/android_java_framework/android_dialer_app_video_incall/" class="media-left">
                 <p class="image is-64x64">
                     <img class="thumbnail" src="/gallery/6.jpeg" alt="Android如何屏蔽通话界面的视频彩铃">
                 </p>
@@ -1048,7 +1239,7 @@
             <div class="media-content">
                 <div class="content">
                     <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2019-11-06T09:36:14.000Z">2019-11-06</time></div>
-                    <a href="/2019/11/06/android_system_app/android_dialer_app_video_incall/" class="title has-link-black-ter is-size-6 has-text-weight-normal">Android如何屏蔽通话界面的视频彩铃</a>
+                    <a href="/2019/11/06/android_java_framework/android_dialer_app_video_incall/" class="title has-link-black-ter is-size-6 has-text-weight-normal">Android如何屏蔽通话界面的视频彩铃</a>
                     <p class="is-size-7 is-uppercase">
                         <a class="has-link-grey -link" href="/categories/Android-System-App/">Android System App</a>
                     </p>
@@ -1058,7 +1249,7 @@
         
         <article class="media">
             
-            <a href="/2019/08/28/java_certificate_verify/java_certificate_verify_and_decript/" class="media-left">
+            <a href="/2019/08/28/java/java_certificate_verify_and_decript/" class="media-left">
                 <p class="image is-64x64">
                     <img class="thumbnail" src="/gallery/5.jpeg" alt="JAVA根证书验证用户证书是否可信和解密数据">
                 </p>
@@ -1067,9 +1258,9 @@
             <div class="media-content">
                 <div class="content">
                     <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2019-08-27T16:00:00.000Z">2019-08-28</time></div>
-                    <a href="/2019/08/28/java_certificate_verify/java_certificate_verify_and_decript/" class="title has-link-black-ter is-size-6 has-text-weight-normal">JAVA根证书验证用户证书是否可信和解密数据</a>
+                    <a href="/2019/08/28/java/java_certificate_verify_and_decript/" class="title has-link-black-ter is-size-6 has-text-weight-normal">JAVA根证书验证用户证书是否可信和解密数据</a>
                     <p class="is-size-7 is-uppercase">
-                        <a class="has-link-grey -link" href="/categories/Java-Certificate/">Java Certificate</a>
+                        <a class="has-link-grey -link" href="/categories/Java/">Java</a>
                     </p>
                 </div>
             </div>
@@ -1096,16 +1287,16 @@
         
         <article class="media">
             
-            <a href="/2019/04/02/android_system/android_sprd_mtk_alarm_group_whitelist/" class="media-left">
+            <a href="/2019/05/13/android_system/android_boot_flow_self_note/" class="media-left">
                 <p class="image is-64x64">
-                    <img class="thumbnail" src="/gallery/7.jpeg" alt="Android 展讯/MTK Alarm白名单设置">
+                    <img class="thumbnail" src="/gallery/14.jpeg" alt="Android启动流程-个人笔记">
                 </p>
             </a>
             
             <div class="media-content">
                 <div class="content">
-                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2019-04-01T16:00:00.000Z">2019-04-02</time></div>
-                    <a href="/2019/04/02/android_system/android_sprd_mtk_alarm_group_whitelist/" class="title has-link-black-ter is-size-6 has-text-weight-normal">Android 展讯/MTK Alarm白名单设置</a>
+                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2019-05-12T16:00:00.000Z">2019-05-13</time></div>
+                    <a href="/2019/05/13/android_system/android_boot_flow_self_note/" class="title has-link-black-ter is-size-6 has-text-weight-normal">Android启动流程-个人笔记</a>
                     <p class="is-size-7 is-uppercase">
                         <a class="has-link-grey -link" href="/categories/Android-System/">Android System</a>
                     </p>
@@ -1158,6 +1349,17 @@
         </li>
         
         <li>
+            <a class="level is-marginless" href="/archives/2019/05/">
+                <span class="level-start">
+                    <span class="level-item">May 2019</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">1</span>
+                </span>
+            </a>
+        </li>
+        
+        <li>
             <a class="level is-marginless" href="/archives/2019/04/">
                 <span class="level-start">
                     <span class="level-item">April 2019</span>
@@ -1205,6 +1407,17 @@
             <a class="level is-marginless" href="/archives/2018/10/">
                 <span class="level-start">
                     <span class="level-item">October 2018</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">1</span>
+                </span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2018/05/">
+                <span class="level-start">
+                    <span class="level-item">May 2018</span>
                 </span>
                 <span class="level-end">
                     <span class="level-item tag">1</span>
@@ -1293,15 +1506,29 @@
                 </div>
                 
                 <div class="control">
+                    <a class="tags has-addons" href="/tags/Android-OpenGL/">
+                        <span class="tag">Android OpenGL</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
                     <a class="tags has-addons" href="/tags/Android-System/">
                         <span class="tag">Android System</span>
-                        <span class="tag is-grey">1</span>
+                        <span class="tag is-grey">2</span>
                     </a>
                 </div>
                 
                 <div class="control">
                     <a class="tags has-addons" href="/tags/Android-System-App/">
                         <span class="tag">Android System App</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Boot-Flow/">
+                        <span class="tag">Boot Flow</span>
                         <span class="tag is-grey">1</span>
                     </a>
                 </div>
@@ -1386,6 +1613,13 @@
                 <div class="control">
                     <a class="tags has-addons" href="/tags/SPRD/">
                         <span class="tag">SPRD</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/StartUp/">
+                        <span class="tag">StartUp</span>
                         <span class="tag is-grey">1</span>
                     </a>
                 </div>

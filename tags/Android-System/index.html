@@ -131,6 +131,92 @@
 <div class="card">
     
     <div class="card-image">
+        <a href="/2019/05/13/android_system/android_boot_flow_self_note/" class="image is-7by1">
+            <img class="thumbnail" src="/gallery/14.jpeg" alt="Android启动流程-个人笔记">
+        </a>
+    </div>
+    
+    <div class="card-content article ">
+        
+        <div class="level article-meta is-size-7 is-uppercase is-mobile is-overflow-x-auto">
+            <div class="level-left">
+                <time class="level-item has-text-grey" datetime="2019-05-12T16:00:00.000Z">2019-05-13</time>
+                
+                <div class="level-item">
+                <a class="has-link-grey -link" href="/categories/Android-System/">Android System</a>
+                </div>
+                
+                
+                <span class="level-item has-text-grey">
+                    
+                    
+                    10 minutes read (About 1447 words)
+                </span>
+                
+                
+            </div>
+        </div>
+        
+        <h1 class="title is-size-3 is-size-4-mobile has-text-weight-normal">
+            
+                <a class="has-link-black-ter" href="/2019/05/13/android_system/android_boot_flow_self_note/">Android启动流程-个人笔记</a>
+            
+        </h1>
+        <div class="content">
+            <p>网上关于android启动流程的文章很多，对于我个人而言想额外补充一些知识点总结下。下面是一张网上很常见的android 启动流程图：</p>
+<p><img src="/reference/android_startuo_flow.png" alt="android 启动流程图"></p>
+<p>所以我就顺着这张流程图从上到下总结一下.</p>
+<hr>
+<h3 id="Boot-Rom"><a href="#Boot-Rom" class="headerlink" title="Boot Rom"></a>Boot Rom</h3><p>Boot Rom是嵌入在ARM芯片上的，当设备按下power键上电后，设备启动加电自检后从固定的地址开始执行，随后Boot Rom加载Bootloader代码进入内存，然后执行。</p>
+<hr>
+<h3 id="BootLoader"><a href="#BootLoader" class="headerlink" title="BootLoader"></a>BootLoader</h3><p>BootLoader类似windows上的BIOS程序，嵌入式系统有很多开源的BootLoader，比如很多Android平台厂商使用的U-boot（全名An Universal boot loader）就是开源的BootLoader。</p>
+<p>下图是Linux系统和Android系统(MTK平台)启动流程差别，左边为Linux系统，右边为Android系统(MTK平台)。</p>
+<p><img src="/reference/kernel_boot_android_boot.png" alt="Linux和Android启动流程差别"></p>
+<p>我们根据上面的对比图，可以发现Android的启动流程设计和Linux的区别。</p>
+<p>这里先说一点，MTK平台为了防止芯片被HACK，特意加了Pre-Loader这段程序，Pre-Loader为了保护芯片包含了一些安全功能和做一些安全检查，安全检查没问题后才加载启动U-boot程序，但Pre-Loader不是所有Android平台都有的，比如展讯的一些平台就没有。</p>
+<p>BootLoader主要工作包括配置系统Memory、加载kernel的image、传递参数给linux kernel、获取芯片信息、跳转到kernel执行。</p>
+<p>当然BootLoader还有一些其他的工作，比如设备在关机状态下，按下开机键，此时设备执行到BootLoader层，设备有最底启动电压，BootLoader里的代码会判断当前电池电压是否满足最低启动电压，来决定是否启动设备。</p>
+<p>还有判断进入recovery模式/充电模式/开机模式等，也是在这一层做判断。</p>
+<hr>
+<h3 id="Kernel"><a href="#Kernel" class="headerlink" title="Kernel"></a>Kernel</h3><p>在这一步会加载Linux内核，内核启动时，会设置缓存、被保护存储器、计划列表，加载驱动等等。设备很多硬件功能就是在这一层开始支持使用的。当内核完成系统设置，它会启动init进程。</p>
+<p>另外linux的watchdog进程也是这时候启动的，watchdog是为了保证系统正常运行，或者从死循环，死锁等一场状态退出的一种机制。防止系统死机卡死，但如果系统在bootloader阶段卡死，那watchdog就不起作用了。</p>
+<hr>
+<h3 id="init"><a href="#init" class="headerlink" title="init"></a>init</h3><p>init进程（/system/core/init）是Linux系统第一个在用户空间创建的进程。Linux 操作系统和驱动程序运行在内核空间，应用程序运行在用户空间。</p>
+<p>用户空间和内核空间使用的内存区域也是划分开的，也是为了避免用户空间的操作影响到内核空间。</p>
+<p>init进程会启动一些关键的系统进程，比如servicemanager服务管理、zygote孵化程序、surfaceflinger、mediaserver、Property Service(我们常用的系统属性，System Properties就是由这个服务管理的)等。</p>
+<p>init目录下有自己的语法脚本，比如init.rc、init.usb.rc、init.trace.rc等。</p>
+<hr>
+<h3 id="Zygote"><a href="#Zygote" class="headerlink" title="Zygote"></a>Zygote</h3><p>Zygote负责创建JVM的环境，工作包括创建Dalvik虚拟机实例、创建system_server进程、创建socket server进程（让其他进程和zygote进程通信）、DVM预加载初始化核心的库和资源文件。</p>
+<p><img src="/reference/zygote_flow.png" alt="Zygote启动流程"></p>
+<p>所有apk的进程都是由Zygote fork出来的，由于是linux父子进程的关系，DVM加载的core library和资源（一般是只读的）也可以被app进程使用,app进程只需要加载自己独有的资源，这样就节省下了内存。</p>
+<p>Linux的fork()使用写时拷贝（copy-on-write）页实现。如下图所示，创建P2子进程，内核只为P2子进程创建虚拟空间，不分配物理内存，和P1父进程共享物理空间，<br>当P1父进程中有更改相应段的行为发生时，才为子进程分配物理空间。<br><img src="/reference/linux_fork_copy_on_write.png" alt="linux fork copy-on-write"></p>
+<p>所以Zygote在创建子进程前加载的资源可以直接被子进程调用，同为了避免写入资源造成重新分配问题，所以资源一般都是只读的。</p>
+<p><img src="/reference/zygote_fork.png" alt="zygote fork"></p>
+<p>Android上层的所有程序都是运行在Dalvik VM上的。DVM只执行.dex的Dalvik executable文件。每一个Android应用程序在底层都对应有一个独立的DVM实例并在其解释下执行。</p>
+<p><img src="/reference/zygote_flow2.png" alt="Zygote和app进程"></p>
+<hr>
+<h3 id="System-Server"><a href="#System-Server" class="headerlink" title="System Server"></a>System Server</h3><p>System Server进程由Zygote进程fork出来，这个进程加载了其他很多关键的Service，比如PMS、WMS、AMS等，从这一层开始，各种各样的Service会进行扫描安装apk，启动Launcher，关闭开机动画，app启动运行，窗口显示管理等等的工作，这一层开始后网上的文章已经有很多了，就不重复了。</p>
+<hr>
+<p>这一篇文章注重概括android启动流程和补充一些细节，比较少讲android上层的启动知识点，时间已到深夜，晚安。</p>
+
+        </div>
+        
+        
+        
+    </div>
+</div>
+
+
+
+
+
+
+
+
+    
+<div class="card">
+    
+    <div class="card-image">
         <a href="/2019/04/02/android_system/android_sprd_mtk_alarm_group_whitelist/" class="image is-7by1">
             <img class="thumbnail" src="/gallery/7.jpeg" alt="Android 展讯/MTK Alarm白名单设置">
         </a>
@@ -240,7 +326,7 @@
                     </p>
                     <a href="/archives">
                         <p class="title has-text-weight-normal">
-                            13
+                            15
                         </p>
                     </a>
                 </div>
@@ -252,7 +338,7 @@
                     </p>
                     <a href="/categories">
                         <p class="title has-text-weight-normal">
-                            9
+                            10
                         </p>
                     </a>
                 </div>
@@ -264,7 +350,7 @@
                     </p>
                     <a href="/tags">
                         <p class="title has-text-weight-normal">
-                            26
+                            29
                         </p>
                     </a>
                 </div>
@@ -357,7 +443,7 @@
                 <span class="level-item">Android System</span>
             </span>
             <span class="level-end">
-                <span class="level-item tag">2</span>
+                <span class="level-item tag">3</span>
             </span>
         </a></li><li>
         <a class="level is-marginless" href="/categories/Android-System-App/">
@@ -376,9 +462,9 @@
                 <span class="level-item tag">1</span>
             </span>
         </a></li><li>
-        <a class="level is-marginless" href="/categories/Java-Certificate/">
+        <a class="level is-marginless" href="/categories/Java/">
             <span class="level-start">
-                <span class="level-item">Java Certificate</span>
+                <span class="level-item">Java</span>
             </span>
             <span class="level-end">
                 <span class="level-item tag">1</span>
@@ -387,6 +473,14 @@
         <a class="level is-marginless" href="/categories/OpenCV/">
             <span class="level-start">
                 <span class="level-item">OpenCV</span>
+            </span>
+            <span class="level-end">
+                <span class="level-item tag">1</span>
+            </span>
+        </a></li><li>
+        <a class="level is-marginless" href="/categories/OpenGL/">
+            <span class="level-start">
+                <span class="level-item">OpenGL</span>
             </span>
             <span class="level-end">
                 <span class="level-item tag">1</span>
@@ -410,7 +504,7 @@
         <h3 class="menu-label">
             Tag Cloud
         </h3>
-        <a href="/tags/Alarm/" style="font-size: 10px;">Alarm</a> <a href="/tags/Android/" style="font-size: 20px;">Android</a> <a href="/tags/Android-Camera-Driver/" style="font-size: 10px;">Android Camera Driver</a> <a href="/tags/Android-Driver/" style="font-size: 10px;">Android Driver</a> <a href="/tags/Android-Java-framework/" style="font-size: 10px;">Android Java framework</a> <a href="/tags/Android-Kernel/" style="font-size: 10px;">Android Kernel</a> <a href="/tags/Android-KitKat/" style="font-size: 10px;">Android KitKat</a> <a href="/tags/Android-Map/" style="font-size: 10px;">Android Map</a> <a href="/tags/Android-System/" style="font-size: 10px;">Android System</a> <a href="/tags/Android-System-App/" style="font-size: 10px;">Android System App</a> <a href="/tags/Certificate-Verify/" style="font-size: 10px;">Certificate Verify</a> <a href="/tags/Decript/" style="font-size: 10px;">Decript</a> <a href="/tags/Dialer/" style="font-size: 10px;">Dialer</a> <a href="/tags/Incall/" style="font-size: 10px;">Incall</a> <a href="/tags/Java/" style="font-size: 10px;">Java</a> <a href="/tags/Key/" style="font-size: 10px;">Key</a> <a href="/tags/Map-SDK/" style="font-size: 10px;">Map SDK</a> <a href="/tags/MapView/" style="font-size: 10px;">MapView</a> <a href="/tags/OpenCV/" style="font-size: 10px;">OpenCV</a> <a href="/tags/PhoneNumber-WhiteList/" style="font-size: 10px;">PhoneNumber WhiteList</a> <a href="/tags/Power-Save/" style="font-size: 10px;">Power Save</a> <a href="/tags/SPRD/" style="font-size: 10px;">SPRD</a> <a href="/tags/UVCCamera/" style="font-size: 10px;">UVCCamera</a> <a href="/tags/Video-Call/" style="font-size: 10px;">Video Call</a> <a href="/tags/Zbar/" style="font-size: 20px;">Zbar</a> <a href="/tags/libuvc/" style="font-size: 10px;">libuvc</a>
+        <a href="/tags/Alarm/" style="font-size: 10px;">Alarm</a> <a href="/tags/Android/" style="font-size: 20px;">Android</a> <a href="/tags/Android-Camera-Driver/" style="font-size: 10px;">Android Camera Driver</a> <a href="/tags/Android-Driver/" style="font-size: 10px;">Android Driver</a> <a href="/tags/Android-Java-framework/" style="font-size: 10px;">Android Java framework</a> <a href="/tags/Android-Kernel/" style="font-size: 10px;">Android Kernel</a> <a href="/tags/Android-KitKat/" style="font-size: 10px;">Android KitKat</a> <a href="/tags/Android-Map/" style="font-size: 10px;">Android Map</a> <a href="/tags/Android-OpenGL/" style="font-size: 10px;">Android OpenGL</a> <a href="/tags/Android-System/" style="font-size: 20px;">Android System</a> <a href="/tags/Android-System-App/" style="font-size: 10px;">Android System App</a> <a href="/tags/Boot-Flow/" style="font-size: 10px;">Boot Flow</a> <a href="/tags/Certificate-Verify/" style="font-size: 10px;">Certificate Verify</a> <a href="/tags/Decript/" style="font-size: 10px;">Decript</a> <a href="/tags/Dialer/" style="font-size: 10px;">Dialer</a> <a href="/tags/Incall/" style="font-size: 10px;">Incall</a> <a href="/tags/Java/" style="font-size: 10px;">Java</a> <a href="/tags/Key/" style="font-size: 10px;">Key</a> <a href="/tags/Map-SDK/" style="font-size: 10px;">Map SDK</a> <a href="/tags/MapView/" style="font-size: 10px;">MapView</a> <a href="/tags/OpenCV/" style="font-size: 10px;">OpenCV</a> <a href="/tags/PhoneNumber-WhiteList/" style="font-size: 10px;">PhoneNumber WhiteList</a> <a href="/tags/Power-Save/" style="font-size: 10px;">Power Save</a> <a href="/tags/SPRD/" style="font-size: 10px;">SPRD</a> <a href="/tags/StartUp/" style="font-size: 10px;">StartUp</a> <a href="/tags/UVCCamera/" style="font-size: 10px;">UVCCamera</a> <a href="/tags/Video-Call/" style="font-size: 10px;">Video Call</a> <a href="/tags/Zbar/" style="font-size: 20px;">Zbar</a> <a href="/tags/libuvc/" style="font-size: 10px;">libuvc</a>
     </div>
 </div>
     
@@ -444,7 +538,7 @@
         
         <article class="media">
             
-            <a href="/2019/11/06/android_system_app/android_dialer_app_video_incall/" class="media-left">
+            <a href="/2019/11/06/android_java_framework/android_dialer_app_video_incall/" class="media-left">
                 <p class="image is-64x64">
                     <img class="thumbnail" src="/gallery/6.jpeg" alt="Android如何屏蔽通话界面的视频彩铃">
                 </p>
@@ -453,7 +547,7 @@
             <div class="media-content">
                 <div class="content">
                     <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2019-11-06T09:36:14.000Z">2019-11-06</time></div>
-                    <a href="/2019/11/06/android_system_app/android_dialer_app_video_incall/" class="title has-link-black-ter is-size-6 has-text-weight-normal">Android如何屏蔽通话界面的视频彩铃</a>
+                    <a href="/2019/11/06/android_java_framework/android_dialer_app_video_incall/" class="title has-link-black-ter is-size-6 has-text-weight-normal">Android如何屏蔽通话界面的视频彩铃</a>
                     <p class="is-size-7 is-uppercase">
                         <a class="has-link-grey -link" href="/categories/Android-System-App/">Android System App</a>
                     </p>
@@ -463,7 +557,7 @@
         
         <article class="media">
             
-            <a href="/2019/08/28/java_certificate_verify/java_certificate_verify_and_decript/" class="media-left">
+            <a href="/2019/08/28/java/java_certificate_verify_and_decript/" class="media-left">
                 <p class="image is-64x64">
                     <img class="thumbnail" src="/gallery/5.jpeg" alt="JAVA根证书验证用户证书是否可信和解密数据">
                 </p>
@@ -472,9 +566,9 @@
             <div class="media-content">
                 <div class="content">
                     <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2019-08-27T16:00:00.000Z">2019-08-28</time></div>
-                    <a href="/2019/08/28/java_certificate_verify/java_certificate_verify_and_decript/" class="title has-link-black-ter is-size-6 has-text-weight-normal">JAVA根证书验证用户证书是否可信和解密数据</a>
+                    <a href="/2019/08/28/java/java_certificate_verify_and_decript/" class="title has-link-black-ter is-size-6 has-text-weight-normal">JAVA根证书验证用户证书是否可信和解密数据</a>
                     <p class="is-size-7 is-uppercase">
-                        <a class="has-link-grey -link" href="/categories/Java-Certificate/">Java Certificate</a>
+                        <a class="has-link-grey -link" href="/categories/Java/">Java</a>
                     </p>
                 </div>
             </div>
@@ -501,16 +595,16 @@
         
         <article class="media">
             
-            <a href="/2019/04/02/android_system/android_sprd_mtk_alarm_group_whitelist/" class="media-left">
+            <a href="/2019/05/13/android_system/android_boot_flow_self_note/" class="media-left">
                 <p class="image is-64x64">
-                    <img class="thumbnail" src="/gallery/7.jpeg" alt="Android 展讯/MTK Alarm白名单设置">
+                    <img class="thumbnail" src="/gallery/14.jpeg" alt="Android启动流程-个人笔记">
                 </p>
             </a>
             
             <div class="media-content">
                 <div class="content">
-                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2019-04-01T16:00:00.000Z">2019-04-02</time></div>
-                    <a href="/2019/04/02/android_system/android_sprd_mtk_alarm_group_whitelist/" class="title has-link-black-ter is-size-6 has-text-weight-normal">Android 展讯/MTK Alarm白名单设置</a>
+                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2019-05-12T16:00:00.000Z">2019-05-13</time></div>
+                    <a href="/2019/05/13/android_system/android_boot_flow_self_note/" class="title has-link-black-ter is-size-6 has-text-weight-normal">Android启动流程-个人笔记</a>
                     <p class="is-size-7 is-uppercase">
                         <a class="has-link-grey -link" href="/categories/Android-System/">Android System</a>
                     </p>
@@ -563,6 +657,17 @@
         </li>
         
         <li>
+            <a class="level is-marginless" href="/archives/2019/05/">
+                <span class="level-start">
+                    <span class="level-item">May 2019</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">1</span>
+                </span>
+            </a>
+        </li>
+        
+        <li>
             <a class="level is-marginless" href="/archives/2019/04/">
                 <span class="level-start">
                     <span class="level-item">April 2019</span>
@@ -610,6 +715,17 @@
             <a class="level is-marginless" href="/archives/2018/10/">
                 <span class="level-start">
                     <span class="level-item">October 2018</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">1</span>
+                </span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2018/05/">
+                <span class="level-start">
+                    <span class="level-item">May 2018</span>
                 </span>
                 <span class="level-end">
                     <span class="level-item tag">1</span>
@@ -698,15 +814,29 @@
                 </div>
                 
                 <div class="control">
+                    <a class="tags has-addons" href="/tags/Android-OpenGL/">
+                        <span class="tag">Android OpenGL</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
                     <a class="tags has-addons" href="/tags/Android-System/">
                         <span class="tag">Android System</span>
-                        <span class="tag is-grey">1</span>
+                        <span class="tag is-grey">2</span>
                     </a>
                 </div>
                 
                 <div class="control">
                     <a class="tags has-addons" href="/tags/Android-System-App/">
                         <span class="tag">Android System App</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Boot-Flow/">
+                        <span class="tag">Boot Flow</span>
                         <span class="tag is-grey">1</span>
                     </a>
                 </div>
@@ -791,6 +921,13 @@
                 <div class="control">
                     <a class="tags has-addons" href="/tags/SPRD/">
                         <span class="tag">SPRD</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/StartUp/">
+                        <span class="tag">StartUp</span>
                         <span class="tag is-grey">1</span>
                     </a>
                 </div>
@@ -866,7 +1003,7 @@
         
         <article class="media">
             
-            <a href="/2019/11/06/android_system_app/android_dialer_app_video_incall/" class="media-left">
+            <a href="/2019/11/06/android_java_framework/android_dialer_app_video_incall/" class="media-left">
                 <p class="image is-64x64">
                     <img class="thumbnail" src="/gallery/6.jpeg" alt="Android如何屏蔽通话界面的视频彩铃">
                 </p>
@@ -875,7 +1012,7 @@
             <div class="media-content">
                 <div class="content">
                     <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2019-11-06T09:36:14.000Z">2019-11-06</time></div>
-                    <a href="/2019/11/06/android_system_app/android_dialer_app_video_incall/" class="title has-link-black-ter is-size-6 has-text-weight-normal">Android如何屏蔽通话界面的视频彩铃</a>
+                    <a href="/2019/11/06/android_java_framework/android_dialer_app_video_incall/" class="title has-link-black-ter is-size-6 has-text-weight-normal">Android如何屏蔽通话界面的视频彩铃</a>
                     <p class="is-size-7 is-uppercase">
                         <a class="has-link-grey -link" href="/categories/Android-System-App/">Android System App</a>
                     </p>
@@ -885,7 +1022,7 @@
         
         <article class="media">
             
-            <a href="/2019/08/28/java_certificate_verify/java_certificate_verify_and_decript/" class="media-left">
+            <a href="/2019/08/28/java/java_certificate_verify_and_decript/" class="media-left">
                 <p class="image is-64x64">
                     <img class="thumbnail" src="/gallery/5.jpeg" alt="JAVA根证书验证用户证书是否可信和解密数据">
                 </p>
@@ -894,9 +1031,9 @@
             <div class="media-content">
                 <div class="content">
                     <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2019-08-27T16:00:00.000Z">2019-08-28</time></div>
-                    <a href="/2019/08/28/java_certificate_verify/java_certificate_verify_and_decript/" class="title has-link-black-ter is-size-6 has-text-weight-normal">JAVA根证书验证用户证书是否可信和解密数据</a>
+                    <a href="/2019/08/28/java/java_certificate_verify_and_decript/" class="title has-link-black-ter is-size-6 has-text-weight-normal">JAVA根证书验证用户证书是否可信和解密数据</a>
                     <p class="is-size-7 is-uppercase">
-                        <a class="has-link-grey -link" href="/categories/Java-Certificate/">Java Certificate</a>
+                        <a class="has-link-grey -link" href="/categories/Java/">Java</a>
                     </p>
                 </div>
             </div>
@@ -923,16 +1060,16 @@
         
         <article class="media">
             
-            <a href="/2019/04/02/android_system/android_sprd_mtk_alarm_group_whitelist/" class="media-left">
+            <a href="/2019/05/13/android_system/android_boot_flow_self_note/" class="media-left">
                 <p class="image is-64x64">
-                    <img class="thumbnail" src="/gallery/7.jpeg" alt="Android 展讯/MTK Alarm白名单设置">
+                    <img class="thumbnail" src="/gallery/14.jpeg" alt="Android启动流程-个人笔记">
                 </p>
             </a>
             
             <div class="media-content">
                 <div class="content">
-                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2019-04-01T16:00:00.000Z">2019-04-02</time></div>
-                    <a href="/2019/04/02/android_system/android_sprd_mtk_alarm_group_whitelist/" class="title has-link-black-ter is-size-6 has-text-weight-normal">Android 展讯/MTK Alarm白名单设置</a>
+                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2019-05-12T16:00:00.000Z">2019-05-13</time></div>
+                    <a href="/2019/05/13/android_system/android_boot_flow_self_note/" class="title has-link-black-ter is-size-6 has-text-weight-normal">Android启动流程-个人笔记</a>
                     <p class="is-size-7 is-uppercase">
                         <a class="has-link-grey -link" href="/categories/Android-System/">Android System</a>
                     </p>
@@ -985,6 +1122,17 @@
         </li>
         
         <li>
+            <a class="level is-marginless" href="/archives/2019/05/">
+                <span class="level-start">
+                    <span class="level-item">May 2019</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">1</span>
+                </span>
+            </a>
+        </li>
+        
+        <li>
             <a class="level is-marginless" href="/archives/2019/04/">
                 <span class="level-start">
                     <span class="level-item">April 2019</span>
@@ -1032,6 +1180,17 @@
             <a class="level is-marginless" href="/archives/2018/10/">
                 <span class="level-start">
                     <span class="level-item">October 2018</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">1</span>
+                </span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2018/05/">
+                <span class="level-start">
+                    <span class="level-item">May 2018</span>
                 </span>
                 <span class="level-end">
                     <span class="level-item tag">1</span>
@@ -1120,15 +1279,29 @@
                 </div>
                 
                 <div class="control">
+                    <a class="tags has-addons" href="/tags/Android-OpenGL/">
+                        <span class="tag">Android OpenGL</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
                     <a class="tags has-addons" href="/tags/Android-System/">
                         <span class="tag">Android System</span>
-                        <span class="tag is-grey">1</span>
+                        <span class="tag is-grey">2</span>
                     </a>
                 </div>
                 
                 <div class="control">
                     <a class="tags has-addons" href="/tags/Android-System-App/">
                         <span class="tag">Android System App</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Boot-Flow/">
+                        <span class="tag">Boot Flow</span>
                         <span class="tag is-grey">1</span>
                     </a>
                 </div>
@@ -1213,6 +1386,13 @@
                 <div class="control">
                     <a class="tags has-addons" href="/tags/SPRD/">
                         <span class="tag">SPRD</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/StartUp/">
+                        <span class="tag">StartUp</span>
                         <span class="tag is-grey">1</span>
                     </a>
                 </div>
