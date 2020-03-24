@@ -10,16 +10,16 @@
 <title>Android 实现电话号码（接听/拨号/短信）白名单 - Zola&#39;s Blog</title>
 
 
-    <meta name="description" content="我遇到一个需求，需要实现电话号码的白名单，除了通讯录里的号码，所有来电短信都要屏蔽掉。 Android 7.0后提供了一个电话号码黑名单的功能，可以拦截对应号码的电话和短信，即Android N BlockedNumberContract原生黑名单。 所以我这里就直接利用这个模块的函数，再此之上增加白名单判断。  白名单电话接听拦截和短信拦截这里直接利用BlockedNumberContract框">
+    <meta name="description" content="我遇到一个需求，需要实现电话号码的白名单，除了通讯录里的号码，所有来电短信都要屏蔽掉。">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Android 实现电话号码（接听&#x2F;拨号&#x2F;短信）白名单">
 <meta property="og:url" content="http://yoursite.com/2019/02/08/android_java_framework/android_phone_whitelist/index.html">
 <meta property="og:site_name" content="Zola&#39;s Blog">
-<meta property="og:description" content="我遇到一个需求，需要实现电话号码的白名单，除了通讯录里的号码，所有来电短信都要屏蔽掉。 Android 7.0后提供了一个电话号码黑名单的功能，可以拦截对应号码的电话和短信，即Android N BlockedNumberContract原生黑名单。 所以我这里就直接利用这个模块的函数，再此之上增加白名单判断。  白名单电话接听拦截和短信拦截这里直接利用BlockedNumberContract框">
+<meta property="og:description" content="我遇到一个需求，需要实现电话号码的白名单，除了通讯录里的号码，所有来电短信都要屏蔽掉。">
 <meta property="og:locale" content="en_US">
 <meta property="og:image" content="http://yoursite.com/gallery/9.jpeg">
 <meta property="article:published_time" content="2019-02-07T16:00:00.000Z">
-<meta property="article:modified_time" content="2020-03-23T13:41:27.519Z">
+<meta property="article:modified_time" content="2020-03-24T19:50:24.790Z">
 <meta property="article:author" content="Zola">
 <meta property="article:tag" content="Android">
 <meta property="article:tag" content="PhoneNumber WhiteList">
@@ -143,7 +143,7 @@
                 <span class="level-item has-text-grey">
                     
                     
-                    4 minutes read (About 549 words)
+                    4 minutes read (About 550 words)
                 </span>
                 
                 
@@ -157,6 +157,8 @@
         </h1>
         <div class="content">
             <p>我遇到一个需求，需要实现电话号码的白名单，除了通讯录里的号码，所有来电短信都要屏蔽掉。</p>
+<a id="more"></a>
+
 <p>Android 7.0后提供了一个电话号码黑名单的功能，可以拦截对应号码的电话和短信，即Android N BlockedNumberContract原生黑名单。</p>
 <p>所以我这里就直接利用这个模块的函数，再此之上增加白名单判断。</p>
 <hr>

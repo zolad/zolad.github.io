@@ -10,16 +10,16 @@
 <title>Android UVCCamera/libuvc遇到的卡死崩溃bug和解决方法 - Zola&#39;s Blog</title>
 
 
-    <meta name="description" content="分享下debug uvccamera&#x2F;libuvc这些so库遇到的卡死崩溃问题和思路  1.UVCCamera执行stopPreview或release时阻塞卡死在多次重复打开关闭uvc摄像头的时候，上层调用stopPreview&#x2F;release会概率性卡死，经过调试一步步定位调用函数和阻塞住的位置 android java层调用略，下面直接从so库的代码开始； –&gt;UVCCamera&#x2F;UV">
+    <meta name="description" content="分享下debug uvccamera&#x2F;libuvc这些so库遇到的卡死崩溃问题和思路">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Android UVCCamera&#x2F;libuvc遇到的卡死崩溃bug和解决方法">
 <meta property="og:url" content="http://yoursite.com/2019/08/27/uvccamera/android_uvccamera_experience_and_bug/index.html">
 <meta property="og:site_name" content="Zola&#39;s Blog">
-<meta property="og:description" content="分享下debug uvccamera&#x2F;libuvc这些so库遇到的卡死崩溃问题和思路  1.UVCCamera执行stopPreview或release时阻塞卡死在多次重复打开关闭uvc摄像头的时候，上层调用stopPreview&#x2F;release会概率性卡死，经过调试一步步定位调用函数和阻塞住的位置 android java层调用略，下面直接从so库的代码开始； –&gt;UVCCamera&#x2F;UV">
+<meta property="og:description" content="分享下debug uvccamera&#x2F;libuvc这些so库遇到的卡死崩溃问题和思路">
 <meta property="og:locale" content="en_US">
 <meta property="og:image" content="http://yoursite.com/gallery/3.jpeg">
 <meta property="article:published_time" content="2019-08-26T16:00:00.000Z">
-<meta property="article:modified_time" content="2020-03-23T13:40:42.871Z">
+<meta property="article:modified_time" content="2020-03-24T19:49:20.742Z">
 <meta property="article:author" content="Zola">
 <meta property="article:tag" content="Android">
 <meta property="article:tag" content="UVCCamera">
@@ -144,7 +144,7 @@
                 <span class="level-item has-text-grey">
                     
                     
-                    6 minutes read (About 869 words)
+                    6 minutes read (About 870 words)
                 </span>
                 
                 
@@ -158,6 +158,8 @@
         </h1>
         <div class="content">
             <p>分享下debug uvccamera/libuvc这些so库遇到的卡死崩溃问题和思路</p>
+<a id="more"></a>
+
 <hr>
 <h3 id="1-UVCCamera执行stopPreview或release时阻塞卡死"><a href="#1-UVCCamera执行stopPreview或release时阻塞卡死" class="headerlink" title="1.UVCCamera执行stopPreview或release时阻塞卡死"></a>1.UVCCamera执行stopPreview或release时阻塞卡死</h3><p>在多次重复打开关闭uvc摄像头的时候，上层调用stopPreview/release会概率性卡死，经过调试一步步定位调用函数和阻塞住的位置</p>
 <p>android java层调用略，下面直接从so库的代码开始；<br> –&gt;<br>UVCCamera/UVCCamera.cpp-stopPreview()<br> –&gt;<br>UVCCamera/UVCPreView.cpp-stopPreview()<br>这里设置mIsRunning = false;停止预览帧处理；<br>调试发现，在下面这一句代码阻塞住没有往下走了：<br>pthread_join(preview_thread, NULL) != EXIT_SUCCESS;<br>pthread_join会阻塞到preview_thread预览线程执行结束为止，所以预览处理没有正常结束；<br>–&gt;<br>UVCCamera/UVCPreview.cpp-do_preview()<br>结束预览时会停止libuvc的流处理uvc_stop_streaming(mDeviceHandle);，所以流处理没有正常结束；<br>–&gt;<br>libuvc/stream.c-uvc_stop_streaming()<br>–&gt;<br>libuvc/stream.c-uvc_stream_close()<br>–&gt;<br>libuvc/stream.c-uvc_stream_stop()<br>这一步停止流的传输，并将所有流转换器都释放掉：<br>strmh-&gt;running = 0;并遍历调用libusb_cancel_transfer(strmh-&gt;transfers[i]);<br>至于关键的阻塞代码如下：</p>

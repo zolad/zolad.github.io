@@ -150,7 +150,7 @@
                 <span class="level-item has-text-grey">
                     
                     
-                    4 minutes read (About 566 words)
+                    4 minutes read (About 567 words)
                 </span>
                 
                 
@@ -164,39 +164,16 @@
         </h1>
         <div class="content">
             <p>此篇文章记录下自己在android平台上使用opengl的经验，顺便记录下自己开源项目使用opengl的思路，内容会很零碎，因为只是随便整理记录下。</p>
-<hr>
-<p>opengl里的program 是可以复用的</p>
-<p>但是shader一旦绑定是不能复用的，一个program绑定一个顶点shader和一个片段shader</p>
-<hr>
-<p>opengl滤镜制作</p>
-<p>滤镜实际就是对图像的像素点色彩值进行多次加工，代码实现上就是自定义shader进行色彩处理</p>
-<p>例如亮度，就是r,g,b分别加上亮度r+0.1 ,g+0.1,b+0.1<br>hsv是把rgb转hsv，再叠加</p>
-<p>另外可以使用混合模式，减少渲染次数</p>
-<ul>
-<li><p><a href="https://cloud.tencent.com/developer/article/1132385">https://cloud.tencent.com/developer/article/1132385</a> “终端图像处理系列 - OpenGL混合模式的使用”</p>
-</li>
-<li><p><a href="https://blog.csdn.net/junzia/article/details/76580379">https://blog.csdn.net/junzia/article/details/76580379</a> “Android OpenGLES2.0（十八）——轻松搞定Blend颜色混合”</p>
-</li>
-</ul>
-<hr>
-<p>自己的开源项目BubbleTextureview实现思路</p>
-<p>具体是自定义绘制了一个气泡状的模型GLbubbleGeometry，另外基于GLTextureView，将TextureView的图像数据当纹理显示。</p>
-<p>GLtextureView 是模仿根据Glsurfaceview 改过来的，新建了一个Glthread 去链接EGL, 相关知识搜索OPENGL GLtextureView相关文章。</p>
-<p><img src="/opengl/BubbleTextureview1.png" alt="GLbubbleGeometry顶点"></p>
-<p>float[] vertices = new float[verticesSize]; 保存了所有顶点，不重复<br>short[] indices = new short[indicesSize]; 保存了三角形绘制的点顺序具体就是0，1，2，3，2，3，4，3，4，5 .。。。 这样，绘制根据这个点顺序去绘制</p>
-<p>topleftradius 是0-1的百分比圆角半径长度，适应opengl的0-1坐标系</p>
-<p>求圆角的多个三角形点坐标时用<br>vertices[currentOffset + 5] = center[0] + radius[0] * (float) Math.cos(rads);<br>x坐标为 中心点 +  半径*cos角度</p>
-<p>vertices[currentOffset + 6] = center[1] + radius[1] * (float) Math.sin(rads);<br>y坐标为 中心点 +  半径*sin角度</p>
-<p>π就是逆时针180°，-π就是顺时针180°</p>
-<p><img src="/opengl/BubbleTextureview2.png" alt="GLbubbleGeometry 圆角坐标计算"></p>
-<hr>
-<p>MediaCodec 要将surface里的数据转为混合为mp4,必须要4.3以上的手机<br>，因为EGLExt.eglPresentationTimeANDROID(mEGLDisplay, mEGLSurface, nsecs);</p>
-<p>这个设置surface时间的方法是必须api18的.</p>
-<p>如果不用MediaMuxer混合视频，可以用mp4parser这个开源库，就能在4.1的手机上转码视频为mp4</p>
-<hr>
-
         </div>
         
+        
+        <div class="level is-mobile">
+            <div class="level-start">
+                <div class="level-item">
+                <a class="button is-size-7 is-light" href="/2018/05/19/opengl/opengl_experience/#more">Read More</a>
+                </div>
+            </div>
+        </div>
         
         
     </div>

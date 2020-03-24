@@ -150,7 +150,7 @@
                 <span class="level-item has-text-grey">
                     
                     
-                    a minute read (About 222 words)
+                    a minute read (About 223 words)
                 </span>
                 
                 
@@ -164,14 +164,16 @@
         </h1>
         <div class="content">
             <p>展讯系统驱动配置物理按键，首先查看硬件原理图，找到对应物理按键的管脚，比如按键5接的是gpio125</p>
-<p>1.打开kernel/arch/arm/boot/dts/对应项目的.dts文件<br>修改gpio_keys下的配置，gpios修改对应的gpio引脚号</p>
-<figure class="highlight dts"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs dts"><span class="hljs-class">gpio_keys </span>&#123;<br> 		<span class="hljs-class">key_5 </span>&#123;<br> 			label = <span class="hljs-string">"5 Key"</span>;<br>			linux,code = <span class="hljs-params">&lt;<span class="hljs-number">6</span>&gt;</span>;<br>-			gpios = <span class="hljs-params">&lt;<span class="hljs-variable">&amp;ap_gpio</span> <span class="hljs-number">92</span> <span class="hljs-number">1</span>&gt;</span>;<br>+			gpios = <span class="hljs-params">&lt;<span class="hljs-variable">&amp;ap_gpio</span> <span class="hljs-number">125</span> <span class="hljs-number">1</span>&gt;</span>;<br> 			gpio-key,wakeup;<br>			gpio-key,level-trigger;<br> 		&#125;;<br><br>&#125;<br></code></pre></td></tr></table></figure>
-<p>linux,code对应的就是KEY CODE<br>gpio-key,wakeup代表按下时如果系统正在休眠会触发唤醒<br>gpio-key,level-trigger 表示增加电平触发判断</p>
-<p>2.打开u-boot15/board/spreadtrum/对应项目的pinmap .c文件</p>
-<p>对照平台GPIO_Spec的xls表，找到gpio125对应的Ball Name，修改Fuction为默认gpio功能:BITS_PIN_AF(3)</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs c">&#123;REG_PIN_RTCK_LTE,                      BITS_PIN_AF(<span class="hljs-number">3</span>)&#125;,<br>&#123;REG_MISC_PIN_RTCK_LTE,                 BITS_PIN_DS(<span class="hljs-number">1</span>)|BIT_PIN_NULL|BIT_PIN_NUL|BIT_PIN_SLP_AP|BIT_PIN_SLP_NUL|BIT_PIN_SLP_OE&#125;,<br></code></pre></td></tr></table></figure>
         </div>
         
+        
+        <div class="level is-mobile">
+            <div class="level-start">
+                <div class="level-item">
+                <a class="button is-size-7 is-light" href="/2019/02/07/android_driver/sprd_key_driver_experience/#more">Read More</a>
+                </div>
+            </div>
+        </div>
         
         
     </div>

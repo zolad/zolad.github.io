@@ -10,16 +10,16 @@
 <title>Android KitKat(4.4)单独编译Kernel - Zola&#39;s Blog</title>
 
 
-    <meta name="description" content="这篇文章教你如何在没有全部Android源码，只有kernel文件夹时编译boot.img。另外这里需要从4.4的源码或者平台源码提取一些工具。 Android源码里的Kernel文件夹是GNU协议的，所以厂家的驱动操作细节基本在其他目录（比如vendor）下的Hal代码里。 如果想熟悉Android大概编译流程的话，最直接的就是看&#x2F;build&#x2F;core&#x2F;Makefile的代码，这样你就会清楚每个">
+    <meta name="description" content="这篇文章教你如何在没有全部Android源码，只有kernel文件夹时编译boot.img。另外这里需要从4.4的源码或者平台源码提取一些工具。">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Android KitKat(4.4)单独编译Kernel">
 <meta property="og:url" content="http://yoursite.com/2018/10/28/android_kernel/android_kitkat_kernel_build/index.html">
 <meta property="og:site_name" content="Zola&#39;s Blog">
-<meta property="og:description" content="这篇文章教你如何在没有全部Android源码，只有kernel文件夹时编译boot.img。另外这里需要从4.4的源码或者平台源码提取一些工具。 Android源码里的Kernel文件夹是GNU协议的，所以厂家的驱动操作细节基本在其他目录（比如vendor）下的Hal代码里。 如果想熟悉Android大概编译流程的话，最直接的就是看&#x2F;build&#x2F;core&#x2F;Makefile的代码，这样你就会清楚每个">
+<meta property="og:description" content="这篇文章教你如何在没有全部Android源码，只有kernel文件夹时编译boot.img。另外这里需要从4.4的源码或者平台源码提取一些工具。">
 <meta property="og:locale" content="en_US">
 <meta property="og:image" content="http://yoursite.com/gallery/8.jpeg">
 <meta property="article:published_time" content="2018-10-28T09:43:14.000Z">
-<meta property="article:modified_time" content="2020-03-23T13:41:08.111Z">
+<meta property="article:modified_time" content="2020-03-24T19:50:10.191Z">
 <meta property="article:author" content="Zola">
 <meta property="article:tag" content="Android KitKat">
 <meta property="article:tag" content="Android Kernel">
@@ -143,7 +143,7 @@
                 <span class="level-item has-text-grey">
                     
                     
-                    5 minutes read (About 793 words)
+                    5 minutes read (About 794 words)
                 </span>
                 
                 
@@ -157,6 +157,8 @@
         </h1>
         <div class="content">
             <p>这篇文章教你如何在没有全部Android源码，只有kernel文件夹时编译boot.img。另外这里需要从4.4的源码或者平台源码提取一些工具。</p>
+<a id="more"></a>
+
 <p>Android源码里的Kernel文件夹是GNU协议的，所以厂家的驱动操作细节基本在其他目录（比如vendor）下的Hal代码里。</p>
 <p>如果想熟悉Android大概编译流程的话，最直接的就是看/build/core/Makefile的代码，这样你就会清楚每个img文件是从那些文件里生成的，用的什么参数、工具也一目了然。</p>
 <hr>

@@ -140,7 +140,7 @@
                 <span class="level-item has-text-grey">
                     
                     
-                    6 minutes read (About 855 words)
+                    6 minutes read (About 873 words)
                 </span>
                 
                 
@@ -153,43 +153,17 @@
             
         </h1>
         <div class="content">
-            <h2 id="展讯平台"><a href="#展讯平台" class="headerlink" title="展讯平台"></a>展讯平台</h2><h3 id="1-项目对应kernel-dts文件配置"><a href="#1-项目对应kernel-dts文件配置" class="headerlink" title="1.项目对应kernel/dts文件配置"></a>1.项目对应kernel/dts文件配置</h3><figure class="highlight dts"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><code class="hljs dts"><span class="hljs-variable">&amp;i2c0</span> &#123;<br>	status = <span class="hljs-string">"okay"</span>;<br>	clock-frequency = <span class="hljs-params">&lt;<span class="hljs-number">400000</span>&gt;</span>;<br><br><span class="hljs-symbol">	sensor_main:</span> sensor-<span class="hljs-class">main@3c </span>&#123;<br>		compatible = <span class="hljs-string">"sprd,sensor-main"</span>;<br>		reg = <span class="hljs-params">&lt;<span class="hljs-number">0x3c</span>&gt;</span>;<br>		clock-names = <span class="hljs-string">"clk_src"</span>, <span class="hljs-string">"sensor_eb"</span>,<br>			<span class="hljs-string">"clk_96m"</span>, <span class="hljs-string">"clk_76m8"</span>,<br>			<span class="hljs-string">"clk_48m"</span>, <span class="hljs-string">"clk_26m"</span>;<br>		clocks  = <span class="hljs-params">&lt;<span class="hljs-variable">&amp;clk_sensor0</span>&gt;</span>,<br>			<span class="hljs-params">&lt;<span class="hljs-variable">&amp;clk_mm_ckg_gates</span> <span class="hljs-number">1</span>&gt;</span>,<br>			<span class="hljs-params">&lt;<span class="hljs-variable">&amp;clk_twpll_96m</span>&gt;</span>,<br>			<span class="hljs-params">&lt;<span class="hljs-variable">&amp;clk_twpll_76m8</span>&gt;</span>,<br>			<span class="hljs-params">&lt;<span class="hljs-variable">&amp;clk_twpll_48m</span>&gt;</span>,<br>			<span class="hljs-params">&lt;<span class="hljs-variable">&amp;ext_26m</span>&gt;</span>;<br>		vddio-supply = <span class="hljs-params">&lt;<span class="hljs-variable">&amp;vddcamio</span>&gt;</span>;<br>		vddcama-supply = <span class="hljs-params">&lt;<span class="hljs-variable">&amp;vddcama</span>&gt;</span>;<br>		vddcamd-supply = <span class="hljs-params">&lt;<span class="hljs-variable">&amp;vddcamd</span>&gt;</span>;<br>		vddcammot-supply = <span class="hljs-params">&lt;<span class="hljs-variable">&amp;vddcammot</span>&gt;</span>;<br>		reset-gpios = <span class="hljs-params">&lt;<span class="hljs-variable">&amp;ap_gpio</span> <span class="hljs-number">37</span> <span class="hljs-number">0</span>&gt;</span>;<br>		power-down-gpios = <span class="hljs-params">&lt;<span class="hljs-variable">&amp;ap_gpio</span> <span class="hljs-number">39</span> <span class="hljs-number">0</span>&gt;</span>;<br>		host = <span class="hljs-string">"dcam0"</span>;<br>		<span class="hljs-class">port </span>&#123;<br><span class="hljs-symbol">			sensor_main_0:</span> <span class="hljs-class">endpoint </span>&#123;<br>				remote-endpoint = <span class="hljs-params">&lt;<span class="hljs-variable">&amp;phy0_out</span>&gt;</span>;<br>			&#125;;<br>		&#125;;<br>	&#125;;<br><br>&#125;;<br></code></pre></td></tr></table></figure>
-
-<p>(1).compatible = “sprd,sensor-main”， 这里不需要配摄像头的I2C Device Address，<br>alps/kernel/drivers/misc/sprd_camera/sensor/sprd_sensor_drv.c 会读取这里的id进行处理<br>具体的I2C地址在sensor驱动中配置</p>
-<p>(2).reset-gpios，power-down-gpios可通过查看机器板子的原理图来确定对应gpio的引脚修改</p>
-<h3 id="2-项目对应device-BoardConfig-mk配置"><a href="#2-项目对应device-BoardConfig-mk配置" class="headerlink" title="2.项目对应device/../../BoardConfig.mk配置"></a>2.项目对应device/../../BoardConfig.mk配置</h3><p>(1).配上前后置摄像头对应Camera Sensor的型号，如：<br>CAMERA_SENSOR_TYPE_BACK := “sp2509 c2590”<br>CAMERA_SENSOR_TYPE_FRONT := “gc030a”</p>
-<p>(2).若模组厂打样时摄像头拍照方向为横屏，则TARGET_BOARD_BACK_CAMERA_ROTATION/TARGET_BOARD_FRONT_CAMERA_ROTATION设置为false，否则设置为true。</p>
-<p>(3).配置Camera支持的分辨率</p>
-<figure class="highlight mk"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs mk"><span class="hljs-comment">#select camera 2M,3M,5M,8M,13M,16M,21M</span><br>CAMERA_SUPPORT_SIZE := 2M<br>FRONT_CAMERA_SUPPORT_SIZE := 2M<br></code></pre></td></tr></table></figure>
-
-<h3 id="3-vendor-sprd-libcamera配置和添加Camera驱动代码"><a href="#3-vendor-sprd-libcamera配置和添加Camera驱动代码" class="headerlink" title="3.vendor/sprd/../../libcamera配置和添加Camera驱动代码"></a>3.vendor/sprd/../../libcamera配置和添加Camera驱动代码</h3><p>(1).在vendor/sprd/../../libcamera/sensor下放置已经适配了平台的sensor_drv代码，<br>如果没有已经适配了平台的驱动代码，那只能按平台已有的驱动代码为模板按硬件文档进行适配修改。<br>注意修改时尽量按平台已有的camera驱动代码为规范。这方面可以自己修改也可以找FAE帮忙。</p>
-<p>(2).修改vendor/sprd/../../libcamera/sensorsensor_cfg.c，配置新Camera</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-meta">#<span class="hljs-meta-keyword">ifdef</span> OV8856</span><br><span class="hljs-keyword">extern</span> SENSOR_INFO_T g_ov8856_mipi_raw_info;<br><span class="hljs-meta">#<span class="hljs-meta-keyword">endif</span></span><br><br>在对应的sensor_infor_tab添加配置，分别是camera <span class="hljs-keyword">module</span> name/camera name/sensor info/af/otp：<br><span class="hljs-meta">#<span class="hljs-meta-keyword">ifdef</span> OV8856</span><br>    &#123;MODULE_SUNNY, <span class="hljs-string">"ov8856"</span>, &amp;g_ov8856_mipi_raw_info, &#123;&amp;dw9763a_drv_entry, <span class="hljs-number">0</span>&#125;, &amp;ov8856_cmk_drv_entry&#125;,<br><span class="hljs-meta">#<span class="hljs-meta-keyword">endif</span></span><br></code></pre></td></tr></table></figure>
-
-
-<hr>
-<h2 id="MTK平台"><a href="#MTK平台" class="headerlink" title="MTK平台"></a>MTK平台</h2><h3 id="1-kernel-4-4-drivers-misc-mediatek-imgsensor-inc-kd-imgsensor-h配置"><a href="#1-kernel-4-4-drivers-misc-mediatek-imgsensor-inc-kd-imgsensor-h配置" class="headerlink" title="1.kernel-4.4/drivers/misc/mediatek/imgsensor/inc/kd_imgsensor.h配置"></a>1.kernel-4.4/drivers/misc/mediatek/imgsensor/inc/kd_imgsensor.h配置</h3><figure class="highlight h"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs h"><span class="hljs-meta">#<span class="hljs-meta-keyword">define</span> S5K4H8_SENSOR_ID                        0x4088</span><br><br><span class="hljs-meta">#<span class="hljs-meta-keyword">define</span> SENSOR_DRVNAME_S5K4H8_MIPI_RAW          <span class="hljs-meta-string">"s5k4h8_mipi_raw"</span></span><br></code></pre></td></tr></table></figure>
-
-
-<h3 id="2-项目对应kernel-4-4-arch-arm-configs-…-xxx-defconfig配置"><a href="#2-项目对应kernel-4-4-arch-arm-configs-…-xxx-defconfig配置" class="headerlink" title="2.项目对应kernel-4.4/arch/arm/configs/…/xxx_defconfig配置"></a>2.项目对应kernel-4.4/arch/arm/configs/…/xxx_defconfig配置</h3><p>可通过查看device目录下项目mk文件里 KERNEL_DEFCONFIG 指向的是哪个config文件<br>CONFIG_CUSTOM_KERNEL_IMGSENSOR=”s5k4h8_mipi_raw”</p>
-<p>带debug标签的用于编译过程中查看调试信息</p>
-<h3 id="3-项目对应ProjectConfig-mk配置"><a href="#3-项目对应ProjectConfig-mk配置" class="headerlink" title="3.项目对应ProjectConfig.mk配置"></a>3.项目对应ProjectConfig.mk配置</h3><figure class="highlight mk"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs mk">CUSTOM_HAL_IMGSENSOR = s5k4h8_mipi_raw<br>CUSTOM_HAL_MAIN_IMGSENSOR = s5k4h8_mipi_raw<br>CUSTOM_KERNEL_IMGSENSOR = s5k4h8_mipi_raw<br>CUSTOM_KERNEL_MAIN_IMGSENSOR = s5k4h8_mipi_raw<br></code></pre></td></tr></table></figure>
-
-<h3 id="4-kernel-4-4-drivers-misc-mediatek-imgsensor-src-xxx-xxx-imgsensor-sensor-list-c添加"><a href="#4-kernel-4-4-drivers-misc-mediatek-imgsensor-src-xxx-xxx-imgsensor-sensor-list-c添加" class="headerlink" title="4.kernel-4.4/drivers/misc/mediatek/imgsensor/src/xxx/xxx/imgsensor_sensor_list.c添加"></a>4.kernel-4.4/drivers/misc/mediatek/imgsensor/src/xxx/xxx/imgsensor_sensor_list.c添加</h3><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-meta">#<span class="hljs-meta-keyword">if</span> defined(S5K4H8_MIPI_RAW)</span><br>	&#123;S5K4H8_SENSOR_ID, SENSOR_DRVNAME_S5K4H8_MIPI_RAW, S5K4H8_MIPI_RAW_SensorInit&#125;,<br><span class="hljs-meta">#<span class="hljs-meta-keyword">endif</span></span><br></code></pre></td></tr></table></figure>
-
-<h3 id="5-kernel-4-4-drivers-misc-mediatek-imgsensor-src-xxx-xxx-imgsensor-sensor-list-h添加"><a href="#5-kernel-4-4-drivers-misc-mediatek-imgsensor-src-xxx-xxx-imgsensor-sensor-list-h添加" class="headerlink" title="5.kernel-4.4/drivers/misc/mediatek/imgsensor/src/xxx/xxx/imgsensor_sensor_list.h添加"></a>5.kernel-4.4/drivers/misc/mediatek/imgsensor/src/xxx/xxx/imgsensor_sensor_list.h添加</h3><figure class="highlight h"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs h"><span class="hljs-function">UINT32 <span class="hljs-title">S5K4H8_MIPI_RAW_SensorInit</span><span class="hljs-params">(PSENSOR_FUNCTION_STRUCT *pfFunc)</span></span>;<br></code></pre></td></tr></table></figure>
-
-
-<h3 id="6-kernel-4-4-drivers-misc-mediatek-imgsensor-src-xxx-xxx-配置和添加Camera-sensor驱动代码"><a href="#6-kernel-4-4-drivers-misc-mediatek-imgsensor-src-xxx-xxx-配置和添加Camera-sensor驱动代码" class="headerlink" title="6.kernel-4.4/drivers/misc/mediatek/imgsensor/src/xxx/xxx 配置和添加Camera sensor驱动代码"></a>6.kernel-4.4/drivers/misc/mediatek/imgsensor/src/xxx/xxx 配置和添加Camera sensor驱动代码</h3><h3 id="7-kernel-4-4-drivers-misc-mediatek-imgsensor-src-xxx-xxx-imgsensor-cfg-table-c-配置上下电时序"><a href="#7-kernel-4-4-drivers-misc-mediatek-imgsensor-src-xxx-xxx-imgsensor-cfg-table-c-配置上下电时序" class="headerlink" title="7.kernel-4.4/drivers/misc/mediatek/imgsensor/src/xxx/xxx/imgsensor_cfg_table.c 配置上下电时序"></a>7.kernel-4.4/drivers/misc/mediatek/imgsensor/src/xxx/xxx/imgsensor_cfg_table.c 配置上下电时序</h3><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-meta">#<span class="hljs-meta-keyword">if</span> defined(S5K4H8_MIPI_RAW)</span><br>		&#123;<br>			SENSOR_DRVNAME_S5K4H8_MIPI_RAW,<br>			&#123;							<br>				&#123;SensorMCLK, Vol_High, <span class="hljs-number">0</span>&#125;,				<br>				&#123;PDN, Vol_Low, <span class="hljs-number">5</span>&#125;,<br>				&#123;RST, Vol_Low, <span class="hljs-number">5</span>&#125;,<br>				&#123;DVDD, Vol_1200, <span class="hljs-number">0</span>&#125;,<br>				&#123;AVDD, Vol_2800, <span class="hljs-number">0</span>&#125;,<br>				&#123;DOVDD, Vol_1800, <span class="hljs-number">5</span>&#125;,<br>			    &#123;AFVDD, Vol_2800, <span class="hljs-number">0</span>&#125;,<br>				&#123;PDN, Vol_High, <span class="hljs-number">5</span>&#125;,<br>				&#123;RST, Vol_High, <span class="hljs-number">5</span>&#125;				<br>			&#125;,<br>		&#125;,<br><span class="hljs-meta">#<span class="hljs-meta-keyword">endif</span></span><br></code></pre></td></tr></table></figure>
-
-<h3 id="8-vendor-mediatek-proprietary-custom-xxxx-hal-imgsensor-添加对应Camera驱动代码"><a href="#8-vendor-mediatek-proprietary-custom-xxxx-hal-imgsensor-添加对应Camera驱动代码" class="headerlink" title="8.vendor/mediatek/proprietary/custom/xxxx/hal/imgsensor/ 添加对应Camera驱动代码"></a>8.vendor/mediatek/proprietary/custom/xxxx/hal/imgsensor/ 添加对应Camera驱动代码</h3><h3 id="9-vendor-mediatek-proprietary-custom-xxxx-hal-imgsensor-src-sensorlist-cpp添加"><a href="#9-vendor-mediatek-proprietary-custom-xxxx-hal-imgsensor-src-sensorlist-cpp添加" class="headerlink" title="9.vendor/mediatek/proprietary/custom/xxxx/hal/imgsensor_src/sensorlist.cpp添加"></a>9.vendor/mediatek/proprietary/custom/xxxx/hal/imgsensor_src/sensorlist.cpp添加</h3><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-meta">#<span class="hljs-meta-keyword">if</span> defined(S5K4H8_MIPI_RAW)</span><br>    RAW_INFO(S5K4H8_SENSOR_ID, SENSOR_DRVNAME_S5K4H8_MIPI_RAW, S5K4H8_CAM_CALGetCalData),<br><span class="hljs-meta">#<span class="hljs-meta-keyword">endif</span></span><br></code></pre></td></tr></table></figure>
-
-<h3 id="10-vendor-mediatek-proprietary-custom-xxxx-hal-lens-src-lenslist-cpp添加"><a href="#10-vendor-mediatek-proprietary-custom-xxxx-hal-lens-src-lenslist-cpp添加" class="headerlink" title="10.vendor/mediatek/proprietary/custom/xxxx/hal/lens/src/lenslist.cpp添加"></a>10.vendor/mediatek/proprietary/custom/xxxx/hal/lens/src/lenslist.cpp添加</h3><pre><code class="cpp"><span class="meta">#<span class="meta-keyword">if</span> defined(DW9714AF_S5K4H8_SUNWIN_P130)</span>
-    <span class="keyword">extern</span> PFUNC_GETLENSDEFAULT pDW9714AF_S5K4H8_SUNWIN_P130_getDefaultData;
-<span class="meta">#<span class="meta-keyword">endif</span></span></code></pre>
-
+            <p>记录在展讯9820，MTK6739平台配置Camera驱动的经验</p>
         </div>
         
+        
+        <div class="level is-mobile">
+            <div class="level-start">
+                <div class="level-item">
+                <a class="button is-size-7 is-light" href="/2019/12/07/android_driver/camera_driver_config_experience/#more">Read More</a>
+                </div>
+            </div>
+        </div>
         
         
     </div>
@@ -225,7 +199,7 @@
                 <span class="level-item has-text-grey">
                     
                     
-                    2 minutes read (About 357 words)
+                    2 minutes read (About 358 words)
                 </span>
                 
                 
@@ -239,20 +213,16 @@
         </h1>
         <div class="content">
             <p>一般用户证书和加密数据是一起发放到客户端的，但是使用用户证书的公钥解密数据前需要验证用户证书是否可信，即从源头来说是否由根证书签发的，按证书链去认证。使用根证书验证用户证书可信并解密的Java实现如下：</p>
-<p>1.读取根证书文件初始化根证书对象，并获取根证书中的公钥</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs java">CertificateFactory certificateFactory = CertificateFactory.getInstance(<span class="hljs-string">"X.509"</span>);<br>Certificate rootCert = certificateFactory.generateCertificate(<span class="hljs-keyword">new</span> FileInputStream(rootCertPath));<br>PublicKey rootCertPublicKey = rootCert.getPublicKey();<br></code></pre></td></tr></table></figure>
-
-
-<p>2.使用用户证书byte数组数据初始化用户证书对象</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs java">X509Certificate userCert = (X509Certificate)certificateFactory.generateCertificate(<br>                <span class="hljs-keyword">new</span> ByteArrayInputStream(userCertByteArray));<br></code></pre></td></tr></table></figure>
-
-<p>3.使用用户证书验证根证书的公钥，如果验证通过（即不抛出Exception）说明这个用户证书是这个根证书签发的,同时检查用户证书是否有效</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">try</span> &#123;<br>       userCert.verify(rootCertPublicKey);<br>       userCert.checkValidity();<br>       Log.d(TAG,<span class="hljs-string">"------------- 工作证书验证成功 -----------"</span>);<br>&#125;<span class="hljs-keyword">catch</span> (Exception e) &#123;<br>       Log.d(TAG,<span class="hljs-string">"------------- 工作证书验证失败 -----------"</span>);<br>        <br>&#125;<br></code></pre></td></tr></table></figure>
-
-<p>4.最后使用用户证书的公钥进行解密</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">try</span> &#123;<br>    Cipher cipher = Cipher.getInstance(<span class="hljs-string">"RSA/ECB/NoPadding"</span>);<br>	cipher.init(Cipher.DECRYPT_MODE, userCert);<br>    <span class="hljs-keyword">byte</span>[] output = cipher.doFinal(cipherData);<br>    <span class="hljs-keyword">return</span> output;<br>&#125; <span class="hljs-keyword">catch</span> (NoSuchAlgorithmException e) &#123;<br>    <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> Exception(<span class="hljs-string">"无此解密算法"</span>);<br>&#125; <span class="hljs-keyword">catch</span> (NoSuchPaddingException e) &#123;<br>    e.printStackTrace();<br>    <span class="hljs-keyword">return</span> <span class="hljs-keyword">null</span>;<br>&#125; <span class="hljs-keyword">catch</span> (InvalidKeyException e) &#123;<br>    <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> Exception(<span class="hljs-string">"解密公钥非法,请检查"</span>);<br>&#125; <span class="hljs-keyword">catch</span> (IllegalBlockSizeException e) &#123;<br>    <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> Exception(<span class="hljs-string">"密文长度非法"</span>);<br>&#125; <span class="hljs-keyword">catch</span> (BadPaddingException e) &#123;<br>    <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> Exception(<span class="hljs-string">"密文数据已损坏"</span>);<br>&#125;<br></code></pre></td></tr></table></figure>
         </div>
         
+        
+        <div class="level is-mobile">
+            <div class="level-start">
+                <div class="level-item">
+                <a class="button is-size-7 is-light" href="/2019/08/28/java/java_certificate_verify_and_decript/#more">Read More</a>
+                </div>
+            </div>
+        </div>
         
         
     </div>
@@ -288,7 +258,7 @@
                 <span class="level-item has-text-grey">
                     
                     
-                    6 minutes read (About 869 words)
+                    6 minutes read (About 870 words)
                 </span>
                 
                 
@@ -302,28 +272,16 @@
         </h1>
         <div class="content">
             <p>分享下debug uvccamera/libuvc这些so库遇到的卡死崩溃问题和思路</p>
-<hr>
-<h3 id="1-UVCCamera执行stopPreview或release时阻塞卡死"><a href="#1-UVCCamera执行stopPreview或release时阻塞卡死" class="headerlink" title="1.UVCCamera执行stopPreview或release时阻塞卡死"></a>1.UVCCamera执行stopPreview或release时阻塞卡死</h3><p>在多次重复打开关闭uvc摄像头的时候，上层调用stopPreview/release会概率性卡死，经过调试一步步定位调用函数和阻塞住的位置</p>
-<p>android java层调用略，下面直接从so库的代码开始；<br> –&gt;<br>UVCCamera/UVCCamera.cpp-stopPreview()<br> –&gt;<br>UVCCamera/UVCPreView.cpp-stopPreview()<br>这里设置mIsRunning = false;停止预览帧处理；<br>调试发现，在下面这一句代码阻塞住没有往下走了：<br>pthread_join(preview_thread, NULL) != EXIT_SUCCESS;<br>pthread_join会阻塞到preview_thread预览线程执行结束为止，所以预览处理没有正常结束；<br>–&gt;<br>UVCCamera/UVCPreview.cpp-do_preview()<br>结束预览时会停止libuvc的流处理uvc_stop_streaming(mDeviceHandle);，所以流处理没有正常结束；<br>–&gt;<br>libuvc/stream.c-uvc_stop_streaming()<br>–&gt;<br>libuvc/stream.c-uvc_stream_close()<br>–&gt;<br>libuvc/stream.c-uvc_stream_stop()<br>这一步停止流的传输，并将所有流转换器都释放掉：<br>strmh-&gt;running = 0;并遍历调用libusb_cancel_transfer(strmh-&gt;transfers[i]);<br>至于关键的阻塞代码如下：</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-comment">/* Wait for transfers to complete/cancel */</span><br>	<span class="hljs-keyword">for</span> (; <span class="hljs-number">1</span> ;) &#123;<br>		<span class="hljs-keyword">for</span> (i = <span class="hljs-number">0</span>; i &lt; LIBUVC_NUM_TRANSFER_BUFS; i++) &#123;<br>			<span class="hljs-keyword">if</span> (strmh-&gt;transfers[i] != <span class="hljs-literal">NULL</span>)<br>				<span class="hljs-keyword">break</span>;<br>		&#125;<br>		<span class="hljs-keyword">if</span> (i == LIBUVC_NUM_TRANSFER_BUFS)<br>			<span class="hljs-keyword">break</span>;<br>		pthread_cond_wait(&amp;strmh-&gt;cb_cond, &amp;strmh-&gt;cb_mutex);<br>	&#125;<br></code></pre></td></tr></table></figure>
-<p>这里会一直循环等待所有流转换器都释放置空完成，而问题就在于偏偏有个别流转换器就是无法正常释放。</p>
-<p>为什么没有正常释放完成，<br>是因为libusb_cancel_transfer失败返回LIBUSB_ERROR_NOT_FOUND的状态时，<br>转换器持有无效的buffer和指针，导致上面的循环代码一直不往下走。</p>
-<p>一般释放正常时的Log如下：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs log">[4632*stream.c:989:_uvc_stream_callback]:not retrying transfer, status &#x3D; 3<br>[4632*stream.c:629:_uvc_delete_transfer]:begin<br>[4632*stream.c:642:_uvc_delete_transfer]:Freeing transfer 5 (0x72fdbe5960)<br>[4632*stream.c:656:_uvc_delete_transfer]:end<br></code></pre></td></tr></table></figure>
-<p>但函数阻塞住时，我发现并没有看到index为6的transfer执行delete的Log，于是我怀疑是否跟transfer的数量有关。</p>
-<p>这时查看源码里有一个transfer buffers的数量定义如下：</p>
-<figure class="highlight h"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs h">libuvc/libuvc_internal.h<br><span class="hljs-comment">/*</span><br><span class="hljs-comment">  set a high number of transfer buffers. This uses a lot of ram, but</span><br><span class="hljs-comment">  avoids problems with scheduling delays on slow boards causing missed</span><br><span class="hljs-comment">  transfers. A better approach may be to make the transfer thread FIFO</span><br><span class="hljs-comment">  scheduled (if we have root).</span><br><span class="hljs-comment">  We could/should change this to allow reduce it to, say, 5 by default</span><br><span class="hljs-comment">  and then allow the user to change the number of buffers as required.</span><br><span class="hljs-comment"> */</span><br><span class="hljs-meta">#<span class="hljs-meta-keyword">define</span> LIBUVC_NUM_TRANSFER_BUFS 10</span><br></code></pre></td></tr></table></figure>
-<p>如果设置得太高，不仅会提高内存的占用，在处理速度慢的板子上也会有transfer浪费掉。<br>这里我尝试降低数量值为5，再次调试开关100次，stopPreview卡死的问题不再复现。</p>
-<h3 id="2-JNI-DETECTED-ERROR-IN-APPLICATION-jmethodID-was-NULL-空指针"><a href="#2-JNI-DETECTED-ERROR-IN-APPLICATION-jmethodID-was-NULL-空指针" class="headerlink" title="2.JNI DETECTED ERROR IN APPLICATION: jmethodID was NULL  空指针"></a>2.JNI DETECTED ERROR IN APPLICATION: jmethodID was NULL  空指针</h3><p>由于java上层设置setFrameCallback(null, 0); iframecallback_fields.onFrame在另外一个线程被置为NULL<br>而以下这段代码没有判空，导致的空指针：<br><font color='red'>env-&gt;CallVoidMethod(mFrameCallbackObj, iframecallback_fields.onFrame, buf);</font></p>
-<p>解决方法为增加空指针判断如下</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-function"><span class="hljs-keyword">void</span> <span class="hljs-title">UVCPreview::do_capture_callback</span><span class="hljs-params">(JNIEnv *env, <span class="hljs-keyword">uvc_frame_t</span> *frame)</span></span>&#123;<br>...<br>+<span class="hljs-keyword">if</span> (iframecallback_fields.onFrame != <span class="hljs-literal">NULL</span>) &#123;<br>  env-&gt;CallVoidMethod(mFrameCallbackObj, iframecallback_fields.onFrame, buf);<br>+&#125;<br>...<br>&#125;<br></code></pre></td></tr></table></figure>
-
-
-<h3 id="3-UVCCamera-could-not-open-camera-err-99"><a href="#3-UVCCamera-could-not-open-camera-err-99" class="headerlink" title="3.UVCCamera could not open camera:err=-99"></a>3.UVCCamera could not open camera:err=-99</h3><p>要检查打开的usb设备是否已经被其他进程打开了/其他进程持有没释放/打开的是不是UVC摄像头，是否打开了错误的其他usb设备</p>
-<h3 id="4-其他一些别人发现的bug和修复方法"><a href="#4-其他一些别人发现的bug和修复方法" class="headerlink" title="4.其他一些别人发现的bug和修复方法"></a>4.其他一些别人发现的bug和修复方法</h3><p><a href="https://github.com/saki4510t/UVCCamera/pull/520">https://github.com/saki4510t/UVCCamera/pull/520</a><br><a href="https://github.com/saki4510t/UVCCamera/pull/328">https://github.com/saki4510t/UVCCamera/pull/328</a></p>
-
         </div>
         
+        
+        <div class="level is-mobile">
+            <div class="level-start">
+                <div class="level-item">
+                <a class="button is-size-7 is-light" href="/2019/08/27/uvccamera/android_uvccamera_experience_and_bug/#more">Read More</a>
+                </div>
+            </div>
+        </div>
         
         
     </div>
@@ -359,7 +317,7 @@
                 <span class="level-item has-text-grey">
                     
                     
-                    a minute read (About 141 words)
+                    a minute read (About 142 words)
                 </span>
                 
                 
@@ -373,14 +331,16 @@
         </h1>
         <div class="content">
             <p>当电话呼叫对方时，如果对方设置了视频彩铃，则会在呼叫页面出现运营商的视频和彩铃，可以通过修改系统应用中的Dialer App的incall页面来屏蔽。</p>
-<hr>
-<p>比如MTK平台的Dialer App，路径如下：vendor/mediatek/proprietary/packages/apps/Dialer/java/com/android/incallui/call/DialerCall.java<br>可以通过如下修改：</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs java">   <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">boolean</span> <span class="hljs-title">isVideoCall</span><span class="hljs-params">()</span> </span>&#123;<br>-    <span class="hljs-keyword">return</span> getVideoTech().isTransmittingOrReceiving();<br>+    <span class="hljs-keyword">return</span> <span class="hljs-keyword">false</span>;<span class="hljs-comment">//getVideoTech().isTransmittingOrReceiving();</span><br>   &#125;<br></code></pre></td></tr></table></figure>
-
-<p>或者修改vendor/mediatek/proprietary/packages/apps/Dialer/java/com/android/incallui/InCallActivity.java 的<br>private static ShouldShowUiResult getShouldShowVideoUi() 方法使其不显示视频页面</p>
-
         </div>
         
+        
+        <div class="level is-mobile">
+            <div class="level-start">
+                <div class="level-item">
+                <a class="button is-size-7 is-light" href="/2019/07/06/android_java_framework/android_dialer_app_video_incall/#more">Read More</a>
+                </div>
+            </div>
+        </div>
         
         
     </div>
@@ -416,7 +376,7 @@
                 <span class="level-item has-text-grey">
                     
                     
-                    10 minutes read (About 1447 words)
+                    10 minutes read (About 1448 words)
                 </span>
                 
                 
@@ -430,43 +390,16 @@
         </h1>
         <div class="content">
             <p>网上关于android启动流程的文章很多，对于我个人而言想额外补充一些知识点总结下。下面是一张网上很常见的android 启动流程图：</p>
-<p><img src="/reference/android_startuo_flow.png" alt="android 启动流程图"></p>
-<p>所以我就顺着这张流程图从上到下总结一下.</p>
-<hr>
-<h3 id="Boot-Rom"><a href="#Boot-Rom" class="headerlink" title="Boot Rom"></a>Boot Rom</h3><p>Boot Rom是嵌入在ARM芯片上的，当设备按下power键上电后，设备启动加电自检后从固定的地址开始执行，随后Boot Rom加载Bootloader代码进入内存，然后执行。</p>
-<hr>
-<h3 id="BootLoader"><a href="#BootLoader" class="headerlink" title="BootLoader"></a>BootLoader</h3><p>BootLoader类似windows上的BIOS程序，嵌入式系统有很多开源的BootLoader，比如很多Android平台厂商使用的U-boot（全名An Universal boot loader）就是开源的BootLoader。</p>
-<p>下图是Linux系统和Android系统(MTK平台)启动流程差别，左边为Linux系统，右边为Android系统(MTK平台)。</p>
-<p><img src="/reference/kernel_boot_android_boot.png" alt="Linux和Android启动流程差别"></p>
-<p>我们根据上面的对比图，可以发现Android的启动流程设计和Linux的区别。</p>
-<p>这里先说一点，MTK平台为了防止芯片被HACK，特意加了Pre-Loader这段程序，Pre-Loader为了保护芯片包含了一些安全功能和做一些安全检查，安全检查没问题后才加载启动U-boot程序，但Pre-Loader不是所有Android平台都有的，比如展讯的一些平台就没有。</p>
-<p>BootLoader主要工作包括配置系统Memory、加载kernel的image、传递参数给linux kernel、获取芯片信息、跳转到kernel执行。</p>
-<p>当然BootLoader还有一些其他的工作，比如设备在关机状态下，按下开机键，此时设备执行到BootLoader层，设备有最底启动电压，BootLoader里的代码会判断当前电池电压是否满足最低启动电压，来决定是否启动设备。</p>
-<p>还有判断进入recovery模式/充电模式/开机模式等，也是在这一层做判断。</p>
-<hr>
-<h3 id="Kernel"><a href="#Kernel" class="headerlink" title="Kernel"></a>Kernel</h3><p>在这一步会加载Linux内核，内核启动时，会设置缓存、被保护存储器、计划列表，加载驱动等等。设备很多硬件功能就是在这一层开始支持使用的。当内核完成系统设置，它会启动init进程。</p>
-<p>另外linux的watchdog进程也是这时候启动的，watchdog是为了保证系统正常运行，或者从死循环，死锁等一场状态退出的一种机制。防止系统死机卡死，但如果系统在bootloader阶段卡死，那watchdog就不起作用了。</p>
-<hr>
-<h3 id="init"><a href="#init" class="headerlink" title="init"></a>init</h3><p>init进程（/system/core/init）是Linux系统第一个在用户空间创建的进程。Linux 操作系统和驱动程序运行在内核空间，应用程序运行在用户空间。</p>
-<p>用户空间和内核空间使用的内存区域也是划分开的，也是为了避免用户空间的操作影响到内核空间。</p>
-<p>init进程会启动一些关键的系统进程，比如servicemanager服务管理、zygote孵化程序、surfaceflinger、mediaserver、Property Service(我们常用的系统属性，System Properties就是由这个服务管理的)等。</p>
-<p>init目录下有自己的语法脚本，比如init.rc、init.usb.rc、init.trace.rc等。</p>
-<hr>
-<h3 id="Zygote"><a href="#Zygote" class="headerlink" title="Zygote"></a>Zygote</h3><p>Zygote负责创建JVM的环境，工作包括创建Dalvik虚拟机实例、创建system_server进程、创建socket server进程（让其他进程和zygote进程通信）、DVM预加载初始化核心的库和资源文件。</p>
-<p><img src="/reference/zygote_flow.png" alt="Zygote启动流程"></p>
-<p>所有apk的进程都是由Zygote fork出来的，由于是linux父子进程的关系，DVM加载的core library和资源（一般是只读的）也可以被app进程使用,app进程只需要加载自己独有的资源，这样就节省下了内存。</p>
-<p>Linux的fork()使用写时拷贝（copy-on-write）页实现。如下图所示，创建P2子进程，内核只为P2子进程创建虚拟空间，不分配物理内存，和P1父进程共享物理空间，<br>当P1父进程中有更改相应段的行为发生时，才为子进程分配物理空间。<br><img src="/reference/linux_fork_copy_on_write.png" alt="linux fork copy-on-write"></p>
-<p>所以Zygote在创建子进程前加载的资源可以直接被子进程调用，同为了避免写入资源造成重新分配问题，所以资源一般都是只读的。</p>
-<p><img src="/reference/zygote_fork.png" alt="zygote fork"></p>
-<p>Android上层的所有程序都是运行在Dalvik VM上的。DVM只执行.dex的Dalvik executable文件。每一个Android应用程序在底层都对应有一个独立的DVM实例并在其解释下执行。</p>
-<p><img src="/reference/zygote_flow2.png" alt="Zygote和app进程"></p>
-<hr>
-<h3 id="System-Server"><a href="#System-Server" class="headerlink" title="System Server"></a>System Server</h3><p>System Server进程由Zygote进程fork出来，这个进程加载了其他很多关键的Service，比如PMS、WMS、AMS等，从这一层开始，各种各样的Service会进行扫描安装apk，启动Launcher，关闭开机动画，app启动运行，窗口显示管理等等的工作，这一层开始后网上的文章已经有很多了，就不重复了。</p>
-<hr>
-<p>这一篇文章注重概括android启动流程和补充一些细节，比较少讲android上层的启动知识点，时间已到深夜，晚安。</p>
-
         </div>
         
+        
+        <div class="level is-mobile">
+            <div class="level-start">
+                <div class="level-item">
+                <a class="button is-size-7 is-light" href="/2019/05/13/android_system/android_boot_flow_self_note/#more">Read More</a>
+                </div>
+            </div>
+        </div>
         
         
     </div>
@@ -502,7 +435,7 @@
                 <span class="level-item has-text-grey">
                     
                     
-                    2 minutes read (About 358 words)
+                    2 minutes read (About 359 words)
                 </span>
                 
                 
@@ -516,25 +449,16 @@
         </h1>
         <div class="content">
             <p>目前大部分应用都会通过AlarmManager设置 alarm 来定时或周期唤醒系统来做一些操作。这种随机的 alarm 唤醒会增加系统的待机功耗。所以平台厂商为了功耗优化，一方面禁止了非白名单的第三方应用在系统休眠时唤醒系统，一方面做了心跳对齐的机制（即将这些唤醒时间杂乱的alarm修改为统一时间唤醒）。</p>
-<p>当然Android M开始也引入了Doze机制，Doze机制的白名单和平台的Alarm白名单最好都配置上对应的包名。</p>
-<hr>
-<h3 id="展讯平台"><a href="#展讯平台" class="headerlink" title="展讯平台"></a>展讯平台</h3><p>修改路径：vendor\sprd\platform\frameworks\native\data\etc\appPowerSaveConfig.xml</p>
-<p>在配置文件中添加应用包名</p>
-<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs xml"><span class="hljs-tag">&lt;<span class="hljs-name">package</span> <span class="hljs-attr">name</span>=<span class="hljs-string">"com.my.app"</span> <span class="hljs-attr">optimize</span>=<span class="hljs-string">"1"</span> <span class="hljs-attr">alarm</span>=<span class="hljs-string">"2"</span> <span class="hljs-attr">wakelock</span>=<span class="hljs-string">"2"</span> <span class="hljs-attr">network</span>=<span class="hljs-string">"0"</span> <span class="hljs-attr">autolaunch</span>=<span class="hljs-string">"2"</span> <span class="hljs-attr">secondarylaunch</span>=<span class="hljs-string">"2"</span> <span class="hljs-attr">lockscreencleanup</span>=<span class="hljs-string">"2"</span> <span class="hljs-attr">consumertype</span>=<span class="hljs-string">"0"</span> /&gt;</span><br></code></pre></td></tr></table></figure>
-<ul>
-<li>optimize 对应是否对该应用进行省电优化的总开关，0 为不优化，1 为优化</li>
-<li>alarm 对应待机唤醒优化，0 对应自动，1 对应优化，2 对应不优化</li>
-<li>wakelock 对应待机休眠优化，0 对应自动，1 对应优化，2 对应不优化</li>
-</ul>
-<hr>
-<h3 id="MTK平台"><a href="#MTK平台" class="headerlink" title="MTK平台"></a>MTK平台</h3><p>修改路径：frameworks/base/core/java/com/mediatek/amplus/config/alarmplus.config</p>
-<p>如果没有该文件就创建一个，在配置文件中添加应用包名</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs config">1com.my.app<br>2com.my.app2<br></code></pre></td></tr></table></figure>
-
-<p>另外将该文件拷贝到system/etc下</p>
-<figure class="highlight mk"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs mk"><span class="hljs-comment">#alarmplus</span><br>PRODUCT_COPY_FILES += \<br><span class="hljs-section">vendor/mediatek/proprietary/frameworks/opt/amplus/config/alarmplus.config:system/etc/alarmplus.config:mtk</span><br></code></pre></td></tr></table></figure>
         </div>
         
+        
+        <div class="level is-mobile">
+            <div class="level-start">
+                <div class="level-item">
+                <a class="button is-size-7 is-light" href="/2019/04/02/android_system/android_sprd_mtk_alarm_group_whitelist/#more">Read More</a>
+                </div>
+            </div>
+        </div>
         
         
     </div>
@@ -570,7 +494,7 @@
                 <span class="level-item has-text-grey">
                     
                     
-                    4 minutes read (About 549 words)
+                    4 minutes read (About 550 words)
                 </span>
                 
                 
@@ -584,20 +508,16 @@
         </h1>
         <div class="content">
             <p>我遇到一个需求，需要实现电话号码的白名单，除了通讯录里的号码，所有来电短信都要屏蔽掉。</p>
-<p>Android 7.0后提供了一个电话号码黑名单的功能，可以拦截对应号码的电话和短信，即Android N BlockedNumberContract原生黑名单。</p>
-<p>所以我这里就直接利用这个模块的函数，再此之上增加白名单判断。</p>
-<hr>
-<h3 id="白名单电话接听拦截和短信拦截"><a href="#白名单电话接听拦截和短信拦截" class="headerlink" title="白名单电话接听拦截和短信拦截"></a>白名单电话接听拦截和短信拦截</h3><p>这里直接利用BlockedNumberContract框架里的关键判断类BlockChecker，BlockChecker的isBlocked函数会返回一个bool值，根据这个bool值，BlockedNumberContract框架会决定是否拦截对应号码的电话和短信。</p>
-<p>修改位置 frameworks\opt\telephony\src\java\com\android\internal\telephony\BlockChecker.java</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><code class="hljs java">   <span class="hljs-comment">/**</span><br><span class="hljs-comment">     * Returns &#123;<span class="hljs-doctag">@code</span> true&#125; if &#123;<span class="hljs-doctag">@code</span> phoneNumber&#125; is blocked.</span><br><span class="hljs-comment">     * &lt;p&gt;</span><br><span class="hljs-comment">     * This method catches all underlying exceptions to ensure that this method never throws any</span><br><span class="hljs-comment">     * exception.</span><br><span class="hljs-comment">     */</span><br>    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">boolean</span> <span class="hljs-title">isBlocked</span><span class="hljs-params">(Context context, String phoneNumber)</span> </span>&#123;<br>        <span class="hljs-keyword">boolean</span> isBlocked = <span class="hljs-keyword">false</span>;<br>        <span class="hljs-keyword">long</span> startTimeNano = System.nanoTime();<br><br>        <span class="hljs-keyword">try</span> &#123;<br>+        	<span class="hljs-comment">//注释掉这部分原生判断，会读取BlockedNumberContract数据库里的名单作对比</span><br>+            <span class="hljs-comment">// if (BlockedNumberContract.SystemContract.shouldSystemBlockNumber(</span><br>+           <span class="hljs-comment">//         context, phoneNumber)) &#123;</span><br>+            <span class="hljs-comment">//     Rlog.d(TAG, phoneNumber + " is blocked.");</span><br>+            <span class="hljs-comment">//     isBlocked = true;</span><br>+            <span class="hljs-comment">// &#125;</span><br><br>+             <span class="hljs-comment">//新增一个shouldBlockNumber函数，这里可以根据自己需求，从什么数据库读取白名单来判断对应号码是否该拦截</span><br>+               <span class="hljs-keyword">if</span> (shouldBlockNumber( context, phoneNumber)) &#123;<br>+                Log.d(TAG, phoneNumber + <span class="hljs-string">" is blocked."</span>);<br>+                isBlocked = <span class="hljs-keyword">true</span>;<br>+            &#125;<br>            <br><br>        &#125; <span class="hljs-keyword">catch</span> (Exception e) &#123;<br>            Rlog.e(TAG, <span class="hljs-string">"Exception checking for blocked number: "</span> + e);<br>           <br>        &#125;<br><br>        <span class="hljs-keyword">int</span> durationMillis = (<span class="hljs-keyword">int</span>) ((System.nanoTime() - startTimeNano) / <span class="hljs-number">1000000</span>);<br>        <span class="hljs-keyword">if</span> (durationMillis &gt; <span class="hljs-number">500</span> || VDBG) &#123;<br>            Rlog.d(TAG, <span class="hljs-string">"Blocked number lookup took: "</span> + durationMillis + <span class="hljs-string">" ms."</span>);<br>        &#125;<br>        <span class="hljs-keyword">return</span> isBlocked;<br>    &#125;<br></code></pre></td></tr></table></figure>
-
-<p>如果不想短信受控制，可以修改<br>frameworks/opt/telephony/src/java/com/android/internal/telephony/InboundSmsHandler.java</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><code class="hljs java">-            block = BlockChecker.isBlocked(mContext, tracker.getDisplayAddress());<br>+		    <span class="hljs-comment">// not block </span><br>+           <span class="hljs-comment">// block = BlockChecker.isBlocked(mContext, tracker.getDisplayAddress());</span><br><br><br>-                        block = BlockChecker.isBlocked(mContext,<br>-                                cursor.getString(PDU_SEQUENCE_PORT_PROJECTION_INDEX_MAPPING<br>-                                        .get(DISPLAY_ADDRESS_COLUMN)));<br><br>+		<span class="hljs-comment">// not block </span><br>+                    <span class="hljs-comment">//    block = BlockChecker.isBlocked(mContext,</span><br>+                    <span class="hljs-comment">//            cursor.getString(PDU_SEQUENCE_PORT_PROJECTION_INDEX_MAPPING</span><br>+                    <span class="hljs-comment">//                    .get(DISPLAY_ADDRESS_COLUMN)));</span><br><br>``` <br><br><br>frameworks/opt/telephony/src/java/com/android/internal/telephony/WapPushOverSms.java<br>``` <br>-                <span class="hljs-keyword">if</span> (nInd.getFrom() != <span class="hljs-keyword">null</span><br>-                        &amp;&amp; BlockChecker.isBlocked(mContext, nInd.getFrom().getString())) &#123;<br>+<br>+		<span class="hljs-comment">// not block </span><br>+		<span class="hljs-comment">// &amp;&amp; BlockChecker.isBlocked(mContext, nInd.getFrom().getString())</span><br>+                <span class="hljs-keyword">if</span> (nInd.getFrom() != <span class="hljs-keyword">null</span>) &#123;<br></code></pre></td></tr></table></figure>
-<hr>
-<h3 id="电话拨号拦截"><a href="#电话拨号拦截" class="headerlink" title="电话拨号拦截"></a>电话拨号拦截</h3><p>修改位置 proprietary/packages/services/Telecomm/src/com/android/server/telecom/CallIntentProcessor.java</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><code class="hljs java">    <span class="hljs-comment">/**</span><br><span class="hljs-comment">     * Processes CALL, CALL_PRIVILEGED, and CALL_EMERGENCY intents.</span><br><span class="hljs-comment">     *</span><br><span class="hljs-comment">     * <span class="hljs-doctag">@param</span> intent Call intent containing data about the handle to call.</span><br><span class="hljs-comment">     */</span><br>    <span class="hljs-function"><span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title">processOutgoingCallIntent</span><span class="hljs-params">(</span></span><br><span class="hljs-function"><span class="hljs-params">            Context context,</span></span><br><span class="hljs-function"><span class="hljs-params">            CallsManager callsManager,</span></span><br><span class="hljs-function"><span class="hljs-params">            Intent intent)</span> </span>&#123;<br><br><br><br>            	    <span class="hljs-keyword">if</span> (phoneNumber != <span class="hljs-keyword">null</span>) &#123;<br>            <span class="hljs-keyword">if</span> (!PhoneNumberUtils.isUriNumber(phoneNumber)) &#123;  <br>               phoneNumber = PhoneNumberUtils.convertAndStrip(phoneNumber);  <br>            &#125;  <br>        &#125;<br><br>+        <span class="hljs-keyword">if</span> (shouldBlockNumber(context,phoneNumber)) &#123;<br>+                <br>+                Log.d(CallIntentProcessor.class,phoneNumber + " is blocked.");<br>+<br>+                <span class="hljs-keyword">return</span>;<br>+        &#125;<br><br><br>    &#125;<br></code></pre></td></tr></table></figure>
         </div>
         
+        
+        <div class="level is-mobile">
+            <div class="level-start">
+                <div class="level-item">
+                <a class="button is-size-7 is-light" href="/2019/02/08/android_java_framework/android_phone_whitelist/#more">Read More</a>
+                </div>
+            </div>
+        </div>
         
         
     </div>
@@ -633,7 +553,7 @@
                 <span class="level-item has-text-grey">
                     
                     
-                    a minute read (About 222 words)
+                    a minute read (About 223 words)
                 </span>
                 
                 
@@ -647,14 +567,16 @@
         </h1>
         <div class="content">
             <p>展讯系统驱动配置物理按键，首先查看硬件原理图，找到对应物理按键的管脚，比如按键5接的是gpio125</p>
-<p>1.打开kernel/arch/arm/boot/dts/对应项目的.dts文件<br>修改gpio_keys下的配置，gpios修改对应的gpio引脚号</p>
-<figure class="highlight dts"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs dts"><span class="hljs-class">gpio_keys </span>&#123;<br> 		<span class="hljs-class">key_5 </span>&#123;<br> 			label = <span class="hljs-string">"5 Key"</span>;<br>			linux,code = <span class="hljs-params">&lt;<span class="hljs-number">6</span>&gt;</span>;<br>-			gpios = <span class="hljs-params">&lt;<span class="hljs-variable">&amp;ap_gpio</span> <span class="hljs-number">92</span> <span class="hljs-number">1</span>&gt;</span>;<br>+			gpios = <span class="hljs-params">&lt;<span class="hljs-variable">&amp;ap_gpio</span> <span class="hljs-number">125</span> <span class="hljs-number">1</span>&gt;</span>;<br> 			gpio-key,wakeup;<br>			gpio-key,level-trigger;<br> 		&#125;;<br><br>&#125;<br></code></pre></td></tr></table></figure>
-<p>linux,code对应的就是KEY CODE<br>gpio-key,wakeup代表按下时如果系统正在休眠会触发唤醒<br>gpio-key,level-trigger 表示增加电平触发判断</p>
-<p>2.打开u-boot15/board/spreadtrum/对应项目的pinmap .c文件</p>
-<p>对照平台GPIO_Spec的xls表，找到gpio125对应的Ball Name，修改Fuction为默认gpio功能:BITS_PIN_AF(3)</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs c">&#123;REG_PIN_RTCK_LTE,                      BITS_PIN_AF(<span class="hljs-number">3</span>)&#125;,<br>&#123;REG_MISC_PIN_RTCK_LTE,                 BITS_PIN_DS(<span class="hljs-number">1</span>)|BIT_PIN_NULL|BIT_PIN_NUL|BIT_PIN_SLP_AP|BIT_PIN_SLP_NUL|BIT_PIN_SLP_OE&#125;,<br></code></pre></td></tr></table></figure>
         </div>
         
+        
+        <div class="level is-mobile">
+            <div class="level-start">
+                <div class="level-item">
+                <a class="button is-size-7 is-light" href="/2019/02/07/android_driver/sprd_key_driver_experience/#more">Read More</a>
+                </div>
+            </div>
+        </div>
         
         
     </div>
@@ -690,7 +612,7 @@
                 <span class="level-item has-text-grey">
                     
                     
-                    6 minutes read (About 860 words)
+                    6 minutes read (About 861 words)
                 </span>
                 
                 
@@ -704,48 +626,16 @@
         </h1>
         <div class="content">
             <p>顺手记录下修改系统时的经验,网上很容易就能搜到的就不记录了</p>
-<hr>
-<h3 id="修改下拉快捷菜单栏的菜单列表"><a href="#修改下拉快捷菜单栏的菜单列表" class="headerlink" title="修改下拉快捷菜单栏的菜单列表:"></a>修改下拉快捷菜单栏的菜单列表:</h3><p>主要搜索qstile相关的类</p>
-<p>xxxx/packages/apps/SystemUI/res/values/config.xml</p>
-<figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs java">&lt;!-- The <span class="hljs-keyword">default</span> tiles to display in QuickSettings --&gt;<br>&lt;string name=<span class="hljs-string">"quick_settings_tiles_default"</span> translatable=<span class="hljs-string">"false"</span>&gt;<br>wifi,bt,dnd,rotation,battery,cell,cast<br>&lt;/string&gt;<br><br>&lt;!-- Tiles <span class="hljs-keyword">native</span> to System UI. Order should match <span class="hljs-string">"quick_settings_tiles_default"</span> --&gt;<br>&lt;string name=<span class="hljs-string">"quick_settings_tiles_stock"</span> translatable=<span class="hljs-string">"false"</span>&gt;<br>wifi,cell,battery,dnd,rotation,bt,location,hotspot,inversion,saver,work,cast,night<br>&lt;/string&gt;<br></code></pre></td></tr></table></figure>
-<hr>
-<h3 id="如何在framework层获取当前api被调用时的进程对应的app的application-context"><a href="#如何在framework层获取当前api被调用时的进程对应的app的application-context" class="headerlink" title="如何在framework层获取当前api被调用时的进程对应的app的application context:"></a>如何在framework层获取当前api被调用时的进程对应的app的application context:</h3><p>ActivityThread.currentActivityThread().getApplication()</p>
-<hr>
-<h3 id="去除-hide-但-make-update-api和编译出错解决方法"><a href="#去除-hide-但-make-update-api和编译出错解决方法" class="headerlink" title="去除@hide 但 make update-api和编译出错解决方法:"></a>去除@hide 但 make update-api和编译出错解决方法:</h3><p>如果make update-api报错的话<br>要看对应方法里是不是有其他@hide的类或方法,比如参数的类是hide的,调用的api是hide的<br>要将所有相关的变量和api都去除hide,才能update成功<br>比如:<br>void aaa(B bbb){<br>    ccc(bbb);<br>}<br>要保证B的类和ccc函数是非hide的</p>
-<hr>
-<h3 id="如何修改系统通话UI界面"><a href="#如何修改系统通话UI界面" class="headerlink" title="如何修改系统通话UI界面:"></a>如何修改系统通话UI界面:</h3><p>路径为：<br>packages/apps/Dialer/java/com/android/incallui/incall/impl<br>vendor/xxxxx/proprietary/packages/apps/Dialer/java/com/android/incallui/incall/impl</p>
-<p>InCallFragment ，InCallButtonGridFragment是关键类，有很多代理类和presenter类</p>
-<hr>
-<h3 id="UsbManager在连接usb设备时需要request权限才能连接到usb设备-如何跳过申请权限的弹框-默认赋予权限呢"><a href="#UsbManager在连接usb设备时需要request权限才能连接到usb设备-如何跳过申请权限的弹框-默认赋予权限呢" class="headerlink" title="UsbManager在连接usb设备时需要request权限才能连接到usb设备,如何跳过申请权限的弹框,默认赋予权限呢"></a>UsbManager在连接usb设备时需要request权限才能连接到usb设备,如何跳过申请权限的弹框,默认赋予权限呢</h3><p>可以修改framework下的UsbUserSettingsManager:</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><code class="hljs java">  <span class="hljs-comment">// Temporary mapping USB device name to list of UIDs with permissions for the device</span><br>    <span class="hljs-keyword">private</span> <span class="hljs-keyword">final</span> HashMap&lt;String, SparseBooleanArray&gt; mDevicePermissionMap =<br>            <span class="hljs-keyword">new</span> HashMap&lt;&gt;();<br>    <span class="hljs-comment">// Temporary mapping UsbAccessory to list of UIDs with permissions for the accessory</span><br>    <span class="hljs-keyword">private</span> <span class="hljs-keyword">final</span> HashMap&lt;UsbAccessory, SparseBooleanArray&gt; mAccessoryPermissionMap =<br>            <span class="hljs-keyword">new</span> HashMap&lt;&gt;();<br><br>两个hashmap分别储存的uid和对应的usbdevice,只要存在即允许了权限<br>    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">boolean</span> <span class="hljs-title">hasPermission</span><span class="hljs-params">(UsbDevice device, String packageName, <span class="hljs-keyword">int</span> uid)</span> </span>&#123;<br>        <span class="hljs-keyword">synchronized</span> (mLock) &#123;<br>            <span class="hljs-keyword">if</span> (isCameraDevicePresent(device)) &#123;<br>		<span class="hljs-comment">//camera权限,usb camera需要额外的camera权限</span><br>                <span class="hljs-keyword">if</span> (!isCameraPermissionGranted(packageName, uid)) &#123;<br>                    <span class="hljs-keyword">return</span> <span class="hljs-keyword">false</span>;<br>                &#125;<br>            &#125;<br>		<span class="hljs-comment">//如果是系统uid,或者mDisablePermissionDialogs 设置禁用usb权限询问框,则默认拥有权限</span><br>            <span class="hljs-keyword">if</span> (uid == Process.SYSTEM_UID || mDisablePermissionDialogs) &#123;<br>                <span class="hljs-keyword">return</span> <span class="hljs-keyword">true</span>;<br>            &#125;<br>		<span class="hljs-comment">//获取对应usbdevice的已允许权限uid,如果uid存在则判断拥有权限</span><br>            SparseBooleanArray uidList = mDevicePermissionMap.get(device.getDeviceName());<br>            <span class="hljs-keyword">if</span> (uidList == <span class="hljs-keyword">null</span>) &#123;<br>                <span class="hljs-keyword">return</span> <span class="hljs-keyword">false</span>;<br>            &#125;<br>            <span class="hljs-keyword">return</span> uidList.get(uid);<br> <br>        &#125;<br>    &#125;<br></code></pre></td></tr></table></figure>
-
-<hr>
-<h3 id="系统编译自定义覆盖代码"><a href="#系统编译自定义覆盖代码" class="headerlink" title="系统编译自定义覆盖代码"></a>系统编译自定义覆盖代码</h3><p>资源文件：</p>
-<p>Android Overlay机制允许在不修改packages中apk的情况下，来自定义 framework/package/vendor中的资源文件，实现资源的定制。来达到显示不同的UI得目的</p>
-<p>PRODUCT_PACKAGE_OVERLAYS :=  device/vendor-name/device-name/product-name/overlay</p>
-<p>Or：</p>
-<p>DEVICE_PACKAGE_OVERLAYS :=  device/vendor-name/device-name/common/overlay</p>
-<p>注意只能修改xml之类的资源文件,java文件无法替换。</p>
-<p>代码文件：</p>
-<p>通过修改 envsetup 和 lunch执行的mk文件，比如在build/core/envsetup.mk添加复制替换代码：</p>
-<p>$(shell \cp -rf vendor/mediatek/xxxx/Camera.java frameworks/base/core/java/android/hardware/Camera.java)</p>
-<hr>
-<h3 id="通讯录如何判断是否是sim卡储存的号码："><a href="#通讯录如何判断是否是sim卡储存的号码：" class="headerlink" title="通讯录如何判断是否是sim卡储存的号码："></a>通讯录如何判断是否是sim卡储存的号码：</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><code class="hljs java"> <span class="hljs-keyword">private</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">final</span> String ACCOUNT_TYPE_SIM = <span class="hljs-string">"SIM Account"</span>;<br> <span class="hljs-keyword">private</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">final</span> String ACCOUNT_TYPE_USIM = <span class="hljs-string">"USIM Account"</span>;<br> <span class="hljs-keyword">private</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">final</span> String ACCOUNT_TYPE_RUIM = <span class="hljs-string">"RUIM Account"</span>;<br> <span class="hljs-keyword">private</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">final</span> String ACCOUNT_TYPE_CSIM = <span class="hljs-string">"CSIM Account"</span>;<br><br><span class="hljs-function"><span class="hljs-keyword">private</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">boolean</span> <span class="hljs-title">isAccountTypeIccCard</span><span class="hljs-params">(String accountTypeString)</span> </span>&#123;<br>     <span class="hljs-keyword">boolean</span> isIccCardAccount = (ACCOUNT_TYPE_SIM.equals(accountTypeString)<br>             || ACCOUNT_TYPE_USIM.equals(accountTypeString)<br>             || ACCOUNT_TYPE_RUIM.equals(accountTypeString)<br>             || ACCOUNT_TYPE_CSIM.equals(accountTypeString));<br>     <span class="hljs-comment">//Log.d(TAG, "account " + accountTypeString + " is IccCard? " + isIccCardAccount);</span><br>     <span class="hljs-keyword">return</span> isIccCardAccount;<br> &#125;<br></code></pre></td></tr></table></figure>
-
-<hr>
-<h3 id="app监听短信接收，只能监听到短短信，监听不到长短信："><a href="#app监听短信接收，只能监听到短短信，监听不到长短信：" class="headerlink" title="app监听短信接收，只能监听到短短信，监听不到长短信："></a>app监听短信接收，只能监听到短短信，监听不到长短信：</h3><p>检查系统短信应用Mms，长短信是需要系统短信应用去操作拼接的</p>
-<hr>
-<h3 id="修改系统蓝牙功能支持类型"><a href="#修改系统蓝牙功能支持类型" class="headerlink" title="修改系统蓝牙功能支持类型"></a>修改系统蓝牙功能支持类型</h3><p>vendor/xxxx/proprietary/packages/apps/Bluetooth/res/values/config.xml</p>
-<p>修改如下对应功能支持的值</p>
-<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><code class="hljs xml"><span class="hljs-tag">&lt;<span class="hljs-name">bool</span> <span class="hljs-attr">name</span>=<span class="hljs-string">"profile_supported_a2dp"</span>&gt;</span>true<span class="hljs-tag">&lt;/<span class="hljs-name">bool</span>&gt;</span><br><span class="hljs-tag">&lt;<span class="hljs-name">bool</span> <span class="hljs-attr">name</span>=<span class="hljs-string">"profile_supported_a2dp_sink"</span>&gt;</span>false<span class="hljs-tag">&lt;/<span class="hljs-name">bool</span>&gt;</span><br><span class="hljs-tag">&lt;<span class="hljs-name">bool</span> <span class="hljs-attr">name</span>=<span class="hljs-string">"profile_supported_hdp"</span>&gt;</span>false<span class="hljs-tag">&lt;/<span class="hljs-name">bool</span>&gt;</span><br><span class="hljs-tag">&lt;<span class="hljs-name">bool</span> <span class="hljs-attr">name</span>=<span class="hljs-string">"profile_supported_hs_hfp"</span>&gt;</span>true<span class="hljs-tag">&lt;/<span class="hljs-name">bool</span>&gt;</span><br><span class="hljs-tag">&lt;<span class="hljs-name">bool</span> <span class="hljs-attr">name</span>=<span class="hljs-string">"profile_supported_hfpclient"</span>&gt;</span>false<span class="hljs-tag">&lt;/<span class="hljs-name">bool</span>&gt;</span><br><span class="hljs-tag">&lt;<span class="hljs-name">bool</span> <span class="hljs-attr">name</span>=<span class="hljs-string">"profile_supported_hid"</span>&gt;</span>false<span class="hljs-tag">&lt;/<span class="hljs-name">bool</span>&gt;</span><br><span class="hljs-tag">&lt;<span class="hljs-name">bool</span> <span class="hljs-attr">name</span>=<span class="hljs-string">"profile_supported_opp"</span>&gt;</span>false<span class="hljs-tag">&lt;/<span class="hljs-name">bool</span>&gt;</span><br><span class="hljs-tag">&lt;<span class="hljs-name">bool</span> <span class="hljs-attr">name</span>=<span class="hljs-string">"profile_supported_pan"</span>&gt;</span>false<span class="hljs-tag">&lt;/<span class="hljs-name">bool</span>&gt;</span><br><span class="hljs-tag">&lt;<span class="hljs-name">bool</span> <span class="hljs-attr">name</span>=<span class="hljs-string">"profile_supported_pbap"</span>&gt;</span>false<span class="hljs-tag">&lt;/<span class="hljs-name">bool</span>&gt;</span><br><span class="hljs-tag">&lt;<span class="hljs-name">bool</span> <span class="hljs-attr">name</span>=<span class="hljs-string">"profile_supported_gatt"</span>&gt;</span>true<span class="hljs-tag">&lt;/<span class="hljs-name">bool</span>&gt;</span><br><span class="hljs-tag">&lt;<span class="hljs-name">bool</span> <span class="hljs-attr">name</span>=<span class="hljs-string">"pbap_include_photos_in_vcard"</span>&gt;</span>false<span class="hljs-tag">&lt;/<span class="hljs-name">bool</span>&gt;</span><br><span class="hljs-tag">&lt;<span class="hljs-name">bool</span> <span class="hljs-attr">name</span>=<span class="hljs-string">"pbap_use_profile_for_owner_vcard"</span>&gt;</span>false<span class="hljs-tag">&lt;/<span class="hljs-name">bool</span>&gt;</span><br><span class="hljs-tag">&lt;<span class="hljs-name">bool</span> <span class="hljs-attr">name</span>=<span class="hljs-string">"profile_supported_map"</span>&gt;</span>false<span class="hljs-tag">&lt;/<span class="hljs-name">bool</span>&gt;</span><br><span class="hljs-tag">&lt;<span class="hljs-name">bool</span> <span class="hljs-attr">name</span>=<span class="hljs-string">"profile_supported_avrcp_controller"</span>&gt;</span>false<span class="hljs-tag">&lt;/<span class="hljs-name">bool</span>&gt;</span><br><span class="hljs-tag">&lt;<span class="hljs-name">bool</span> <span class="hljs-attr">name</span>=<span class="hljs-string">"profile_supported_sap"</span>&gt;</span>false<span class="hljs-tag">&lt;/<span class="hljs-name">bool</span>&gt;</span><br><span class="hljs-tag">&lt;<span class="hljs-name">bool</span> <span class="hljs-attr">name</span>=<span class="hljs-string">"profile_supported_pbapclient"</span>&gt;</span>false<span class="hljs-tag">&lt;/<span class="hljs-name">bool</span>&gt;</span><br><span class="hljs-tag">&lt;<span class="hljs-name">bool</span> <span class="hljs-attr">name</span>=<span class="hljs-string">"profile_supported_mapmce"</span>&gt;</span>false<span class="hljs-tag">&lt;/<span class="hljs-name">bool</span>&gt;</span><br><span class="hljs-tag">&lt;<span class="hljs-name">bool</span> <span class="hljs-attr">name</span>=<span class="hljs-string">"profile_supported_hidd"</span>&gt;</span>false<span class="hljs-tag">&lt;/<span class="hljs-name">bool</span>&gt;</span><br></code></pre></td></tr></table></figure>
-
-
-
-<hr>
-<hr>
-
         </div>
         
+        
+        <div class="level is-mobile">
+            <div class="level-start">
+                <div class="level-item">
+                <a class="button is-size-7 is-light" href="/2019/01/05/android_java_framework/android_java_framework_experience/#more">Read More</a>
+                </div>
+            </div>
+        </div>
         
         
     </div>
@@ -781,7 +671,7 @@
                 <span class="level-item has-text-grey">
                     
                     
-                    4 minutes read (About 547 words)
+                    4 minutes read (About 548 words)
                 </span>
                 
                 
@@ -795,20 +685,16 @@
         </h1>
         <div class="content">
             <p>在使用Zbar的过程中，有时会遇到二维码/条形码倾斜45%时识别不出来的情况，然而这并不是Zbar的Bug，下面给出两种解决办法。</p>
-<hr>
-<h2 id="通过修改Zbar的扫描密度设置（推荐）"><a href="#通过修改Zbar的扫描密度设置（推荐）" class="headerlink" title="通过修改Zbar的扫描密度设置（推荐）"></a>通过修改Zbar的扫描密度设置（推荐）</h2><p>Zbar在对图像识别时会逐行逐列地扫描，扫描初始化设置里提供了X轴和Y轴的扫描密度的设置，将密度值设置为1，即不跨行扫描，就可以正常识别倾斜的二维码/条形码。  </p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs java">ImageScanner.setConfig(<span class="hljs-number">0</span>, ZBAR_CFG_X_DENSITY, <span class="hljs-number">1</span>);<br>ImageScanner.setConfig(<span class="hljs-number">0</span>, ZBAR_CFG_Y_DENSITY, <span class="hljs-number">1</span>);<br></code></pre></td></tr></table></figure>
-
-<p>注意，这里涉及到一个识别速度的问题，很多人将这个值设置为2甚至3，就是为了可以加快识别一帧图像的速度。因为设置为2时，每2行才扫描1行，识别时间更短了，但这也会丢失细节，导致倾斜二维码识别不出来。大部分情况下，Zbar识别一帧图像的时间小于1秒，为了加快一倍的识别速度，丢失识别成功率是不值得的。</p>
-<p>使用JNI调用Zbar的情况，要注意检查Java和C代码里对Zbar的初始化设置有没有问题。  </p>
-<hr>
-<h2 id="通过图像处理矫正再识别"><a href="#通过图像处理矫正再识别" class="headerlink" title="通过图像处理矫正再识别"></a>通过图像处理矫正再识别</h2><p>将图像矫正再丢给Zbar识别，也是可以的。很多人会使用OpenCV进行图像矫正，这里提供一个处理过程：</p>
-<p>resize（图像尺寸缩小）-&gt;threshold（二值化）-&gt;erode（几次膨胀腐蚀）-&gt;HoughLines（寻找直线）-&gt;筛除出二维码/一维码的边线，计算出边线的倾斜角度-&gt;warpAffine（对原图像进行仿射变换）</p>
-<p>处理后再将图像丢给Zbar识别即可，OpenCV相关代码网上很多，这里就不贴了。    </p>
-<p>&nbsp;<br>综上所述，这里还是推荐第一种方式。如果还是识别不出来，也许就是图像帧的质量问题，毕竟你觉得清晰的图像，Zbar并不一定觉得细节清晰。</p>
-
         </div>
         
+        
+        <div class="level is-mobile">
+            <div class="level-start">
+                <div class="level-item">
+                <a class="button is-size-7 is-light" href="/2018/12/24/zbar/zbar_correct_recognize/#more">Read More</a>
+                </div>
+            </div>
+        </div>
         
         
     </div>

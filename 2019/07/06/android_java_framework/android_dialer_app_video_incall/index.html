@@ -10,16 +10,16 @@
 <title>Android如何屏蔽通话界面的视频彩铃 - Zola&#39;s Blog</title>
 
 
-    <meta name="description" content="当电话呼叫对方时，如果对方设置了视频彩铃，则会在呼叫页面出现运营商的视频和彩铃，可以通过修改系统应用中的Dialer App的incall页面来屏蔽。  比如MTK平台的Dialer App，路径如下：vendor&#x2F;mediatek&#x2F;proprietary&#x2F;packages&#x2F;apps&#x2F;Dialer&#x2F;java&#x2F;com&#x2F;android&#x2F;incallui&#x2F;call&#x2F;DialerCall.java可以通过">
+    <meta name="description" content="当电话呼叫对方时，如果对方设置了视频彩铃，则会在呼叫页面出现运营商的视频和彩铃，可以通过修改系统应用中的Dialer App的incall页面来屏蔽。">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Android如何屏蔽通话界面的视频彩铃">
 <meta property="og:url" content="http://yoursite.com/2019/07/06/android_java_framework/android_dialer_app_video_incall/index.html">
 <meta property="og:site_name" content="Zola&#39;s Blog">
-<meta property="og:description" content="当电话呼叫对方时，如果对方设置了视频彩铃，则会在呼叫页面出现运营商的视频和彩铃，可以通过修改系统应用中的Dialer App的incall页面来屏蔽。  比如MTK平台的Dialer App，路径如下：vendor&#x2F;mediatek&#x2F;proprietary&#x2F;packages&#x2F;apps&#x2F;Dialer&#x2F;java&#x2F;com&#x2F;android&#x2F;incallui&#x2F;call&#x2F;DialerCall.java可以通过">
+<meta property="og:description" content="当电话呼叫对方时，如果对方设置了视频彩铃，则会在呼叫页面出现运营商的视频和彩铃，可以通过修改系统应用中的Dialer App的incall页面来屏蔽。">
 <meta property="og:locale" content="en_US">
 <meta property="og:image" content="http://yoursite.com/gallery/6.jpeg">
 <meta property="article:published_time" content="2019-07-05T16:00:00.000Z">
-<meta property="article:modified_time" content="2020-03-24T19:13:08.988Z">
+<meta property="article:modified_time" content="2020-03-24T19:49:10.847Z">
 <meta property="article:author" content="Zola">
 <meta property="article:tag" content="Android System App">
 <meta property="article:tag" content="Incall">
@@ -145,7 +145,7 @@
                 <span class="level-item has-text-grey">
                     
                     
-                    a minute read (About 141 words)
+                    a minute read (About 142 words)
                 </span>
                 
                 
@@ -159,6 +159,7 @@
         </h1>
         <div class="content">
             <p>当电话呼叫对方时，如果对方设置了视频彩铃，则会在呼叫页面出现运营商的视频和彩铃，可以通过修改系统应用中的Dialer App的incall页面来屏蔽。</p>
+<a id="more"></a>
 <hr>
 <p>比如MTK平台的Dialer App，路径如下：vendor/mediatek/proprietary/packages/apps/Dialer/java/com/android/incallui/call/DialerCall.java<br>可以通过如下修改：</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs java">   <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">boolean</span> <span class="hljs-title">isVideoCall</span><span class="hljs-params">()</span> </span>&#123;<br>-    <span class="hljs-keyword">return</span> getVideoTech().isTransmittingOrReceiving();<br>+    <span class="hljs-keyword">return</span> <span class="hljs-keyword">false</span>;<span class="hljs-comment">//getVideoTech().isTransmittingOrReceiving();</span><br>   &#125;<br></code></pre></td></tr></table></figure>

@@ -10,16 +10,16 @@
 <title>Android 展讯/MTK Alarm白名单设置 - Zola&#39;s Blog</title>
 
 
-    <meta name="description" content="目前大部分应用都会通过AlarmManager设置 alarm 来定时或周期唤醒系统来做一些操作。这种随机的 alarm 唤醒会增加系统的待机功耗。所以平台厂商为了功耗优化，一方面禁止了非白名单的第三方应用在系统休眠时唤醒系统，一方面做了心跳对齐的机制（即将这些唤醒时间杂乱的alarm修改为统一时间唤醒）。 当然Android M开始也引入了Doze机制，Doze机制的白名单和平台的Alarm白名">
+    <meta name="description" content="目前大部分应用都会通过AlarmManager设置 alarm 来定时或周期唤醒系统来做一些操作。这种随机的 alarm 唤醒会增加系统的待机功耗。所以平台厂商为了功耗优化，一方面禁止了非白名单的第三方应用在系统休眠时唤醒系统，一方面做了心跳对齐的机制（即将这些唤醒时间杂乱的alarm修改为统一时间唤醒）。">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Android 展讯&#x2F;MTK Alarm白名单设置">
 <meta property="og:url" content="http://yoursite.com/2019/04/02/android_system/android_sprd_mtk_alarm_group_whitelist/index.html">
 <meta property="og:site_name" content="Zola&#39;s Blog">
-<meta property="og:description" content="目前大部分应用都会通过AlarmManager设置 alarm 来定时或周期唤醒系统来做一些操作。这种随机的 alarm 唤醒会增加系统的待机功耗。所以平台厂商为了功耗优化，一方面禁止了非白名单的第三方应用在系统休眠时唤醒系统，一方面做了心跳对齐的机制（即将这些唤醒时间杂乱的alarm修改为统一时间唤醒）。 当然Android M开始也引入了Doze机制，Doze机制的白名单和平台的Alarm白名">
+<meta property="og:description" content="目前大部分应用都会通过AlarmManager设置 alarm 来定时或周期唤醒系统来做一些操作。这种随机的 alarm 唤醒会增加系统的待机功耗。所以平台厂商为了功耗优化，一方面禁止了非白名单的第三方应用在系统休眠时唤醒系统，一方面做了心跳对齐的机制（即将这些唤醒时间杂乱的alarm修改为统一时间唤醒）。">
 <meta property="og:locale" content="en_US">
 <meta property="og:image" content="http://yoursite.com/gallery/7.jpeg">
 <meta property="article:published_time" content="2019-04-01T16:00:00.000Z">
-<meta property="article:modified_time" content="2020-03-23T13:37:58.878Z">
+<meta property="article:modified_time" content="2020-03-24T19:49:06.381Z">
 <meta property="article:author" content="Zola">
 <meta property="article:tag" content="Android System">
 <meta property="article:tag" content="Alarm">
@@ -144,7 +144,7 @@
                 <span class="level-item has-text-grey">
                     
                     
-                    2 minutes read (About 358 words)
+                    2 minutes read (About 359 words)
                 </span>
                 
                 
@@ -158,6 +158,8 @@
         </h1>
         <div class="content">
             <p>目前大部分应用都会通过AlarmManager设置 alarm 来定时或周期唤醒系统来做一些操作。这种随机的 alarm 唤醒会增加系统的待机功耗。所以平台厂商为了功耗优化，一方面禁止了非白名单的第三方应用在系统休眠时唤醒系统，一方面做了心跳对齐的机制（即将这些唤醒时间杂乱的alarm修改为统一时间唤醒）。</p>
+<a id="more"></a>
+
 <p>当然Android M开始也引入了Doze机制，Doze机制的白名单和平台的Alarm白名单最好都配置上对应的包名。</p>
 <hr>
 <h3 id="展讯平台"><a href="#展讯平台" class="headerlink" title="展讯平台"></a>展讯平台</h3><p>修改路径：vendor\sprd\platform\frameworks\native\data\etc\appPowerSaveConfig.xml</p>

@@ -150,7 +150,7 @@
                 <span class="level-item has-text-grey">
                     
                     
-                    5 minutes read (About 793 words)
+                    5 minutes read (About 794 words)
                 </span>
                 
                 
@@ -164,22 +164,16 @@
         </h1>
         <div class="content">
             <p>这篇文章教你如何在没有全部Android源码，只有kernel文件夹时编译boot.img。另外这里需要从4.4的源码或者平台源码提取一些工具。</p>
-<p>Android源码里的Kernel文件夹是GNU协议的，所以厂家的驱动操作细节基本在其他目录（比如vendor）下的Hal代码里。</p>
-<p>如果想熟悉Android大概编译流程的话，最直接的就是看/build/core/Makefile的代码，这样你就会清楚每个img文件是从那些文件里生成的，用的什么参数、工具也一目了然。</p>
-<hr>
-<h2 id="关于安卓各版本的差异和平台差异"><a href="#关于安卓各版本的差异和平台差异" class="headerlink" title="关于安卓各版本的差异和平台差异"></a>关于安卓各版本的差异和平台差异</h2><h3 id="安卓各版本差异"><a href="#安卓各版本差异" class="headerlink" title="安卓各版本差异"></a>安卓各版本差异</h3><p>Android不同版本编译时，需要的JDK版本和C编译工具版本是不一样的，4.4用的JDK版本是1.6，而C的编译器版本可以查看/build/core/Makefile的代码来确认。</p>
-<h3 id="平台差异"><a href="#平台差异" class="headerlink" title="平台差异"></a>平台差异</h3><p>展讯、MTK、高通下的有些平台在编译完源码后会对img进行签名加密操作，如果涉及到签名加密最好是拥有对应平台的源码，从中提取签名加密工具和参数。</p>
-<hr>
-<h2 id="编译脚本的编写"><a href="#编译脚本的编写" class="headerlink" title="编译脚本的编写"></a>编译脚本的编写</h2><h3 id="文件目录"><a href="#文件目录" class="headerlink" title="文件目录"></a>文件目录</h3><p>├── arm-eabi-4.8  // c编译器<br>├── build_tools  //编译相关工具<br>├── config<br>│   ├── kernel_config  //kernel编译的config文件，需要从kernel/arch/arm/configs下找到对应机器类型的config文件，或者直接从整体源码编译后的out目录里提取<br>│   └──xxxxx-native.dtb   //kernel对应机器类型的dts文件，用来生成dt.img，需要从kernel/arch/arm/boot/dts目录里提取<br>├── flash<br>│   └── ramdisk.img   //整体源码编译后的ramdisk.img<br>├── kernel   //源码文件<br>├── packimage_scripts  //签名加密工具，不一定需要，看平台<br>├── build.sh  //编译脚本</p>
-<h3 id="编写编译脚本build-sh"><a href="#编写编译脚本build-sh" class="headerlink" title="编写编译脚本build.sh"></a>编写编译脚本build.sh</h3><p>编译的过程，简单来说，就是先根据config文件编译kernel文件夹，找到对应机器的dts文件用dtbTool生成dt.img,然后使用mkbootimg工具，合并kernel的编译结果Image、ramdis.img、dt.img生成boot.img。</p>
-<p>最后如果需要签名加密在用签名加密工具对boot.img进行签名加密。</p>
-<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><code class="hljs sh">make -j8 -l8 -C ./kernel clean<br>rm -rf out<br>mkdir out<br><br>rm flash/dt.img flash/boot.img flash/boot-sign.img<br><br>cp ./config/kernel_config out/.config<br>make -j4 -C ./kernel  ARCH=arm CROSS_COMPILE=<span class="hljs-variable">$PWD</span>/arm-eabi-4.8/bin/arm-eabi- O=<span class="hljs-variable">$PWD</span>/out/<br><br>find out/arch/arm/boot/dts/ -name *.dtb ! -name xxxxx.dtb | xargs -I&#123;&#125; rm &#123;&#125;<br><br>./build_tools/dtbTool -o  flash/dt.img -s 2048 -p out/scripts/dtc/ out/arch/arm/boot/dts/<br><br>./build_tools/mkbootimg --kernel out/arch/arm/boot/Image --ramdisk flash/ramdisk.img --cmdline console=ttyS1,115200n8 --base 0x00000000 --pagesize 2048 --dt flash/dt.img --kernel_offset 0x00008000 --ramdisk_offset 0x05400000 --output flash/boot.img<br><br><span class="hljs-built_in">source</span> packimage_scripts/packimage.sh flash/boot.img<br></code></pre></td></tr></table></figure>
-
-<p>&nbsp;</p>
-<p>这里还得说下，因为平台的不同，编译过程的参数、指令、文件都可能有差异，最好是根据/build/core/Makefile里的过程走，也可以参照其他kernel编译的相关文章。</p>
-
         </div>
         
+        
+        <div class="level is-mobile">
+            <div class="level-start">
+                <div class="level-item">
+                <a class="button is-size-7 is-light" href="/2018/10/28/android_kernel/android_kitkat_kernel_build/#more">Read More</a>
+                </div>
+            </div>
+        </div>
         
         
     </div>

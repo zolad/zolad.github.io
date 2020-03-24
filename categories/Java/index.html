@@ -151,7 +151,7 @@
                 <span class="level-item has-text-grey">
                     
                     
-                    2 minutes read (About 357 words)
+                    2 minutes read (About 358 words)
                 </span>
                 
                 
@@ -165,20 +165,16 @@
         </h1>
         <div class="content">
             <p>一般用户证书和加密数据是一起发放到客户端的，但是使用用户证书的公钥解密数据前需要验证用户证书是否可信，即从源头来说是否由根证书签发的，按证书链去认证。使用根证书验证用户证书可信并解密的Java实现如下：</p>
-<p>1.读取根证书文件初始化根证书对象，并获取根证书中的公钥</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs java">CertificateFactory certificateFactory = CertificateFactory.getInstance(<span class="hljs-string">"X.509"</span>);<br>Certificate rootCert = certificateFactory.generateCertificate(<span class="hljs-keyword">new</span> FileInputStream(rootCertPath));<br>PublicKey rootCertPublicKey = rootCert.getPublicKey();<br></code></pre></td></tr></table></figure>
-
-
-<p>2.使用用户证书byte数组数据初始化用户证书对象</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs java">X509Certificate userCert = (X509Certificate)certificateFactory.generateCertificate(<br>                <span class="hljs-keyword">new</span> ByteArrayInputStream(userCertByteArray));<br></code></pre></td></tr></table></figure>
-
-<p>3.使用用户证书验证根证书的公钥，如果验证通过（即不抛出Exception）说明这个用户证书是这个根证书签发的,同时检查用户证书是否有效</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">try</span> &#123;<br>       userCert.verify(rootCertPublicKey);<br>       userCert.checkValidity();<br>       Log.d(TAG,<span class="hljs-string">"------------- 工作证书验证成功 -----------"</span>);<br>&#125;<span class="hljs-keyword">catch</span> (Exception e) &#123;<br>       Log.d(TAG,<span class="hljs-string">"------------- 工作证书验证失败 -----------"</span>);<br>        <br>&#125;<br></code></pre></td></tr></table></figure>
-
-<p>4.最后使用用户证书的公钥进行解密</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">try</span> &#123;<br>    Cipher cipher = Cipher.getInstance(<span class="hljs-string">"RSA/ECB/NoPadding"</span>);<br>	cipher.init(Cipher.DECRYPT_MODE, userCert);<br>    <span class="hljs-keyword">byte</span>[] output = cipher.doFinal(cipherData);<br>    <span class="hljs-keyword">return</span> output;<br>&#125; <span class="hljs-keyword">catch</span> (NoSuchAlgorithmException e) &#123;<br>    <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> Exception(<span class="hljs-string">"无此解密算法"</span>);<br>&#125; <span class="hljs-keyword">catch</span> (NoSuchPaddingException e) &#123;<br>    e.printStackTrace();<br>    <span class="hljs-keyword">return</span> <span class="hljs-keyword">null</span>;<br>&#125; <span class="hljs-keyword">catch</span> (InvalidKeyException e) &#123;<br>    <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> Exception(<span class="hljs-string">"解密公钥非法,请检查"</span>);<br>&#125; <span class="hljs-keyword">catch</span> (IllegalBlockSizeException e) &#123;<br>    <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> Exception(<span class="hljs-string">"密文长度非法"</span>);<br>&#125; <span class="hljs-keyword">catch</span> (BadPaddingException e) &#123;<br>    <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> Exception(<span class="hljs-string">"密文数据已损坏"</span>);<br>&#125;<br></code></pre></td></tr></table></figure>
         </div>
         
+        
+        <div class="level is-mobile">
+            <div class="level-start">
+                <div class="level-item">
+                <a class="button is-size-7 is-light" href="/2019/08/28/java/java_certificate_verify_and_decript/#more">Read More</a>
+                </div>
+            </div>
+        </div>
         
         
     </div>

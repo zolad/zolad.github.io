@@ -150,7 +150,7 @@
                 <span class="level-item has-text-grey">
                     
                     
-                    10 minutes read (About 1437 words)
+                    10 minutes read (About 1438 words)
                 </span>
                 
                 
@@ -164,47 +164,16 @@
         </h1>
         <div class="content">
             <p>国内国外有不少在Android平台上提供地图sdk的公司。大部分人使用的地图sdk里，国内有百度/高德地图，国外有谷歌地图。但是地图服务，包括地图基础绘制/路线/导航/POI/定位等，大部分地图sdk的实现都是大同小异的。这里我不想写解析地图sdk业务逻辑层实现的文章，只谈谈一般人不知道的几个点。</p>
-<h3 id="1-MapView是怎么实现的"><a href="#1-MapView是怎么实现的" class="headerlink" title="1.MapView是怎么实现的"></a>1.MapView是怎么实现的</h3><p>地图显示绘制是地图sdk最基础的部分，用户通过手势滑动放大缩小地图，在地图的基础上显示两点间的路线，地图上的商户poi点显示标注等等都要基于MapView去绘制显示。</p>
-<ul>
-<li>地图绘制</li>
-</ul>
-<p>先说地图的绘制，Android自带OpenGL开放图形库，支持2D,3D矢量图形的绘制。OpenGL ES 是Android绘图API。</p>
-<p>OpenGL ES在Android上常用来做游戏开发，所以用来做2d,3d地图的绘制是绝对胜任的。</p>
-<p>地图贴图是地图公司收集地图数据绘制出来的，一般都是公司的机密，所以地图sdk在地图绘制上的代码都是在用c/c++代码写的，在Android平台上封装成so库，让java上层只起到一个传递数据/控制/显示的功能。</p>
-<p>对于OpenGL这个图形引擎，地图贴图就是一张张的纹理。由地图基础引擎从本地动态加载地图图片到内存，最后使用OpenGL绘制到画布上。</p>
-<ul>
-<li>地图控制</li>
-</ul>
-<p>OpenGL除了基础的绘制外，也提供了6种坐标系，用户的手势操作最终都会投影到模型和相机视角的变换上。</p>
-<ul>
-<li>地图显示</li>
-</ul>
-<p>OpenGL ES是平台通用的，在特定设备上使用需要一个中间层做适配，这个中间层就是EGL。</p>
-<blockquote>
-<p>Display(EGLDisplay) 是对实际显示设备的抽象。<br>Surface（EGLSurface）是对用来存储图像的内存区域 FrameBuffer 的抽象，包括 Color Buffer， Stencil Buffer ，Depth Buffer。<br>Context (EGLContext) 存储 OpenGL ES绘图的一些状态信息。</p>
-</blockquote>
-<p>关于EGL的详细我就不描述了，简明扼要的说，我们要绘制地图，用OpenGL ES提供的API去绘制，绘制数据的容器是Surface，绘制数据要在哪个View上显示？Android提供了GLSurfaceView。</p>
-<blockquote>
-<p>GLSurfaceView从Android 1.5(API level 3)开始加入，继承自SurfaceView，实现了SurfaceHolder.Callback2接口，拥有SurfaceView的全部特性，也有view所有的功能和属性，特别是处理事件的能力，它主要是在SurfaceView的基础上它加入了EGL的管理，并自带了一个GLThread绘制线程（EGLContext创建GL环境所在线程即为GL线程），绘制的工作直接通过OpenGL在绘制线程进行，不会阻塞主线程，绘制的结果输出到SurfaceView所提供的Surface上，这使得GLSurfaceView也拥有了OpenGlES所提供的图形处理能力</p>
-</blockquote>
-<p>如果你反编译地图sdk就会发现，不看外面的API封装，MapView基本都是继承GLSurfaceView类实现的。</p>
-<p>因为GLSurfaceView拥有SurfaceView的全部特性，所以大部分地图SDK的MapView一旦放到ScrollView里拖动时就会产生黑影。</p>
-<p>当然GLSurfaceView并不是必要的，比如有些人用TextureView模仿GLSurfaceView添加EGL实现了GLThread。也同样可以在GLTextureView上进行OpenGL的绘制显示。但GLSurfaceView在地图绘制的场景下更合适，而且从Android 1.5就支持了，剩下的就不比对了，大家可以搜下SurfaceView和TextureView的优劣。</p>
-<h3 id="2-路线规划-导航-POI搜索"><a href="#2-路线规划-导航-POI搜索" class="headerlink" title="2.路线规划/导航/POI搜索"></a>2.路线规划/导航/POI搜索</h3><ul>
-<li>关于路线/交通状况/POI的数据</li>
-</ul>
-<p>路线/交通状况/POI点的数据实际都是保存在后台服务器的，因为这些也是地图公司持有的资源。</p>
-<p>地图SDK提供的路线规划/POI搜索/路况显示等功能，实际都是通过网络请求从服务器获取数据，然后通过地图引擎显示在MapView上的。</p>
-<p>当然路线的规划也是由后台服务器计算规划出来的，本地通过两个坐标点让服务器计算，服务器返回几条可行的路线数据（包括时间最优，距离最优，少步行等），Android本地只是显示这些服务器返回的结果而已。</p>
-<ul>
-<li>关于导航模式</li>
-</ul>
-<p>导航也是基于MapView的，只不过是业务场景比较复杂而已。路况/路线模拟图/方向/红绿灯提醒/车速等等，导航模式里涉及到数据比较多，跟服务器的交互也比较频繁。</p>
-<p>Android地图的UI，有OpenGL绘制的部分,也有Android View上层绘制的部分。导航数据相关的部分很多是后者。</p>
-<p>以上只是我所知道的几个点，当然有很多我没有提及，以后有机会再补充，包括地图公司一般都有自己的导航路线模拟工具，所以测试时可以记录之前行走的路线再次模拟导航，也可以自动模拟导航来触发bug。当然离开地图公司后也没什么机会再接触到相关的代码了，所以就写下这篇文章简单记录下吧。</p>
-
         </div>
         
+        
+        <div class="level is-mobile">
+            <div class="level-start">
+                <div class="level-item">
+                <a class="button is-size-7 is-light" href="/2017/07/15/android_map/android_map_understanding/#more">Read More</a>
+                </div>
+            </div>
+        </div>
         
         
     </div>
