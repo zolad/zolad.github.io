@@ -1,0 +1,1755 @@
+<!DOCTYPE html>
+<html  lang="en">
+<head>
+    <meta charset="utf-8" />
+
+<meta name="generator" content="Hexo 4.2.0" />
+
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+
+<title>Camera Sensor驱动修改经验 - Zola&#39;s Blog</title>
+
+
+    <meta name="description" content="点亮摄像头必须移植配置好Camera的驱动（Sensor&#x2F;AF&#x2F;OTP），其中Camera Sensor驱动是其中重点。Camera模组是否上电成功？I2C通信是否正常？能否读取到硬件ID？硬件ID是否匹配？寄存器设置是否正确？Fps计算是否正确？等等问题都会影响Camera是否正常工作。 记录下修改Camera Sensor Driver代码的经验，由于各平台架构不同，尽量忽略平台差异，只谈流程">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Camera Sensor驱动修改经验">
+<meta property="og:url" content="http://yoursite.com/2019/10/22/camera/camera_sensor_drive_experience/index.html">
+<meta property="og:site_name" content="Zola&#39;s Blog">
+<meta property="og:description" content="点亮摄像头必须移植配置好Camera的驱动（Sensor&#x2F;AF&#x2F;OTP），其中Camera Sensor驱动是其中重点。Camera模组是否上电成功？I2C通信是否正常？能否读取到硬件ID？硬件ID是否匹配？寄存器设置是否正确？Fps计算是否正确？等等问题都会影响Camera是否正常工作。 记录下修改Camera Sensor Driver代码的经验，由于各平台架构不同，尽量忽略平台差异，只谈流程">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="http://yoursite.com/gallery/23.jpeg">
+<meta property="article:published_time" content="2019-10-21T16:00:00.000Z">
+<meta property="article:modified_time" content="2020-04-02T01:13:54.022Z">
+<meta property="article:author" content="Zola">
+<meta property="article:tag" content="Camera">
+<meta property="article:tag" content="Sensor Driver">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://yoursite.com/gallery/23.jpeg">
+
+
+
+
+
+
+
+<link rel="icon" href="/images/favicon.svg">
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.7.2/css/bulma.css">
+<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.4.1/css/all.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Ubuntu:400,600|Source+Code+Pro">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@9.12.0/styles/atom-one-light.css">
+
+
+    
+    
+<style>body>.footer,body>.navbar,body>.section{opacity:0}</style>
+
+    
+    
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lightgallery@1.6.8/dist/css/lightgallery.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/justifiedGallery@3.7.0/dist/css/justifiedGallery.min.css">
+
+    
+    
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/outdatedbrowser@1.1.5/outdatedbrowser/outdatedbrowser.min.css">
+
+    
+    
+    
+    
+<link rel="stylesheet" href="/css/back-to-top.css">
+
+    
+    
+    
+    
+    
+    
+    
+    <link rel="stylesheet" href="/css/progressbar.css">
+<script src="https://cdn.jsdelivr.net/npm/pace-js@1.0.2/pace.min.js"></script>
+    
+    
+    
+
+
+<link rel="stylesheet" href="/css/style.css">
+</head>
+<body class="is-3-column">
+    <nav class="navbar navbar-main">
+    <div class="container">
+        <div class="navbar-brand is-flex-center">
+            <a class="navbar-item navbar-logo" href="/">
+            
+                <img src="/images/gen.svg" alt="Camera Sensor驱动修改经验" height="28">
+            
+            </a>
+        </div>
+        <div class="navbar-menu">
+            
+            <div class="navbar-start">
+                
+                <a class="navbar-item"
+                href="/">Home</a>
+                
+                <a class="navbar-item"
+                href="/archives">Archives</a>
+                
+                <a class="navbar-item"
+                href="/categories">Categories</a>
+                
+                <a class="navbar-item"
+                href="/tags">Tags</a>
+                
+            </div>
+            
+            <div class="navbar-end">
+                
+                
+                
+                <a class="navbar-item search" title="Search" href="javascript:;">
+                    <i class="fas fa-search"></i>
+                </a>
+                
+            </div>
+        </div>
+    </div>
+</nav>
+    
+    <section class="section">
+        <div class="container">
+            <div class="columns">
+                <div class="column is-8-tablet is-8-desktop is-6-widescreen has-order-2 column-main">
+<div class="card">
+    
+    <div class="card-image">
+        <span  class="image is-7by1">
+            <img class="thumbnail" src="/gallery/23.jpeg" alt="Camera Sensor驱动修改经验">
+        </span>
+    </div>
+    
+    <div class="card-content article ">
+        
+        <div class="level article-meta is-size-7 is-uppercase is-mobile is-overflow-x-auto">
+            <div class="level-left">
+                <time class="level-item has-text-grey" datetime="2019-10-21T16:00:00.000Z">2019-10-22</time>
+                
+                <div class="level-item">
+                <a class="has-link-grey -link" href="/categories/Camera/">Camera</a>&nbsp;/&nbsp;<a class="has-link-grey -link" href="/categories/Camera/Driver/">Driver</a>
+                </div>
+                
+                
+                <span class="level-item has-text-grey">
+                    
+                    
+                    11 minutes read (About 1642 words)
+                </span>
+                
+                
+            </div>
+        </div>
+        
+        <h1 class="title is-size-3 is-size-4-mobile has-text-weight-normal">
+            
+                Camera Sensor驱动修改经验
+            
+        </h1>
+        <div class="content">
+            <p>点亮摄像头必须移植配置好Camera的驱动（Sensor/AF/OTP），其中Camera Sensor驱动是其中重点。Camera模组是否上电成功？I2C通信是否正常？能否读取到硬件ID？硬件ID是否匹配？寄存器设置是否正确？Fps计算是否正确？等等问题都会影响Camera是否正常工作。</p>
+<p>记录下修改Camera Sensor Driver代码的经验，由于各平台架构不同，尽量忽略平台差异，只谈流程/参数的含义和经验。</p>
+<a id="more"></a>
+
+<hr>
+<h3 id="Sensor-Driver的工作"><a href="#Sensor-Driver的工作" class="headerlink" title="Sensor Driver的工作"></a>Sensor Driver的工作</h3><p>Sensor驱动代码一般不用自己写，Camera Sensor厂商会提供你需要的平台或已在别的类似平台上已经实现好的Sensor驱动代码和文档，你必须按文档里的DataSheet配置参数才能使Camera正常工作。</p>
+<p>当你在平台上配置好（前后置）Camera Sensor的类型时，平台的代码会自动匹配到对应的驱动上。</p>
+<p>BB端和Camera的通信一般都是I2C通信（读写Camera的寄存器）。</p>
+<p>当Camera物理连接正常时，会先走power on上电流程，上电成功后会读取硬件id（通过I2C读取寄存器固定某个位置的值，下面会提到），匹配成功后进行初始化，写入代码里的寄存器初始化表，初始化fps计算帧率，这一步后Camera就能正常出图，随后就可以使用接口对Camera进行操作（还是I2C读写寄存器的方式），使用结束后对Camera进行下电。</p>
+<h3 id="上下电时序"><a href="#上下电时序" class="headerlink" title="上下电时序"></a>上下电时序</h3><p>查看硬件文档的上电时序是怎么样的，然后按照文档里的编写上电函数。上电主要对三路电压（camera包含的三路电压为模拟电压（VCAMA），数字电压（VCAMD），IO口电压（VCAMIO））、Reset脚、PDN脚、Mlck脚进行控制。</p>
+<p>上电举个例子</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-keyword">if</span> (power_on) <br>  &#123;<br>      <span class="hljs-comment">//.reset_pulse_level = SENSOR_LOW_PULSE_RESET,</span><br>      <span class="hljs-comment">//.power_down_level = SENSOR_LOW_LEVEL_PWDN,</span><br>      <span class="hljs-comment">//PDN脚拉低</span><br>      hw_sensor_power_down(sns_drv_cxt-&gt;hw_handle, power_down); <br>      <span class="hljs-comment">//Reset脚拉低</span><br>      hw_sensor_set_reset_level(sns_drv_cxt-&gt;hw_handle, reset_level);<br>      <span class="hljs-comment">//disable MCLK</span><br>      hw_sensor_set_mclk(sns_drv_cxt-&gt;hw_handle, SENSOR_DISABLE_MCLK);<br>      <span class="hljs-comment">//关闭三路电压</span><br>      hw_sensor_set_avdd_val(sns_drv_cxt-&gt;hw_handle, SENSOR_AVDD_CLOSED);<br>      hw_sensor_set_dvdd_val(sns_drv_cxt-&gt;hw_handle, SENSOR_AVDD_CLOSED);<br>      hw_sensor_set_iovdd_val(sns_drv_cxt-&gt;hw_handle, SENSOR_AVDD_CLOSED);<br>      <br>      usleep(<span class="hljs-number">1</span> * <span class="hljs-number">1000</span>);<br>      <span class="hljs-comment">//设置三路电压</span><br>      <span class="hljs-comment">//.avdd_val = SENSOR_AVDD_2800MV,</span><br>      <span class="hljs-comment">// .iovdd_val = SENSOR_AVDD_1800MV,</span><br>      <span class="hljs-comment">// .dvdd_val = SENSOR_AVDD_1500MV,</span><br><br>      hw_sensor_set_iovdd_val(sns_drv_cxt-&gt;hw_handle, iovdd_val); <br>      usleep(<span class="hljs-number">1</span> * <span class="hljs-number">1000</span>);<br>      hw_sensor_set_dvdd_val(sns_drv_cxt-&gt;hw_handle, dvdd_val);<br>      usleep(<span class="hljs-number">1</span> * <span class="hljs-number">1000</span>);<br>      hw_sensor_set_avdd_val(sns_drv_cxt-&gt;hw_handle, avdd_val);<br>      usleep(<span class="hljs-number">1</span> * <span class="hljs-number">1000</span>);<br>      <span class="hljs-comment">//设置MCLK</span><br>      hw_sensor_set_mclk(sns_drv_cxt-&gt;hw_handle, EX_MCLK);<br>      usleep(<span class="hljs-number">10</span> * <span class="hljs-number">1000</span>);<br>      <span class="hljs-comment">//拉高PDN脚</span><br>      hw_sensor_power_down(sns_drv_cxt-&gt;hw_handle, !power_down);<br>      <span class="hljs-comment">//拉高reset脚</span><br>      hw_sensor_set_reset_level(sns_drv_cxt-&gt;hw_handle, !reset_level);<br>  &#125;<br></code></pre></td></tr></table></figure>
+
+<p>如果Sensor代码里没有配置下电时序，那么下电时序就是把上电时序倒过来执行一遍。</p>
+<hr>
+<h3 id="当Read-ID失败的时候怎么排查"><a href="#当Read-ID失败的时候怎么排查" class="headerlink" title="当Read ID失败的时候怎么排查"></a>当Read ID失败的时候怎么排查</h3><p>1.检查硬件连接</p>
+<p>除了看线的连接外，要看金手指接触有没有不良的情况。</p>
+<p>2.检查上电是否成功</p>
+<p>看log,上电函数是否执行完成了，用万用表量对应的pin脚（三路电压/reset/pdn）状态，是否跟上电函数里设置的一样。</p>
+<p>3.检查I2C通路是否正常</p>
+<p>用示波器连接I2C的SDA和SCL脚，查看波形是否正常</p>
+<p>4.检查I2C从设备地址</p>
+<p>5.检查I2C的读写函数</p>
+<hr>
+<h3 id="Read-ID正常，初始化失败了怎么办"><a href="#Read-ID正常，初始化失败了怎么办" class="headerlink" title="Read ID正常，初始化失败了怎么办"></a>Read ID正常，初始化失败了怎么办</h3><p>查看log,看看fps的计算结果是否正常，检查是不是fps帧率计算有问题，一般 fps = 1000000000.0 / (frame length * line_time);要注意1000000000.0 和 line_time 的单位，可能是微秒或纳秒。一般fps的范围都在15-60之间。</p>
+<hr>
+<h3 id="参数解析"><a href="#参数解析" class="headerlink" title="参数解析"></a>参数解析</h3><p>Sensor Driver代码里有很多参数，下面解析一下参数的含义和用法。</p>
+<p>p.s.参数的值要以硬件datasheet为准。</p>
+<p>1.I2C_SLAVE_ADDR</p>
+<p>I2C从设备地址，硬件文档datasheet有写明，有两个地址，分别为读地址和写地址，有8位，比如</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-meta">#<span class="hljs-meta-keyword">define</span> I2C_SLAVE_ADDR        0x6c   <span class="hljs-comment">/* 8bit slave address*/</span></span><br></code></pre></td></tr></table></figure>
+
+<p>一般会右移一位，最后一位添加0为读地址，1为写地址</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs c">sensor_module_info s_c2590_module_info_tab[VENDOR_NUM] = &#123;<br>    ...<br>         .major_i2c_addr = I2C_SLAVE_ADDR &gt;&gt; <span class="hljs-number">1</span>,<br>    ...<br></code></pre></td></tr></table></figure>
+
+<p>2.硬件ID的值和在寄存器里高低位位置</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-meta">#<span class="hljs-meta-keyword">define</span> XXXX_PID_ADDR        0x0000</span><br><span class="hljs-meta">#<span class="hljs-meta-keyword">define</span> XXXX_PID_VALUE       0x02</span><br><span class="hljs-meta">#<span class="hljs-meta-keyword">define</span> XXXX_VER_ADDR        0x0001</span><br><span class="hljs-meta">#<span class="hljs-meta-keyword">define</span> XXXX_VER_VALUE       0x02</span><br></code></pre></td></tr></table></figure>
+
+<p>驱动初始化里需要先检查硬件ID，就是通过读取寄存器上面两个ADDR的值，比较两个VALUE是否一致，id一致则代表连接的硬件是我们驱动对应的硬件。</p>
+<p>3.图像尺寸</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-comment">/* effective sensor output image size */</span><br><span class="hljs-meta">#<span class="hljs-meta-keyword">define</span> PREVIEW_WIDTH           1600</span><br><span class="hljs-meta">#<span class="hljs-meta-keyword">define</span> PREVIEW_HEIGHT          1200</span><br><span class="hljs-meta">#<span class="hljs-meta-keyword">define</span> SNAPSHOT_WIDTH          1600</span><br><span class="hljs-meta">#<span class="hljs-meta-keyword">define</span> SNAPSHOT_HEIGHT         1200</span><br><br><span class="hljs-comment">/*Raw Trim parameters*/</span><br><span class="hljs-meta">#<span class="hljs-meta-keyword">define</span> PREVIEW_TRIM_X          0</span><br><span class="hljs-meta">#<span class="hljs-meta-keyword">define</span> PREVIEW_TRIM_Y          0</span><br><span class="hljs-meta">#<span class="hljs-meta-keyword">define</span> PREVIEW_TRIM_W          1600</span><br><span class="hljs-meta">#<span class="hljs-meta-keyword">define</span> PREVIEW_TRIM_H          1200</span><br><span class="hljs-meta">#<span class="hljs-meta-keyword">define</span> SNAPSHOT_TRIM_X         0</span><br><span class="hljs-meta">#<span class="hljs-meta-keyword">define</span> SNAPSHOT_TRIM_Y         0</span><br><span class="hljs-meta">#<span class="hljs-meta-keyword">define</span> SNAPSHOT_TRIM_W         1600</span><br><span class="hljs-meta">#<span class="hljs-meta-keyword">define</span> SNAPSHOT_TRIM_H         1200</span><br></code></pre></td></tr></table></figure>
+
+<p>4.line time和frame length</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-comment">/*line time unit: 1ns*/</span><br><span class="hljs-meta">#<span class="hljs-meta-keyword">define</span> PREVIEW_LINE_TIME         54457</span><br><span class="hljs-meta">#<span class="hljs-meta-keyword">define</span> SNAPSHOT_LINE_TIME        54457</span><br><br><span class="hljs-comment">/* frame length*/</span><br><span class="hljs-meta">#<span class="hljs-meta-keyword">define</span> PREVIEW_FRAME_LENGTH        1224</span><br><span class="hljs-meta">#<span class="hljs-meta-keyword">define</span> SNAPSHOT_FRAME_LENGTH       1224</span><br></code></pre></td></tr></table></figure>
+
+<p>line time跟电子快门的曝光有关，是一行的曝光时间，frame length代表有多少行，一般大于图像的HEIGHT。</p>
+<p>5.EX_MCLK</p>
+<p>提供给Sensor的外部clock，一般不变。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-comment">/* please don't change it */</span><br><span class="hljs-meta">#<span class="hljs-meta-keyword">define</span> EX_MCLK             24</span><br></code></pre></td></tr></table></figure>
+
+<p>6.LANE_NUM </p>
+<p>mipi data是成对的差分信号，MIPI_RDN和MIPI_RDP，有几对这样的pin脚，则说明是几条lane，同一颗sensor由于register setting不同，输出的信号有可能是2 lane或者4lane等</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-comment">/*Mipi output*/</span><br><span class="hljs-meta">#<span class="hljs-meta-keyword">define</span> LANE_NUM            1</span><br><span class="hljs-meta">#<span class="hljs-meta-keyword">define</span> RAW_BITS            10</span><br></code></pre></td></tr></table></figure>
+
+<p>举例：MT6735，5M摄像头，有效像素为2592*1944，30fps帧率，10位ADC色彩深度，最少几lane</p>
+<p>(1) 从平台资料可知，MIPI CSI速率最高为1.5Gbps</p>
+<p>(2) 2592 * 1944 * 10 * 30 * (1+20%) = 1.8Gbps</p>
+<p>lane = 1.8 / 1.5 &gt; 1，所以最少需要 2 lane</p>
+<p>6.MIPI_PER_LANE_BPS</p>
+<p>一个MIPI接口每秒传输速率，单位比特每秒</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-meta">#<span class="hljs-meta-keyword">define</span> PREVIEW_MIPI_PER_LANE_BPS     534  <span class="hljs-comment">/* 2*Mipi clk */</span></span><br><span class="hljs-meta">#<span class="hljs-meta-keyword">define</span> SNAPSHOT_MIPI_PER_LANE_BPS    534  <span class="hljs-comment">/* 2*Mipi clk */</span></span><br></code></pre></td></tr></table></figure>
+
+<p>还有其他参数，比如镜像旋转，即上下镜像左右镜像，通过设置寄存器就可以做到。但是如果相差90度，那就是模组或放置方向差了90度，要修改硬件。</p>
+
+        </div>
+        
+        <div class="level is-size-7 is-uppercase">
+            <div class="level-start">
+                <div class="level-item">
+                    <span class="is-size-6 has-text-grey has-mr-7">#</span>
+                    <a class="has-link-grey -link" href="/tags/Camera/" rel="tag">Camera</a>, <a class="has-link-grey -link" href="/tags/Sensor-Driver/" rel="tag">Sensor Driver</a>
+                </div>
+            </div>
+        </div>
+        
+        
+        
+    </div>
+</div>
+
+
+
+
+
+<div class="card card-transparent">
+    <div class="level post-navigation is-flex-wrap is-mobile">
+        
+        <div class="level-start">
+            <a class="level level-item has-link-grey  article-nav-prev" href="/2020/01/05/camera/android_camera_architecture_1/">
+                <i class="level-item fas fa-chevron-left"></i>
+                <span class="level-item">Android Camera软件框架分析(一)-Application Framework-&gt;Camera Service</span>
+            </a>
+        </div>
+        
+        
+        <div class="level-end">
+            <a class="level level-item has-link-grey  article-nav-next" href="/2019/08/27/uvccamera/android_uvccamera_experience_and_bug/">
+                <span class="level-item">Android UVCCamera/libuvc遇到的卡死崩溃bug和解决方法</span>
+                <i class="level-item fas fa-chevron-right"></i>
+            </a>
+        </div>
+        
+    </div>
+</div>
+
+
+</div>
+                
+
+
+
+
+<div class="column is-4-tablet is-4-desktop is-3-widescreen  has-order-1 column-left ">
+    
+        
+<div class="card widget">
+    <div class="card-content">
+        <nav class="level">
+            <div class="level-item has-text-centered" style="flex-shrink: 1">
+                <div>
+                    
+                    <figure class="image is-128x128 has-mb-6">
+                        <img class="" src="/images/avatar.png" alt="Zola">
+                    </figure>
+                    
+                    <p class="is-size-4 is-block">
+                        Zola
+                    </p>
+                    
+                    
+                    <p class="is-size-6 is-block">
+                        Enjoy technology , Enjoy Life
+                    </p>
+                    
+                    
+                    <p class="is-size-6 is-flex is-flex-center has-text-grey">
+                        <i class="fas fa-map-marker-alt has-mr-7"></i>
+                        <span>ShenZhen,China</span>
+                    </p>
+                    
+                </div>
+            </div>
+        </nav>
+        <nav class="level is-mobile">
+            <div class="level-item has-text-centered is-marginless">
+                <div>
+                    <p class="heading">
+                        Posts
+                    </p>
+                    <a href="/archives">
+                        <p class="title has-text-weight-normal">
+                            21
+                        </p>
+                    </a>
+                </div>
+            </div>
+            <div class="level-item has-text-centered is-marginless">
+                <div>
+                    <p class="heading">
+                        Categories
+                    </p>
+                    <a href="/categories">
+                        <p class="title has-text-weight-normal">
+                            15
+                        </p>
+                    </a>
+                </div>
+            </div>
+            <div class="level-item has-text-centered is-marginless">
+                <div>
+                    <p class="heading">
+                        Tags
+                    </p>
+                    <a href="/tags">
+                        <p class="title has-text-weight-normal">
+                            36
+                        </p>
+                    </a>
+                </div>
+            </div>
+        </nav>
+        
+        <div class="level">
+            <a class="level-item button is-link is-rounded" href="https://github.com/zolad" target="_blank" rel="noopener">
+                Follow</a>
+        </div>
+        
+        
+        
+        <div class="level is-mobile">
+            
+            <a class="level-item button is-white is-marginless" target="_blank" rel="noopener"
+                title="Github" href="https://github.com/zolad">
+                
+                <i class="fab fa-github"></i>
+                
+            </a>
+            
+        </div>
+        
+    </div>
+</div>
+    
+        
+    
+        <div class="card widget">
+    <div class="card-content">
+        <div class="menu">
+        <h3 class="menu-label">
+            Links
+        </h3>
+        <ul class="menu-list">
+        
+            <li>
+                <a class="level is-mobile" href="https://github.com/Zolad" target="_blank" rel="noopener">
+                    <span class="level-left">
+                        <span class="level-item">Zola</span>
+                    </span>
+                    <span class="level-right">
+                        <span class="level-item tag">github.com</span>
+                    </span>
+                </a>
+            </li>
+        
+        </ul>
+        </div>
+    </div>
+</div>
+
+    
+        
+<div class="card widget">
+    <div class="card-content">
+        <div class="menu">
+            <h3 class="menu-label">
+                Categories
+            </h3>
+            <ul class="menu-list">
+            <li>
+        <a class="level is-marginless" href="/categories/Android/">
+            <span class="level-start">
+                <span class="level-item">Android</span>
+            </span>
+            <span class="level-end">
+                <span class="level-item tag">11</span>
+            </span>
+        </a><ul><li>
+        <a class="level is-marginless" href="/categories/Android/Driver/">
+            <span class="level-start">
+                <span class="level-item">Driver</span>
+            </span>
+            <span class="level-end">
+                <span class="level-item tag">1</span>
+            </span>
+        </a></li><li>
+        <a class="level is-marginless" href="/categories/Android/Java-framework/">
+            <span class="level-start">
+                <span class="level-item">Java framework</span>
+            </span>
+            <span class="level-end">
+                <span class="level-item tag">2</span>
+            </span>
+        </a></li><li>
+        <a class="level is-marginless" href="/categories/Android/Map/">
+            <span class="level-start">
+                <span class="level-item">Map</span>
+            </span>
+            <span class="level-end">
+                <span class="level-item tag">1</span>
+            </span>
+        </a></li><li>
+        <a class="level is-marginless" href="/categories/Android/System/">
+            <span class="level-start">
+                <span class="level-item">System</span>
+            </span>
+            <span class="level-end">
+                <span class="level-item tag">5</span>
+            </span>
+        </a></li><li>
+        <a class="level is-marginless" href="/categories/Android/System-App/">
+            <span class="level-start">
+                <span class="level-item">System App</span>
+            </span>
+            <span class="level-end">
+                <span class="level-item tag">1</span>
+            </span>
+        </a></li><li>
+        <a class="level is-marginless" href="/categories/Android/UVCCamera/">
+            <span class="level-start">
+                <span class="level-item">UVCCamera</span>
+            </span>
+            <span class="level-end">
+                <span class="level-item tag">1</span>
+            </span>
+        </a></li></ul></li><li>
+        <a class="level is-marginless" href="/categories/Camera/">
+            <span class="level-start">
+                <span class="level-item">Camera</span>
+            </span>
+            <span class="level-end">
+                <span class="level-item tag">5</span>
+            </span>
+        </a><ul><li>
+        <a class="level is-marginless" href="/categories/Camera/Android-Camera/">
+            <span class="level-start">
+                <span class="level-item">Android Camera</span>
+            </span>
+            <span class="level-end">
+                <span class="level-item tag">1</span>
+            </span>
+        </a></li><li>
+        <a class="level is-marginless" href="/categories/Camera/Basic/">
+            <span class="level-start">
+                <span class="level-item">Basic</span>
+            </span>
+            <span class="level-end">
+                <span class="level-item tag">2</span>
+            </span>
+        </a></li><li>
+        <a class="level is-marginless" href="/categories/Camera/Driver/">
+            <span class="level-start">
+                <span class="level-item">Driver</span>
+            </span>
+            <span class="level-end">
+                <span class="level-item tag">2</span>
+            </span>
+        </a></li></ul></li><li>
+        <a class="level is-marginless" href="/categories/Java/">
+            <span class="level-start">
+                <span class="level-item">Java</span>
+            </span>
+            <span class="level-end">
+                <span class="level-item tag">1</span>
+            </span>
+        </a></li><li>
+        <a class="level is-marginless" href="/categories/OpenCV/">
+            <span class="level-start">
+                <span class="level-item">OpenCV</span>
+            </span>
+            <span class="level-end">
+                <span class="level-item tag">1</span>
+            </span>
+        </a></li><li>
+        <a class="level is-marginless" href="/categories/OpenGL/">
+            <span class="level-start">
+                <span class="level-item">OpenGL</span>
+            </span>
+            <span class="level-end">
+                <span class="level-item tag">1</span>
+            </span>
+        </a></li><li>
+        <a class="level is-marginless" href="/categories/Zbar/">
+            <span class="level-start">
+                <span class="level-item">Zbar</span>
+            </span>
+            <span class="level-end">
+                <span class="level-item tag">2</span>
+            </span>
+        </a></li>
+            </ul>
+        </div>
+    </div>
+</div>
+    
+        <div class="card widget">
+    <div class="card-content">
+        <h3 class="menu-label">
+            Tag Cloud
+        </h3>
+        <a href="/tags/Adb/" style="font-size: 10px;">Adb</a> <a href="/tags/Alarm/" style="font-size: 10px;">Alarm</a> <a href="/tags/Android/" style="font-size: 16.67px;">Android</a> <a href="/tags/Android-Driver/" style="font-size: 10px;">Android Driver</a> <a href="/tags/Android-Java-framework/" style="font-size: 10px;">Android Java framework</a> <a href="/tags/Android-Kernel/" style="font-size: 10px;">Android Kernel</a> <a href="/tags/Android-KitKat/" style="font-size: 10px;">Android KitKat</a> <a href="/tags/Android-Map/" style="font-size: 10px;">Android Map</a> <a href="/tags/Android-OpenGL/" style="font-size: 10px;">Android OpenGL</a> <a href="/tags/Android-System/" style="font-size: 16.67px;">Android System</a> <a href="/tags/Android-System-App/" style="font-size: 10px;">Android System App</a> <a href="/tags/Architecture/" style="font-size: 10px;">Architecture</a> <a href="/tags/Auto-Boot/" style="font-size: 10px;">Auto Boot</a> <a href="/tags/Basic/" style="font-size: 13.33px;">Basic</a> <a href="/tags/Boot-Flow/" style="font-size: 10px;">Boot Flow</a> <a href="/tags/Camera/" style="font-size: 20px;">Camera</a> <a href="/tags/Certificate-Verify/" style="font-size: 10px;">Certificate Verify</a> <a href="/tags/Decript/" style="font-size: 10px;">Decript</a> <a href="/tags/Dialer/" style="font-size: 10px;">Dialer</a> <a href="/tags/Driver/" style="font-size: 10px;">Driver</a> <a href="/tags/Incall/" style="font-size: 10px;">Incall</a> <a href="/tags/Java/" style="font-size: 10px;">Java</a> <a href="/tags/Key/" style="font-size: 10px;">Key</a> <a href="/tags/Map-SDK/" style="font-size: 10px;">Map SDK</a> <a href="/tags/MapView/" style="font-size: 10px;">MapView</a> <a href="/tags/OpenCV/" style="font-size: 10px;">OpenCV</a> <a href="/tags/PhoneNumber-WhiteList/" style="font-size: 10px;">PhoneNumber WhiteList</a> <a href="/tags/Power-Save/" style="font-size: 10px;">Power Save</a> <a href="/tags/SPRD/" style="font-size: 10px;">SPRD</a> <a href="/tags/Sensor-Driver/" style="font-size: 10px;">Sensor Driver</a> <a href="/tags/StartUp/" style="font-size: 10px;">StartUp</a> <a href="/tags/USB/" style="font-size: 10px;">USB</a> <a href="/tags/UVCCamera/" style="font-size: 10px;">UVCCamera</a> <a href="/tags/Video-Call/" style="font-size: 10px;">Video Call</a> <a href="/tags/Zbar/" style="font-size: 13.33px;">Zbar</a> <a href="/tags/libuvc/" style="font-size: 10px;">libuvc</a>
+    </div>
+</div>
+    
+    
+        <div class="column-right-shadow is-hidden-widescreen ">
+        
+            <div class="card widget">
+    <div class="card-content">
+        <h3 class="menu-label">
+            Recent
+        </h3>
+        
+        <article class="media">
+            
+            <a href="/2020/01/05/camera/android_camera_architecture_1/" class="media-left">
+                <p class="image is-64x64">
+                    <img class="thumbnail" src="/gallery/20.jpeg" alt="Android Camera软件框架分析(一)-Application Framework-&gt;Camera Service">
+                </p>
+            </a>
+            
+            <div class="media-content">
+                <div class="content">
+                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2020-01-04T16:00:00.000Z">2020-01-05</time></div>
+                    <a href="/2020/01/05/camera/android_camera_architecture_1/" class="title has-link-black-ter is-size-6 has-text-weight-normal">Android Camera软件框架分析(一)-Application Framework-&gt;Camera Service</a>
+                    <p class="is-size-7 is-uppercase">
+                        <a class="has-link-grey -link" href="/categories/Camera/">Camera</a> / <a class="has-link-grey -link" href="/categories/Camera/Android-Camera/">Android Camera</a>
+                    </p>
+                </div>
+            </div>
+        </article>
+        
+        <article class="media">
+            
+            <a href="/2019/10/22/camera/camera_sensor_drive_experience/" class="media-left">
+                <p class="image is-64x64">
+                    <img class="thumbnail" src="/gallery/23.jpeg" alt="Camera Sensor驱动修改经验">
+                </p>
+            </a>
+            
+            <div class="media-content">
+                <div class="content">
+                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2019-10-21T16:00:00.000Z">2019-10-22</time></div>
+                    <a href="/2019/10/22/camera/camera_sensor_drive_experience/" class="title has-link-black-ter is-size-6 has-text-weight-normal">Camera Sensor驱动修改经验</a>
+                    <p class="is-size-7 is-uppercase">
+                        <a class="has-link-grey -link" href="/categories/Camera/">Camera</a> / <a class="has-link-grey -link" href="/categories/Camera/Driver/">Driver</a>
+                    </p>
+                </div>
+            </div>
+        </article>
+        
+        <article class="media">
+            
+            <a href="/2019/08/27/uvccamera/android_uvccamera_experience_and_bug/" class="media-left">
+                <p class="image is-64x64">
+                    <img class="thumbnail" src="/gallery/3.jpeg" alt="Android UVCCamera/libuvc遇到的卡死崩溃bug和解决方法">
+                </p>
+            </a>
+            
+            <div class="media-content">
+                <div class="content">
+                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2019-08-26T16:00:00.000Z">2019-08-27</time></div>
+                    <a href="/2019/08/27/uvccamera/android_uvccamera_experience_and_bug/" class="title has-link-black-ter is-size-6 has-text-weight-normal">Android UVCCamera/libuvc遇到的卡死崩溃bug和解决方法</a>
+                    <p class="is-size-7 is-uppercase">
+                        <a class="has-link-grey -link" href="/categories/Android/">Android</a> / <a class="has-link-grey -link" href="/categories/Android/UVCCamera/">UVCCamera</a>
+                    </p>
+                </div>
+            </div>
+        </article>
+        
+        <article class="media">
+            
+            <a href="/2019/05/13/android_system/android_boot_flow_self_note/" class="media-left">
+                <p class="image is-64x64">
+                    <img class="thumbnail" src="/gallery/14.jpeg" alt="Android启动流程-个人笔记">
+                </p>
+            </a>
+            
+            <div class="media-content">
+                <div class="content">
+                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2019-05-12T16:00:00.000Z">2019-05-13</time></div>
+                    <a href="/2019/05/13/android_system/android_boot_flow_self_note/" class="title has-link-black-ter is-size-6 has-text-weight-normal">Android启动流程-个人笔记</a>
+                    <p class="is-size-7 is-uppercase">
+                        <a class="has-link-grey -link" href="/categories/Android/">Android</a> / <a class="has-link-grey -link" href="/categories/Android/System/">System</a>
+                    </p>
+                </div>
+            </div>
+        </article>
+        
+        <article class="media">
+            
+            <a href="/2019/05/07/android_driver/camera_driver_config_experience/" class="media-left">
+                <p class="image is-64x64">
+                    <img class="thumbnail" src="/gallery/11.jpeg" alt="Android Camera Driver平台(展讯、MTK)移植适配经验">
+                </p>
+            </a>
+            
+            <div class="media-content">
+                <div class="content">
+                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2019-05-06T16:00:00.000Z">2019-05-07</time></div>
+                    <a href="/2019/05/07/android_driver/camera_driver_config_experience/" class="title has-link-black-ter is-size-6 has-text-weight-normal">Android Camera Driver平台(展讯、MTK)移植适配经验</a>
+                    <p class="is-size-7 is-uppercase">
+                        <a class="has-link-grey -link" href="/categories/Camera/">Camera</a> / <a class="has-link-grey -link" href="/categories/Camera/Driver/">Driver</a>
+                    </p>
+                </div>
+            </div>
+        </article>
+        
+    </div>
+</div>
+        
+            <div class="card widget">
+    <div class="card-content">
+        <div class="menu">
+        <h3 class="menu-label">
+            Archives
+        </h3>
+        <ul class="menu-list">
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2020/01/">
+                <span class="level-start">
+                    <span class="level-item">January 2020</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">1</span>
+                </span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2019/10/">
+                <span class="level-start">
+                    <span class="level-item">October 2019</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">1</span>
+                </span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2019/08/">
+                <span class="level-start">
+                    <span class="level-item">August 2019</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">1</span>
+                </span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2019/05/">
+                <span class="level-start">
+                    <span class="level-item">May 2019</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">2</span>
+                </span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2019/04/">
+                <span class="level-start">
+                    <span class="level-item">April 2019</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">2</span>
+                </span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2019/03/">
+                <span class="level-start">
+                    <span class="level-item">March 2019</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">1</span>
+                </span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2019/02/">
+                <span class="level-start">
+                    <span class="level-item">February 2019</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">2</span>
+                </span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2019/01/">
+                <span class="level-start">
+                    <span class="level-item">January 2019</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">1</span>
+                </span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2018/12/">
+                <span class="level-start">
+                    <span class="level-item">December 2018</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">6</span>
+                </span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2018/11/">
+                <span class="level-start">
+                    <span class="level-item">November 2018</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">1</span>
+                </span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2018/10/">
+                <span class="level-start">
+                    <span class="level-item">October 2018</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">1</span>
+                </span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2018/05/">
+                <span class="level-start">
+                    <span class="level-item">May 2018</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">1</span>
+                </span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2017/07/">
+                <span class="level-start">
+                    <span class="level-item">July 2017</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">1</span>
+                </span>
+            </a>
+        </li>
+        
+        </ul>
+        </div>
+    </div>
+</div>
+        
+            <div class="card widget">
+    <div class="card-content">
+        <div class="menu">
+            <h3 class="menu-label">
+                Tags
+            </h3>
+            <div class="field is-grouped is-grouped-multiline">
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Adb/">
+                        <span class="tag">Adb</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Alarm/">
+                        <span class="tag">Alarm</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Android/">
+                        <span class="tag">Android</span>
+                        <span class="tag is-grey">4</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Android-Driver/">
+                        <span class="tag">Android Driver</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Android-Java-framework/">
+                        <span class="tag">Android Java framework</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Android-Kernel/">
+                        <span class="tag">Android Kernel</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Android-KitKat/">
+                        <span class="tag">Android KitKat</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Android-Map/">
+                        <span class="tag">Android Map</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Android-OpenGL/">
+                        <span class="tag">Android OpenGL</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Android-System/">
+                        <span class="tag">Android System</span>
+                        <span class="tag is-grey">4</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Android-System-App/">
+                        <span class="tag">Android System App</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Architecture/">
+                        <span class="tag">Architecture</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Auto-Boot/">
+                        <span class="tag">Auto Boot</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Basic/">
+                        <span class="tag">Basic</span>
+                        <span class="tag is-grey">2</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Boot-Flow/">
+                        <span class="tag">Boot Flow</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Camera/">
+                        <span class="tag">Camera</span>
+                        <span class="tag is-grey">5</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Certificate-Verify/">
+                        <span class="tag">Certificate Verify</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Decript/">
+                        <span class="tag">Decript</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Dialer/">
+                        <span class="tag">Dialer</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Driver/">
+                        <span class="tag">Driver</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Incall/">
+                        <span class="tag">Incall</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Java/">
+                        <span class="tag">Java</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Key/">
+                        <span class="tag">Key</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Map-SDK/">
+                        <span class="tag">Map SDK</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/MapView/">
+                        <span class="tag">MapView</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/OpenCV/">
+                        <span class="tag">OpenCV</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/PhoneNumber-WhiteList/">
+                        <span class="tag">PhoneNumber WhiteList</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Power-Save/">
+                        <span class="tag">Power Save</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/SPRD/">
+                        <span class="tag">SPRD</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Sensor-Driver/">
+                        <span class="tag">Sensor Driver</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/StartUp/">
+                        <span class="tag">StartUp</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/USB/">
+                        <span class="tag">USB</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/UVCCamera/">
+                        <span class="tag">UVCCamera</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Video-Call/">
+                        <span class="tag">Video Call</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Zbar/">
+                        <span class="tag">Zbar</span>
+                        <span class="tag is-grey">2</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/libuvc/">
+                        <span class="tag">libuvc</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+            </div>
+        </div>
+    </div>
+</div>
+        
+        </div>
+    
+</div>
+
+                
+
+
+
+
+<div class="column is-4-tablet is-4-desktop is-3-widescreen is-hidden-touch is-hidden-desktop-only has-order-3 column-right ">
+    
+        <div class="card widget">
+    <div class="card-content">
+        <h3 class="menu-label">
+            Recent
+        </h3>
+        
+        <article class="media">
+            
+            <a href="/2020/01/05/camera/android_camera_architecture_1/" class="media-left">
+                <p class="image is-64x64">
+                    <img class="thumbnail" src="/gallery/20.jpeg" alt="Android Camera软件框架分析(一)-Application Framework-&gt;Camera Service">
+                </p>
+            </a>
+            
+            <div class="media-content">
+                <div class="content">
+                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2020-01-04T16:00:00.000Z">2020-01-05</time></div>
+                    <a href="/2020/01/05/camera/android_camera_architecture_1/" class="title has-link-black-ter is-size-6 has-text-weight-normal">Android Camera软件框架分析(一)-Application Framework-&gt;Camera Service</a>
+                    <p class="is-size-7 is-uppercase">
+                        <a class="has-link-grey -link" href="/categories/Camera/">Camera</a> / <a class="has-link-grey -link" href="/categories/Camera/Android-Camera/">Android Camera</a>
+                    </p>
+                </div>
+            </div>
+        </article>
+        
+        <article class="media">
+            
+            <a href="/2019/10/22/camera/camera_sensor_drive_experience/" class="media-left">
+                <p class="image is-64x64">
+                    <img class="thumbnail" src="/gallery/23.jpeg" alt="Camera Sensor驱动修改经验">
+                </p>
+            </a>
+            
+            <div class="media-content">
+                <div class="content">
+                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2019-10-21T16:00:00.000Z">2019-10-22</time></div>
+                    <a href="/2019/10/22/camera/camera_sensor_drive_experience/" class="title has-link-black-ter is-size-6 has-text-weight-normal">Camera Sensor驱动修改经验</a>
+                    <p class="is-size-7 is-uppercase">
+                        <a class="has-link-grey -link" href="/categories/Camera/">Camera</a> / <a class="has-link-grey -link" href="/categories/Camera/Driver/">Driver</a>
+                    </p>
+                </div>
+            </div>
+        </article>
+        
+        <article class="media">
+            
+            <a href="/2019/08/27/uvccamera/android_uvccamera_experience_and_bug/" class="media-left">
+                <p class="image is-64x64">
+                    <img class="thumbnail" src="/gallery/3.jpeg" alt="Android UVCCamera/libuvc遇到的卡死崩溃bug和解决方法">
+                </p>
+            </a>
+            
+            <div class="media-content">
+                <div class="content">
+                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2019-08-26T16:00:00.000Z">2019-08-27</time></div>
+                    <a href="/2019/08/27/uvccamera/android_uvccamera_experience_and_bug/" class="title has-link-black-ter is-size-6 has-text-weight-normal">Android UVCCamera/libuvc遇到的卡死崩溃bug和解决方法</a>
+                    <p class="is-size-7 is-uppercase">
+                        <a class="has-link-grey -link" href="/categories/Android/">Android</a> / <a class="has-link-grey -link" href="/categories/Android/UVCCamera/">UVCCamera</a>
+                    </p>
+                </div>
+            </div>
+        </article>
+        
+        <article class="media">
+            
+            <a href="/2019/05/13/android_system/android_boot_flow_self_note/" class="media-left">
+                <p class="image is-64x64">
+                    <img class="thumbnail" src="/gallery/14.jpeg" alt="Android启动流程-个人笔记">
+                </p>
+            </a>
+            
+            <div class="media-content">
+                <div class="content">
+                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2019-05-12T16:00:00.000Z">2019-05-13</time></div>
+                    <a href="/2019/05/13/android_system/android_boot_flow_self_note/" class="title has-link-black-ter is-size-6 has-text-weight-normal">Android启动流程-个人笔记</a>
+                    <p class="is-size-7 is-uppercase">
+                        <a class="has-link-grey -link" href="/categories/Android/">Android</a> / <a class="has-link-grey -link" href="/categories/Android/System/">System</a>
+                    </p>
+                </div>
+            </div>
+        </article>
+        
+        <article class="media">
+            
+            <a href="/2019/05/07/android_driver/camera_driver_config_experience/" class="media-left">
+                <p class="image is-64x64">
+                    <img class="thumbnail" src="/gallery/11.jpeg" alt="Android Camera Driver平台(展讯、MTK)移植适配经验">
+                </p>
+            </a>
+            
+            <div class="media-content">
+                <div class="content">
+                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2019-05-06T16:00:00.000Z">2019-05-07</time></div>
+                    <a href="/2019/05/07/android_driver/camera_driver_config_experience/" class="title has-link-black-ter is-size-6 has-text-weight-normal">Android Camera Driver平台(展讯、MTK)移植适配经验</a>
+                    <p class="is-size-7 is-uppercase">
+                        <a class="has-link-grey -link" href="/categories/Camera/">Camera</a> / <a class="has-link-grey -link" href="/categories/Camera/Driver/">Driver</a>
+                    </p>
+                </div>
+            </div>
+        </article>
+        
+    </div>
+</div>
+    
+        <div class="card widget">
+    <div class="card-content">
+        <div class="menu">
+        <h3 class="menu-label">
+            Archives
+        </h3>
+        <ul class="menu-list">
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2020/01/">
+                <span class="level-start">
+                    <span class="level-item">January 2020</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">1</span>
+                </span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2019/10/">
+                <span class="level-start">
+                    <span class="level-item">October 2019</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">1</span>
+                </span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2019/08/">
+                <span class="level-start">
+                    <span class="level-item">August 2019</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">1</span>
+                </span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2019/05/">
+                <span class="level-start">
+                    <span class="level-item">May 2019</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">2</span>
+                </span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2019/04/">
+                <span class="level-start">
+                    <span class="level-item">April 2019</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">2</span>
+                </span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2019/03/">
+                <span class="level-start">
+                    <span class="level-item">March 2019</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">1</span>
+                </span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2019/02/">
+                <span class="level-start">
+                    <span class="level-item">February 2019</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">2</span>
+                </span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2019/01/">
+                <span class="level-start">
+                    <span class="level-item">January 2019</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">1</span>
+                </span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2018/12/">
+                <span class="level-start">
+                    <span class="level-item">December 2018</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">6</span>
+                </span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2018/11/">
+                <span class="level-start">
+                    <span class="level-item">November 2018</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">1</span>
+                </span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2018/10/">
+                <span class="level-start">
+                    <span class="level-item">October 2018</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">1</span>
+                </span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2018/05/">
+                <span class="level-start">
+                    <span class="level-item">May 2018</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">1</span>
+                </span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2017/07/">
+                <span class="level-start">
+                    <span class="level-item">July 2017</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">1</span>
+                </span>
+            </a>
+        </li>
+        
+        </ul>
+        </div>
+    </div>
+</div>
+    
+        <div class="card widget">
+    <div class="card-content">
+        <div class="menu">
+            <h3 class="menu-label">
+                Tags
+            </h3>
+            <div class="field is-grouped is-grouped-multiline">
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Adb/">
+                        <span class="tag">Adb</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Alarm/">
+                        <span class="tag">Alarm</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Android/">
+                        <span class="tag">Android</span>
+                        <span class="tag is-grey">4</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Android-Driver/">
+                        <span class="tag">Android Driver</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Android-Java-framework/">
+                        <span class="tag">Android Java framework</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Android-Kernel/">
+                        <span class="tag">Android Kernel</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Android-KitKat/">
+                        <span class="tag">Android KitKat</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Android-Map/">
+                        <span class="tag">Android Map</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Android-OpenGL/">
+                        <span class="tag">Android OpenGL</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Android-System/">
+                        <span class="tag">Android System</span>
+                        <span class="tag is-grey">4</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Android-System-App/">
+                        <span class="tag">Android System App</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Architecture/">
+                        <span class="tag">Architecture</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Auto-Boot/">
+                        <span class="tag">Auto Boot</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Basic/">
+                        <span class="tag">Basic</span>
+                        <span class="tag is-grey">2</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Boot-Flow/">
+                        <span class="tag">Boot Flow</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Camera/">
+                        <span class="tag">Camera</span>
+                        <span class="tag is-grey">5</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Certificate-Verify/">
+                        <span class="tag">Certificate Verify</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Decript/">
+                        <span class="tag">Decript</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Dialer/">
+                        <span class="tag">Dialer</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Driver/">
+                        <span class="tag">Driver</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Incall/">
+                        <span class="tag">Incall</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Java/">
+                        <span class="tag">Java</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Key/">
+                        <span class="tag">Key</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Map-SDK/">
+                        <span class="tag">Map SDK</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/MapView/">
+                        <span class="tag">MapView</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/OpenCV/">
+                        <span class="tag">OpenCV</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/PhoneNumber-WhiteList/">
+                        <span class="tag">PhoneNumber WhiteList</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Power-Save/">
+                        <span class="tag">Power Save</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/SPRD/">
+                        <span class="tag">SPRD</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Sensor-Driver/">
+                        <span class="tag">Sensor Driver</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/StartUp/">
+                        <span class="tag">StartUp</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/USB/">
+                        <span class="tag">USB</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/UVCCamera/">
+                        <span class="tag">UVCCamera</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Video-Call/">
+                        <span class="tag">Video Call</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Zbar/">
+                        <span class="tag">Zbar</span>
+                        <span class="tag is-grey">2</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/libuvc/">
+                        <span class="tag">libuvc</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+            </div>
+        </div>
+    </div>
+</div>
+    
+    
+</div>
+
+            </div>
+        </div>
+    </section>
+    <footer class="footer">
+    <div class="container">
+        <div class="level">
+            <div class="level-start has-text-centered-mobile">
+                <a class="footer-logo is-block has-mb-6" href="/">
+                
+                    <img src="/images/gen.svg" alt="Camera Sensor驱动修改经验" height="28">
+                
+                </a>
+                <p class="is-size-7">
+                &copy; 2020 Zola&nbsp;
+                Powered by <a href="https://hexo.io/" target="_blank" rel="noopener">Hexo</a> & <a
+                        href="https://github.com/ppoffice/hexo-theme-icarus" target="_blank" rel="noopener">Icarus</a>
+                
+                </p>
+            </div>
+            <div class="level-end">
+            
+            </div>
+        </div>
+    </div>
+</footer>
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.3.1/dist/jquery.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/moment@2.22.2/min/moment-with-locales.min.js"></script>
+<script>moment.locale("en");</script>
+
+
+<script>
+var IcarusThemeSettings = {
+    site: {
+        url: 'http://yoursite.com',
+        external_link: {"enable":true,"exclude":[]}
+    },
+    article: {
+        highlight: {
+            clipboard: true,
+            fold: 'unfolded'
+        }
+    }
+};
+</script>
+
+
+<script src="https://cdn.jsdelivr.net/npm/clipboard@2.0.4/dist/clipboard.min.js" defer></script>
+
+
+
+
+
+<script src="/js/animation.js"></script>
+
+
+
+<script src="https://cdn.jsdelivr.net/npm/lightgallery@1.6.8/dist/js/lightgallery.min.js" defer></script>
+<script src="https://cdn.jsdelivr.net/npm/justifiedGallery@3.7.0/dist/js/jquery.justifiedGallery.min.js" defer></script>
+<script src="/js/gallery.js" defer></script>
+
+
+
+<div id="outdated">
+    <h6>Your browser is out-of-date!</h6>
+    <p>Update your browser to view this website correctly. <a id="btnUpdateBrowser" href="http://outdatedbrowser.com/">Update
+            my browser now </a></p>
+    <p class="last"><a href="#" id="btnCloseUpdateBrowser" title="Close">&times;</a></p>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/outdatedbrowser@1.1.5/outdatedbrowser/outdatedbrowser.min.js" defer></script>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        outdatedBrowser({
+            bgColor: '#f25648',
+            color: '#ffffff',
+            lowerThan: 'flex'
+        });
+    });
+</script>
+
+
+<script src="https://cdn.jsdelivr.net/npm/mathjax@2.7.5/unpacked/MathJax.js?config=TeX-MML-AM_CHTML" defer></script>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    MathJax.Hub.Config({
+        'HTML-CSS': {
+            matchFontHeight: false
+        },
+        SVG: {
+            matchFontHeight: false
+        },
+        CommonHTML: {
+            matchFontHeight: false
+        },
+        tex2jax: {
+            inlineMath: [
+                ['$','$'],
+                ['\\(','\\)']
+            ]
+        }
+    });
+});
+</script>
+
+
+<a id="back-to-top" title="Back to Top" href="javascript:;">
+    <i class="fas fa-chevron-up"></i>
+</a>
+<script src="/js/back-to-top.js" defer></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<script src="/js/main.js" defer></script>
+
+    
+    <div class="searchbox ins-search">
+    <div class="searchbox-container ins-search-container">
+        <div class="searchbox-input-wrapper">
+            <input type="text" class="searchbox-input ins-search-input" placeholder="Type something..." />
+            <span class="searchbox-close ins-close ins-selectable"><i class="fa fa-times-circle"></i></span>
+        </div>
+        <div class="searchbox-result-wrapper ins-section-wrapper">
+            <div class="ins-section-container"></div>
+        </div>
+    </div>
+</div>
+<script>
+    (function (window) {
+        var INSIGHT_CONFIG = {
+            TRANSLATION: {
+                POSTS: 'Posts',
+                PAGES: 'Pages',
+                CATEGORIES: 'Categories',
+                TAGS: 'Tags',
+                UNTITLED: '(Untitled)',
+            },
+            CONTENT_URL: '/content.json',
+        };
+        window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+    })(window);
+</script>
+<script src="/js/insight.js" defer></script>
+<link rel="stylesheet" href="/css/search.css">
+<link rel="stylesheet" href="/css/insight.css">
+    
+</body>
+</html>
