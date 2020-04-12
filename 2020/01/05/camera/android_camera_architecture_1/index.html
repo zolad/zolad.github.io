@@ -7,22 +7,22 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
 
-<title>Android Camera软件框架分析(一)-Application Framework-&gt;Camera Service - Zola&#39;s Blog</title>
+<title>Android Camera软件框架(一)-Application Framework-&gt;Camera Service - Zola&#39;s Blog</title>
 
 
     <meta name="description" content="Camera根据Android架构从上至下可分为:   1.Applications: 最上层的应用；   2.Application Framework: 主要为Applications提供API;   3.JNI: 使Application Framework和Libraries可交互   4.Libraries: 包括Camera Framework和Camera Service(camer">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Android Camera软件框架分析(一)-Application Framework-&gt;Camera Service">
+<meta property="og:title" content="Android Camera软件框架(一)-Application Framework-&gt;Camera Service">
 <meta property="og:url" content="http://yoursite.com/2020/01/05/camera/android_camera_architecture_1/index.html">
 <meta property="og:site_name" content="Zola&#39;s Blog">
 <meta property="og:description" content="Camera根据Android架构从上至下可分为:   1.Applications: 最上层的应用；   2.Application Framework: 主要为Applications提供API;   3.JNI: 使Application Framework和Libraries可交互   4.Libraries: 包括Camera Framework和Camera Service(camer">
 <meta property="og:locale" content="en_US">
 <meta property="og:image" content="http://yoursite.com/gallery/20.jpeg">
 <meta property="article:published_time" content="2020-01-04T16:00:00.000Z">
-<meta property="article:modified_time" content="2020-04-01T23:37:29.511Z">
+<meta property="article:modified_time" content="2020-04-06T22:14:40.804Z">
 <meta property="article:author" content="Zola">
-<meta property="article:tag" content="Android">
 <meta property="article:tag" content="Camera">
+<meta property="article:tag" content="Android">
 <meta property="article:tag" content="Architecture">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:image" content="http://yoursite.com/gallery/20.jpeg">
@@ -83,7 +83,7 @@
         <div class="navbar-brand is-flex-center">
             <a class="navbar-item navbar-logo" href="/">
             
-                <img src="/images/gen.svg" alt="Android Camera软件框架分析(一)-Application Framework-&gt;Camera Service" height="28">
+                <img src="/images/gen.svg" alt="Android Camera软件框架(一)-Application Framework-&gt;Camera Service" height="28">
             
             </a>
         </div>
@@ -126,7 +126,7 @@
     
     <div class="card-image">
         <span  class="image is-7by1">
-            <img class="thumbnail" src="/gallery/20.jpeg" alt="Android Camera软件框架分析(一)-Application Framework-&gt;Camera Service">
+            <img class="thumbnail" src="/gallery/20.jpeg" alt="Android Camera软件框架(一)-Application Framework-&gt;Camera Service">
         </span>
     </div>
     
@@ -144,7 +144,7 @@
                 <span class="level-item has-text-grey">
                     
                     
-                    4 minutes read (About 548 words)
+                    7 minutes read (About 1058 words)
                 </span>
                 
                 
@@ -153,7 +153,7 @@
         
         <h1 class="title is-size-3 is-size-4-mobile has-text-weight-normal">
             
-                Android Camera软件框架分析(一)-Application Framework-&gt;Camera Service
+                Android Camera软件框架(一)-Application Framework-&gt;Camera Service
             
         </h1>
         <div class="content">
@@ -169,16 +169,31 @@
 <p><img src="/camera/camera_api_hal.png" alt="api-hal"></p>
 <p>下面分别分析Camera Api1和Api2对Camera Service的调用。</p>
 <hr>
-<h2 id="Camera-Api1"><a href="#Camera-Api1" class="headerlink" title="Camera Api1"></a>Camera Api1</h2><p><img src="/camera/camera_framework1.png" alt="camera api1 open camera flow"></p>
+<h2 id="Camera-Api1"><a href="#Camera-Api1" class="headerlink" title="Camera Api1"></a>Camera Api1</h2><h3 id="Camera-java-gt-CameraService"><a href="#Camera-java-gt-CameraService" class="headerlink" title="Camera.java -&gt; CameraService"></a>Camera.java -&gt; CameraService</h3><p><img src="/camera/camera_framework1.png" alt="camera api1 open camera flow"></p>
 <p>上图是Camera1接口openCamera操作的调用流程。</p>
-<p>源码位置：<br>frameworks/base/core/java/android/hardware/Camera.java<br>Camera.java为App直接调用的接口</p>
+<p>其中JNI调用Camera::connect()请求CameraService服务。Camera类继承模板类CameraBase<Camera>和BnCameraClient。首先调用模板类的connect()函数，在函数中向ServiceManager获取Camera服务信息，并生成CameraService服务代理BpCameraService（/frameworks/av/camera/ICameraService.cpp），然后通过Binder通信发送CONNECT命令，当BnCameraService收到CONNECT命令后调用CameraService的connect()成员函数来做相应的处理。</p>
+<p>BpCameraService的connect()成员函数。首先将传递过来的Camera对象转换成IBinder类型，将调用的参数写到Parcel中，通过BpBinder的transact()函数发送消息，然后由BnCameraService去响应该连接，最后就是等待服务端返回，如果成功这里为我们生成一个BpCamera实例。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs c">remote()-&gt;transact(BnCameraService::CONNECT, data, &amp;reply); <span class="hljs-comment">// CONNECT命令</span><br><span class="hljs-keyword">if</span> (readExceptionCode(reply)) <span class="hljs-keyword">return</span> -EPROTO;<br><span class="hljs-keyword">status_t</span> status = reply.readInt32();<br><span class="hljs-keyword">if</span> (reply.readInt32() != <span class="hljs-number">0</span>) &#123;<br>    device = interface_cast&lt;ICamera&gt;(reply.readStrongBinder()); <span class="hljs-comment">// client端读出server返回的binder，device为BpCamera(ICamera)</span><br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p><img src="/camera/camera_client_service.jpg" alt="camera client and service"></p>
+<p>BpCameraService是client端的代理接口，通过transact将处理请求传给BnCameraService（BnCameraService）</p>
+<p><img src="/camera/binder_service.png" alt="binder service"></p>
+<blockquote>
+<p>IXXXService为client端的代理接口BpXXXService和server端的BnXXXService的共同接口类，这个共同接口类的目的就是保证service方法在C/S两端的一致性。</p>
+</blockquote>
+<h3 id="CameraService-gt-HAL"><a href="#CameraService-gt-HAL" class="headerlink" title="CameraService -&gt; HAL"></a>CameraService -&gt; HAL</h3><p>CameraService在hal1老版本的实现里，是通过hw_get_module(CAMERA_HARDWARE_MODULE_ID)打开对应Camera hal层动态库，老版本Hal层调用的原理是dlopen()。</p>
+<p>新版hal3则是通过HIDL连接Hal层。HIDL又分直通式和绑定式，直通式的原理还是dlopen（只是用HIDL的方式封装了），所以直通式HIDL下hal层还是跟service在同一个进程，而绑定式HIDL使用Binder方式进行IPC，所以service和hal层运行在不同进程。</p>
+<h3 id="源码位置："><a href="#源码位置：" class="headerlink" title="源码位置："></a>源码位置：</h3><p>frameworks/base/core/java/android/hardware/Camera.java<br>Camera.java为App直接调用的接口</p>
 <p>frameworks/base/core/jni/android_hardware_Camera.cpp<br>此部分为Java调用的JNI native部分代码</p>
 <p>frameworks/av/camera/Camera.cpp<br>frameworks/av/camera/CameraBase.cpp<br>App连接到CameraService部分的Client</p>
 <p>frameworks/av/services/camera/libcameraservice/CameraService.cpp<br>frameworks/av/services/camera/libcameraservice/CameraService.h<br>这部分是CameraService的代码, App通过Binder来连接</p>
 <p>frameworks/av/services/camera/libcameraservice/api1/CameraClient.cpp<br>这部分是CameraService端的Client, 用于调用HAL层的接口</p>
 <p>frameworks/av/services/camera/libcameraservice/device1/CameraHardwareInterface.h<br>Google定义的HAL接口, 由芯片厂商去实现, 以上代码是Google写的Android系统代码, HAL层及以下则是芯片厂商写的代码,</p>
 <hr>
-<h2 id="Camera-Api2"><a href="#Camera-Api2" class="headerlink" title="Camera Api2"></a>Camera Api2</h2>
+<h2 id="Camera-Api2"><a href="#Camera-Api2" class="headerlink" title="Camera Api2"></a>Camera Api2</h2><h3 id="CameraManager-java-gt-CameraService"><a href="#CameraManager-java-gt-CameraService" class="headerlink" title="CameraManager.java -&gt; CameraService"></a>CameraManager.java -&gt; CameraService</h3><p><img src="/camera/camera_api2.png" alt="camnera api2"></p>
+<p>Camera2直接通过binder连接CameraService，不像camera1还要经过jni。</p>
+<h3 id="源码位置：-1"><a href="#源码位置：-1" class="headerlink" title="源码位置："></a>源码位置：</h3><p>CameraManager.java:frameworks/base/core/java/android/hardware/camera2</p>
+
         </div>
         
         <div class="level is-size-7 is-uppercase">
@@ -494,14 +509,14 @@
             
             <a href="/2020/01/05/camera/android_camera_architecture_1/" class="media-left">
                 <p class="image is-64x64">
-                    <img class="thumbnail" src="/gallery/20.jpeg" alt="Android Camera软件框架分析(一)-Application Framework-&gt;Camera Service">
+                    <img class="thumbnail" src="/gallery/20.jpeg" alt="Android Camera软件框架(一)-Application Framework-&gt;Camera Service">
                 </p>
             </a>
             
             <div class="media-content">
                 <div class="content">
                     <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2020-01-04T16:00:00.000Z">2020-01-05</time></div>
-                    <a href="/2020/01/05/camera/android_camera_architecture_1/" class="title has-link-black-ter is-size-6 has-text-weight-normal">Android Camera软件框架分析(一)-Application Framework-&gt;Camera Service</a>
+                    <a href="/2020/01/05/camera/android_camera_architecture_1/" class="title has-link-black-ter is-size-6 has-text-weight-normal">Android Camera软件框架(一)-Application Framework-&gt;Camera Service</a>
                     <p class="is-size-7 is-uppercase">
                         <a class="has-link-grey -link" href="/categories/Camera/">Camera</a> / <a class="has-link-grey -link" href="/categories/Camera/Android-Camera/">Android Camera</a>
                     </p>
@@ -1030,14 +1045,14 @@
             
             <a href="/2020/01/05/camera/android_camera_architecture_1/" class="media-left">
                 <p class="image is-64x64">
-                    <img class="thumbnail" src="/gallery/20.jpeg" alt="Android Camera软件框架分析(一)-Application Framework-&gt;Camera Service">
+                    <img class="thumbnail" src="/gallery/20.jpeg" alt="Android Camera软件框架(一)-Application Framework-&gt;Camera Service">
                 </p>
             </a>
             
             <div class="media-content">
                 <div class="content">
                     <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2020-01-04T16:00:00.000Z">2020-01-05</time></div>
-                    <a href="/2020/01/05/camera/android_camera_architecture_1/" class="title has-link-black-ter is-size-6 has-text-weight-normal">Android Camera软件框架分析(一)-Application Framework-&gt;Camera Service</a>
+                    <a href="/2020/01/05/camera/android_camera_architecture_1/" class="title has-link-black-ter is-size-6 has-text-weight-normal">Android Camera软件框架(一)-Application Framework-&gt;Camera Service</a>
                     <p class="is-size-7 is-uppercase">
                         <a class="has-link-grey -link" href="/categories/Camera/">Camera</a> / <a class="has-link-grey -link" href="/categories/Camera/Android-Camera/">Android Camera</a>
                     </p>
@@ -1557,7 +1572,7 @@
             <div class="level-start has-text-centered-mobile">
                 <a class="footer-logo is-block has-mb-6" href="/">
                 
-                    <img src="/images/gen.svg" alt="Android Camera软件框架分析(一)-Application Framework-&gt;Camera Service" height="28">
+                    <img src="/images/gen.svg" alt="Android Camera软件框架(一)-Application Framework-&gt;Camera Service" height="28">
                 
                 </a>
                 <p class="is-size-7">
