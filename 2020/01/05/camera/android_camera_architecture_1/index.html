@@ -19,7 +19,7 @@
 <meta property="og:locale" content="en_US">
 <meta property="og:image" content="http://yoursite.com/gallery/20.jpeg">
 <meta property="article:published_time" content="2020-01-04T16:00:00.000Z">
-<meta property="article:modified_time" content="2020-04-06T22:14:40.804Z">
+<meta property="article:modified_time" content="2020-04-12T19:57:36.506Z">
 <meta property="article:author" content="Zola">
 <meta property="article:tag" content="Camera">
 <meta property="article:tag" content="Android">
@@ -144,7 +144,7 @@
                 <span class="level-item has-text-grey">
                     
                     
-                    7 minutes read (About 1058 words)
+                    10 minutes read (About 1438 words)
                 </span>
                 
                 
@@ -191,7 +191,25 @@
 <p>frameworks/av/services/camera/libcameraservice/device1/CameraHardwareInterface.h<br>Google定义的HAL接口, 由芯片厂商去实现, 以上代码是Google写的Android系统代码, HAL层及以下则是芯片厂商写的代码,</p>
 <hr>
 <h2 id="Camera-Api2"><a href="#Camera-Api2" class="headerlink" title="Camera Api2"></a>Camera Api2</h2><h3 id="CameraManager-java-gt-CameraService"><a href="#CameraManager-java-gt-CameraService" class="headerlink" title="CameraManager.java -&gt; CameraService"></a>CameraManager.java -&gt; CameraService</h3><p><img src="/camera/camera_api2.png" alt="camnera api2"></p>
+<p>Camera2接口和Camera1接口差别很大。</p>
+<ul>
+<li>CameraCharacteristics：描述摄像头的各种特性，我们可以通过CameraManager的getCameraCharacteristics(@NonNull String cameraId)方法来获取。</li>
+<li>CameraDevice：描述系统摄像头，类似于早期的Camera。</li>
+<li>CameraCaptureSession：Session类，当需要拍照、预览等功能时，需要先创建该类的实例，然后通过该实例里的方法进行控制（例如：拍照 capture()）。</li>
+<li>CaptureRequest：描述了一次操作请求，拍照、预览等操作都需要先传入CaptureRequest参数，具体的参数控制也是通过CameraRequest的成员变量来设置。</li>
+</ul>
 <p>Camera2直接通过binder连接CameraService，不像camera1还要经过jni。</p>
+<ul>
+<li>ICameraService 是相机服务的接口。用于请求连接、添加监听等。</li>
+<li>ICameraDeviceUser 是已打开的特定相机设备的接口。应用框架可通过它访问具体设备。</li>
+<li>ICameraServiceListener 和 ICameraDeviceCallbacks 分别是从 CameraService 和 CameraDevice 到应用框架的回调</li>
+<li>ICameraProvider 是CameraProvider的接口。</li>
+</ul>
+<p>CameraProvider也是一个注册到ServiceManager的服务，它属于Camera HAL层服务的一部分。</p>
+<p>Cameraservice通过 CameraProviderManager 来管理对 CameraProvider的操作。</p>
+<p>CameraService-（持有）-&gt;CameraProviderManager-(Binder)-&gt;CameraProvider-（持有）-&gt;ICameraDeviceManager-&gt;ICameraDevice/ICameraDeviceSession</p>
+<p>CameraService可以通过CameraProvider获取ICameraDevice，CameraProver起到一个适配的功能，可以返回不同版本的Camera Device如Device HAL1,Device HAL3(在framework层，hal1和hal3的设备是分开枚举的，如<a href="mailto:device@1.0">device@1.0</a>/device@3.2,但有可能最后调用的都是同一颗摄像头)。</p>
+<p><img src="/camera/camera_device_map.png" alt="camnera Device"></p>
 <h3 id="源码位置：-1"><a href="#源码位置：-1" class="headerlink" title="源码位置："></a>源码位置：</h3><p>CameraManager.java:frameworks/base/core/java/android/hardware/camera2</p>
 
         </div>
